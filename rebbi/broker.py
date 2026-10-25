@@ -1,0 +1,139 @@
+"""The broker: answers an agent that is running out of budget.
+
+The MVP answers LEND or CANNOT_MOVE. Hand-off (moving the job to another
+agent) and WAIT come after HW6, behind the measurement gate in the proposal.
+"""
+
+from __future__ import annotations
+
+import logging
+from collections.abc import Callable
+from dataclasses import asdict, dataclass, field
+from datetime import UTC, datetime, timedelta
+from typing import Any
+
+from rebbi import rules as lending
+from rebbi.ledger import InsufficientHeadroom, Ledger, LedgerError
+from rebbi.rules import LendingRules
+
+log = logging.getLogger("rebbi.broker")
+
+
+def utcnow() -> datetime:
+    return datetime.now(UTC)
+
+
+@dataclass
+class HandoffRequest:
+    """What a stalled agent's harness sends; the fields follow the HW5 proposal."""
+
+    goal: str
+    budget_tokens: int
+    job_template: str = ""
+    source_commit: str = ""
+    requires_tools: list[str] = field(default_factory=list)
+    requires_scopes: list[str] = field(default_factory=list)
+    context_ref: str = ""
+    deadline_s: int = 0
+
+
+class Broker:
+    def __init__(self, ledger: Ledger, rules: LendingRules, now: Callable[[], datetime] = utcnow):
+        self.ledger = ledger
+        self.rules = rules
+        self.now = now
+
+    def budget(self, agent_id: str) -> dict[str, Any]:
+        self.ledger.expire_loans(self.now())
+        state = self.ledger.agent(agent_id)
+        loans = self.ledger.loans("active")
+        return {
+            **state.to_dict(),
+            "lendable": lending.lendable(state),
+            "borrowed": [_loan_view(loan) for loan in loans if loan["borrower"] == agent_id],
+            "lent": [_loan_view(loan) for loan in loans if loan["lender"] == agent_id],
+        }
+
+    def report_headroom(self, agent_id: str, reserve_tokens: int, will_lend: bool = True) -> dict[str, Any]:
+        state = self.ledger.set_headroom(agent_id, reserve_tokens, will_lend, self.now())
+        log.info("%s reports reserve %d, will_lend=%s", agent_id, reserve_tokens, will_lend)
+        return {**state.to_dict(), "lendable": lending.lendable(state)}
+
+    def post_handoff(self, requester: str, request: HandoffRequest) -> dict[str, Any]:
+        now = self.now()
+        self.ledger.expire_loans(now)
+        self.ledger.agent(requester)  # unknown agents are refused before anything is logged
+
+        if request.budget_tokens <= 0:
+            response = _cannot_move(request, "budget_tokens must be a positive number of tokens", [])
+            return self._decided(requester, request, response, now)
+
+        candidates = [a for a in self.ledger.agents() if a.agent_id != requester]
+        offers, considered = lending.rank_lenders(candidates, request.budget_tokens, self.rules)
+        response = None
+        for offer in offers:
+            try:
+                loan = self.ledger.book_loan(
+                    lender=offer.lender,
+                    borrower=requester,
+                    tokens=offer.tokens,
+                    now=now,
+                    expires_at=now + timedelta(seconds=self.rules.loan_ttl_s),
+                    lendable=lending.lendable,
+                )
+            except InsufficientHeadroom:
+                # Another request booked this capacity between our read and our write.
+                _mark(considered, offer.lender, "capacity taken by another request")
+                continue
+            response = {
+                "decision": "LEND",
+                "loan_id": loan["loan_id"],
+                "tokens": loan["tokens"],
+                "requested": request.budget_tokens,
+                "from": loan["lender"],
+                "expires_at": loan["expires_at"],
+                "lender_reserve_intact": loan["lender_balance_after"] >= loan["lender_reserve"],
+                "considered": considered,
+            }
+            break
+        if response is None:
+            response = _cannot_move(request, "no agent has spare capacity above its reserve", considered)
+        return self._decided(requester, request, response, now)
+
+    def settle(self, agent_id: str, loan_id: int, outcome: str = "done") -> dict[str, Any]:
+        """The borrower closes its loan; whatever it did not spend goes back to the lender."""
+        if outcome not in ("done", "abandoned"):
+            raise LedgerError("outcome must be 'done' or 'abandoned'")
+        loan = self.ledger.loan(loan_id)
+        if loan["borrower"] != agent_id:
+            raise LedgerError(f"loan {loan_id} belongs to {loan['borrower']}, not {agent_id}")
+        closed = self.ledger.close_loan(loan_id, "settled", self.now())
+        log.info("%s settled loan %d (%s): returned %d to %s", agent_id, loan_id, outcome,
+                 closed["returned_tokens"], closed["lender"])
+        return {**_loan_view(closed), "outcome": outcome}
+
+    def _decided(self, requester: str, request: HandoffRequest, response: dict[str, Any], now: datetime):
+        response["decision_id"] = self.ledger.log_decision(requester, asdict(request), response, now)
+        log.info("post_handoff from %s for %d tokens -> %s", requester, request.budget_tokens, response["decision"])
+        return response
+
+
+def _cannot_move(request: HandoffRequest, blocker: str, considered: list[dict[str, object]]) -> dict[str, Any]:
+    return {
+        "decision": "CANNOT_MOVE",
+        "requested": request.budget_tokens,
+        "blocker": blocker,
+        "next_step": "wait and ask again, or finish on a cheaper model",
+        "considered": considered,
+    }
+
+
+def _mark(considered: list[dict[str, object]], agent_id: str, reason: str) -> None:
+    for c in considered:
+        if c["agent"] == agent_id:
+            c["reason"] = reason
+
+
+def _loan_view(loan: dict[str, Any]) -> dict[str, Any]:
+    keys = ("loan_id", "lender", "borrower", "tokens", "status", "expires_at", "returned_tokens")
+    return {k: loan[k] for k in keys}
