@@ -22,11 +22,19 @@ class AgentSpec:
     id: str
     owner: str
     role: str
+    model: str
     budget_tokens: int
     reserve_tokens: int
     expected_demand_tokens: int
     will_lend: bool
     tools: list[str] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class HarnessSettings:
+    warn_fraction: float  # warn the agent once its balance falls below this share of its budget
+    max_turns: int  # safety stops for an agent session, independent of Rebbi
+    max_usd: float
 
 
 @dataclass(frozen=True)
@@ -41,6 +49,10 @@ class Scenario:
     rules: LendingRules
     agents: list[AgentSpec]
     target: AuditTarget
+    harness: HarnessSettings
+
+    def agent(self, agent_id: str) -> AgentSpec:
+        return next(a for a in self.agents if a.id == agent_id)
 
 
 def load(path: str | Path = DEFAULT_SCENARIO) -> Scenario:
@@ -49,6 +61,7 @@ def load(path: str | Path = DEFAULT_SCENARIO) -> Scenario:
         rules=LendingRules(**data["rules"]),
         agents=[AgentSpec(**a) for a in data["agents"]],
         target=AuditTarget(**data["target"]),
+        harness=HarnessSettings(**data["harness"]),
     )
 
 

@@ -21,3 +21,4 @@ include = ["rebbi*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = ["integration: starts the real agent CLI against a scripted fake model (slow)"]

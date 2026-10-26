@@ -202,6 +202,19 @@ class Ledger:
             )
             return self._agent(c, agent_id)
 
+    def last_usage(self, agent_id: str) -> int:
+        """Tokens the agent's most recent model call used; 0 before its first call."""
+        rows = self._read(
+            "SELECT -tokens AS t FROM entries WHERE agent_id = ? AND kind = 'usage' ORDER BY entry_id DESC LIMIT 1",
+            (agent_id,),
+        )
+        return rows[0]["t"] if rows else 0
+
+    def used(self, agent_id: str) -> int:
+        rows = self._read("SELECT COALESCE(-SUM(tokens), 0) AS t FROM entries WHERE agent_id = ? AND kind = 'usage'",
+                          (agent_id,))
+        return rows[0]["t"]
+
     # -- loans ----------------------------------------------------------------
 
     def book_loan(
