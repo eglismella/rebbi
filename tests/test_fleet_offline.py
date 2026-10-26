@@ -22,17 +22,22 @@ def fake_upstream():
     return f"http://127.0.0.1:{port}"
 
 
-def test_baseline_stops_when_the_budget_is_spent(fake_upstream):
-    s = asyncio.run(fleet.run_fleet("baseline", {}, fake_upstream))
+STOPPED_BY = {"api-key": "gateway refused: budget spent", "subscription": "harness stopped it: budget spent"}
+
+
+@pytest.mark.parametrize("auth", fleet.AUTH_MODES)
+def test_baseline_stops_when_the_budget_is_spent(fake_upstream, auth):
+    s = asyncio.run(fleet.run_fleet("baseline", {}, fake_upstream, auth))
     assert s["finished"] is False
-    assert s["stopped_by"] == "gateway refused: budget spent"
+    assert s["stopped_by"] == STOPPED_BY[auth]
     assert s["verified"] is False
     assert s["loans"] == [] and s["decisions"] == []
     assert s["ledger_ok"] is True
 
 
-def test_rebbi_lends_and_the_job_finishes_and_verifies(fake_upstream):
-    s = asyncio.run(fleet.run_fleet("rebbi", {}, fake_upstream))
+@pytest.mark.parametrize("auth", fleet.AUTH_MODES)
+def test_rebbi_lends_and_the_job_finishes_and_verifies(fake_upstream, auth):
+    s = asyncio.run(fleet.run_fleet("rebbi", {}, fake_upstream, auth))
     assert s["finished"] is True
     assert s["verified"] is True
     assert s["ledger_ok"] is True

@@ -3,9 +3,19 @@
     python -m rebbi.fleet --mode baseline   # no Rebbi: auditor-01 stops when its budget is spent
     python -m rebbi.fleet --mode rebbi      # auditor-01 is warned, borrows over MCP, and finishes
 
-Every model call goes through the gateway, which this process runs beside the
-agents. Each run writes its own folder under runs/: the ledger, a transcript
-per agent, the report, the verifier's verdict, the ledger check and a summary.
+Two ways to reach the model, picked from .env (or forced with --auth):
+
+- api-key: ANTHROPIC_API_KEY. Every model call goes through the gateway, which this
+  process runs beside the agents; the gateway meters each call and refuses calls once
+  an agent's budget is spent.
+- subscription: CLAUDE_CODE_OAUTH_TOKEN, made by `claude setup-token` for your own
+  Claude plan. Each agent's unmodified Claude Code binary signs in with it and calls
+  Anthropic directly; Rebbi never proxies or sees that traffic's credentials. The
+  harness meters each call from the stream events the SDK forwards, debits the same
+  ledger, and stops an agent the moment its budget is spent.
+
+Each run writes its own folder under runs/: the ledger, a transcript per agent,
+the report, the verifier's verdict, the ledger check and a summary.
 """
 
 from __future__ import annotations
@@ -30,28 +40,41 @@ from claude_agent_sdk import (
     ClaudeSDKClient,
     HookMatcher,
     ResultMessage,
+    StreamEvent,
     TextBlock,
     ToolResultBlock,
     ToolUseBlock,
     UserMessage,
 )
+from dotenv import dotenv_values
 
 from rebbi import scenario
 from rebbi.broker import Broker, utcnow
-from rebbi.gateway import BUDGET_SPENT_STATUS, UPSTREAM, agent_key, create_gateway, real_api_key, serve_in_thread
+from rebbi.gateway import (
+    BUDGET_SPENT_STATUS,
+    UPSTREAM,
+    UsageMeter,
+    agent_key,
+    create_gateway,
+    real_api_key,
+    serve_in_thread,
+)
 from rebbi.ledger import Ledger
 from rebbi.scenario import AgentSpec, Scenario
 from rebbi.verify import DEFAULT_KEY, passed, render, verify_report
 
 ROOT = Path(__file__).resolve().parent.parent
+ENV_FILE = ROOT / ".env"
 TEMPLATE = ROOT / "specs" / "dep-audit-v1.md"
 AUDITOR = "auditor-01"
 REBBI_TOOLS = [f"mcp__rebbi__{t}" for t in ("get_budget", "report_headroom", "post_handoff", "settle")]
 # Whatever launched us (a Claude Code session, say) may have left credentials and settings in the
-# environment. The agents must reach the model only through the gateway, with their stand-in keys.
+# environment. The agents must reach the model only with the credentials this harness gives them.
 INHERITED_PREFIXES = ("CLAUDE", "ANTHROPIC", "USE_LOCAL_OAUTH", "USE_STAGING_OAUTH")
+AUTH_MODES = ("api-key", "subscription")
 
 log = logging.getLogger("rebbi.fleet")
+meter_log = logging.getLogger("rebbi.harness")
 
 LENDER_PROMPT = """You are {id}, one of the agents in your company's fleet. Your owner's policy for this
 window: keep a reserve of {reserve} tokens that you never lend, and {lending}. Publish this to Rebbi now
@@ -94,15 +117,52 @@ def api_failure(result: ResultMessage | None) -> str | None:
 @dataclasses.dataclass
 class Run:
     mode: str
+    auth: str
     dir: Path
     scenario: Scenario
     ledger: Ledger
     broker: Broker
-    gateway_url: str
+    gateway_url: str | None  # api-key mode only
+    direct_env: dict[str, str]  # subscription mode: how each agent's CLI signs in
 
     @property
     def db(self) -> Path:
         return self.dir / "rebbi.db"
+
+    @property
+    def harness_meters(self) -> bool:
+        """Without the gateway in the path, the harness meters and enforces budgets itself."""
+        return self.gateway_url is None
+
+    def model_env(self, agent_id: str) -> dict[str, str]:
+        if self.gateway_url:
+            return {"ANTHROPIC_BASE_URL": self.gateway_url, "ANTHROPIC_API_KEY": agent_key(agent_id)}
+        return dict(self.direct_env)
+
+
+@dataclasses.dataclass
+class AgentOutcome:
+    texts: list[str]
+    result: ResultMessage | None
+    budget_stopped: bool  # the harness stopped it because its budget was spent (subscription mode)
+
+
+def detect_auth(env_file: Path, wanted: str = "auto") -> str:
+    values = {**dotenv_values(env_file), **{k: v for k, v in os.environ.items() if k.startswith(("ANTHROPIC", "CLAUDE"))}}
+    available = [m for m, var in (("api-key", "ANTHROPIC_API_KEY"), ("subscription", "CLAUDE_CODE_OAUTH_TOKEN"))
+                 if values.get(var)]
+    if wanted != "auto":
+        if wanted not in available:
+            raise SystemExit(f"--auth {wanted} needs {'ANTHROPIC_API_KEY' if wanted == 'api-key' else 'CLAUDE_CODE_OAUTH_TOKEN'} in {env_file}")
+        return wanted
+    if not available:
+        raise SystemExit(f"Put ANTHROPIC_API_KEY (an API key with credits) or CLAUDE_CODE_OAUTH_TOKEN "
+                         f"(from `claude setup-token`) in {env_file}")
+    return available[0]
+
+
+def oauth_token(env_file: Path) -> str:
+    return os.environ.get("CLAUDE_CODE_OAUTH_TOKEN") or dotenv_values(env_file).get("CLAUDE_CODE_OAUTH_TOKEN") or ""
 
 
 def isolate_from_host() -> None:
@@ -146,9 +206,9 @@ def options_for(run: Run, spec: AgentSpec, *, system_prompt: str, tools: list[st
         max_turns=run.scenario.harness.max_turns,
         max_budget_usd=run.scenario.harness.max_usd,
         cwd=str(cwd),
+        include_partial_messages=run.harness_meters,  # raw stream events carry each call's usage
         env={
-            "ANTHROPIC_BASE_URL": run.gateway_url,
-            "ANTHROPIC_API_KEY": agent_key(spec.id),
+            **run.model_env(spec.id),
             "CLAUDE_CONFIG_DIR": str(run.dir / "claude-config" / spec.id),
             "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
             "DISABLE_AUTOUPDATER": "1",
@@ -220,15 +280,36 @@ def _record(message: Any) -> dict:
     return {"type": type(message).__name__, **body}
 
 
-async def run_agent(run: Run, spec: AgentSpec, prompt: str, options: ClaudeAgentOptions) -> tuple[list[str], ResultMessage | None]:
+async def run_agent(run: Run, spec: AgentSpec, prompt: str, options: ClaudeAgentOptions) -> AgentOutcome:
     agent_log = logging.getLogger(f"agent.{spec.id}")
     texts: list[str] = []
     calls: dict[str, str] = {}
     result = None
+    meter: UsageMeter | None = None
+    budget_stopped = False
     with open(run.dir / f"transcript-{spec.id}.jsonl", "w", encoding="utf-8") as out:
         async with ClaudeSDKClient(options=options) as client:
             await client.query(prompt)
             async for message in client.receive_response():
+                if isinstance(message, StreamEvent):
+                    # Subscription mode: one model call = message_start ... message_stop. Debit it when it
+                    # ends, and stop the agent once its budget is spent, as the gateway would refuse its next call.
+                    kind = message.event.get("type")
+                    if kind == "message_start":
+                        meter = UsageMeter()
+                    if meter is not None:
+                        meter.observe(message.event)
+                    if kind == "message_stop" and meter is not None:
+                        state = run.ledger.record_usage(spec.id, meter.total, run.broker.now(),
+                                                        f"{meter.model} {meter.breakdown()} (harness)")
+                        meter_log.info("%s used %d tokens (%s), %d left", spec.id, meter.total, meter.breakdown(),
+                                       state.balance)
+                        meter = None
+                        if state.balance <= 0 and not budget_stopped:
+                            budget_stopped = True
+                            meter_log.warning("%s stopped: budget spent (balance %d)", spec.id, state.balance)
+                            await client.interrupt()
+                    continue
                 out.write(json.dumps(_record(message), default=str) + "\n")
                 if isinstance(message, AssistantMessage):
                     for block in message.content:
@@ -245,7 +326,7 @@ async def run_agent(run: Run, spec: AgentSpec, prompt: str, options: ClaudeAgent
                             agent_log.info(_describe_result(name, block))
                 elif isinstance(message, ResultMessage):
                     result = message
-    return texts, result
+    return AgentOutcome(texts, result, budget_stopped)
 
 
 async def publish_headroom(run: Run) -> None:
@@ -256,8 +337,8 @@ async def publish_headroom(run: Run) -> None:
                                       lending="you may lend what is above it" if spec.will_lend else "do not lend")
         options = options_for(run, spec, system_prompt=f"You are {spec.id}, an agent in a company fleet.",
                               tools=[], rebbi=True, cwd=run.dir)
-        _, result = await run_agent(run, spec, prompt, options)
-        if failure := api_failure(result):
+        outcome = await run_agent(run, spec, prompt, options)
+        if failure := api_failure(outcome.result):
             raise ApiUnavailable(f"{spec.id} could not reach the model: {failure}")
 
 
@@ -275,16 +356,22 @@ async def audit(run: Run) -> dict[str, Any]:
     )
     prompt = AUDITOR_PROMPT.format(repo=run.scenario.target.repo, commit=run.scenario.target.commit,
                                    contract=contract())
-    texts, result = await run_agent(run, spec, prompt, options)
-    if failure := api_failure(result):
+    agent = await run_agent(run, spec, prompt, options)
+    result = agent.result
+    if not agent.budget_stopped and (failure := api_failure(result)):
         raise ApiUnavailable(f"{AUDITOR} could not reach the model: {failure}")
-    finished = bool(result and result.subtype == "success" and not result.is_error and result.result)
-    report = result.result if finished else "\n\n".join(texts)
+    finished = bool(not agent.budget_stopped and result and result.subtype == "success" and not result.is_error
+                    and result.result)
+    report = result.result if finished else "\n\n".join(agent.texts)
     (run.dir / "report.md").write_text(report, encoding="utf-8")
     stopped_by = None
     if not finished:
-        stopped_by = ("gateway refused: budget spent" if result and result.api_error_status == BUDGET_SPENT_STATUS
-                      else f"{result.subtype if result else 'no result'}: {(result.result or '')[:160] if result else ''}")
+        if agent.budget_stopped:
+            stopped_by = "harness stopped it: budget spent"
+        elif result and result.api_error_status == BUDGET_SPENT_STATUS:
+            stopped_by = "gateway refused: budget spent"
+        else:
+            stopped_by = f"{result.subtype if result else 'no result'}: {(result.result or '')[:160] if result else ''}"
         log.info("%s stopped mid-job: %s", AUDITOR, stopped_by)
     return {"finished": finished, "stopped_by": stopped_by, "turns": result.num_turns if result else 0,
             "cost_usd_reported": result.total_cost_usd if result else None}
@@ -331,28 +418,42 @@ def parse_budgets(pairs: list[str]) -> dict[str, int]:
     return {agent: int(tokens) for agent, tokens in (p.split("=", 1) for p in pairs)}
 
 
-def start(mode: str, budgets: dict[str, int], upstream: str, now: Callable[[], datetime] = utcnow) -> Run:
+def start(mode: str, budgets: dict[str, int], upstream: str, auth: str,
+          now: Callable[[], datetime] = utcnow) -> Run:
     sc = scenario.load()
     sc = dataclasses.replace(sc, agents=[dataclasses.replace(a, budget_tokens=budgets.get(a.id, a.budget_tokens))
                                          for a in sc.agents])
+    local = upstream != UPSTREAM  # a scripted stand-in for the model, in tests
+    # Read the credentials before isolate_from_host() clears the environment.
+    if auth == "api-key":
+        api_key = "not-used-by-a-local-upstream" if local else real_api_key(ENV_FILE)
+    else:
+        direct_env = ({"ANTHROPIC_BASE_URL": upstream, "ANTHROPIC_API_KEY": "local-test"} if local
+                      else {"CLAUDE_CODE_OAUTH_TOKEN": oauth_token(ENV_FILE)})
     run_dir = ROOT / "runs" / f"{datetime.now(UTC):%Y%m%d-%H%M%S}-{mode}"
     run_dir.mkdir(parents=True)
     configure_logging(run_dir)
-    api_key = real_api_key(ROOT / ".env") if upstream == UPSTREAM else "not-used-by-a-local-upstream"
     isolate_from_host()
 
     ledger = Ledger(run_dir / "rebbi.db")
     scenario.seed(ledger, sc, now())
-    port = free_port()
-    serve_in_thread(create_gateway(Ledger(run_dir / "rebbi.db"), api_key, upstream=upstream), port)
-    (run_dir / "scenario.json").write_text(json.dumps(dataclasses.asdict(sc), indent=2), encoding="utf-8")
-    return Run(mode, run_dir, sc, ledger, Broker(ledger, sc.rules, now), f"http://127.0.0.1:{port}")
+    gateway_url = None
+    if auth == "api-key":
+        port = free_port()
+        serve_in_thread(create_gateway(Ledger(run_dir / "rebbi.db"), api_key, upstream=upstream), port)
+        gateway_url, direct_env = f"http://127.0.0.1:{port}", {}
+    (run_dir / "scenario.json").write_text(json.dumps({"auth": auth, **dataclasses.asdict(sc)}, indent=2),
+                                           encoding="utf-8")
+    return Run(mode, auth, run_dir, sc, ledger, Broker(ledger, sc.rules, now), gateway_url, direct_env)
 
 
-async def run_fleet(mode: str, budgets: dict[str, int], upstream: str = UPSTREAM) -> dict[str, Any]:
+async def run_fleet(mode: str, budgets: dict[str, int], upstream: str = UPSTREAM,
+                    auth: str = "auto") -> dict[str, Any]:
     """One full run; returns what it writes to summary.json."""
+    if auth == "auto":
+        auth = "api-key" if upstream != UPSTREAM else detect_auth(ENV_FILE)
     try:
-        return await _run(start(mode, budgets, upstream))
+        return await _run(start(mode, budgets, upstream, auth))
     finally:
         detach_logging()
 
@@ -361,7 +462,8 @@ async def _run(run: Run) -> dict[str, Any]:
     mode = run.mode
     t0 = time.monotonic()
     budgets_line = ", ".join(f"{a.id} {a.budget_tokens}" for a in run.scenario.agents)
-    log.info("run %s, mode %s: budgets %s; auditing %s@%s", run.dir.name, mode, budgets_line,
+    log.info("run %s, mode %s, budgets enforced by the %s: %s; auditing %s@%s", run.dir.name, mode,
+             "harness" if run.harness_meters else "gateway", budgets_line,
              run.scenario.target.repo.rsplit("/", 1)[-1], run.scenario.target.commit[:7])
 
     try:
@@ -389,6 +491,7 @@ async def _run(run: Run) -> dict[str, Any]:
     summary = {
         "run": run.dir.name,
         "mode": mode,
+        "auth": run.auth,
         **outcome,
         "verified": passed(checks),
         "ledger_ok": not problems,
@@ -409,9 +512,11 @@ def main() -> None:
     p.add_argument("--mode", choices=["baseline", "rebbi"], required=True)
     p.add_argument("--budget", action="append", default=[], metavar="AGENT=TOKENS",
                    help="override one agent's budget for this run, e.g. auditor-01=2000000")
+    p.add_argument("--auth", choices=("auto",) + AUTH_MODES, default="auto",
+                   help="api-key: through the gateway; subscription: your own Claude login (claude setup-token)")
     p.add_argument("--upstream", default=UPSTREAM, help=argparse.SUPPRESS)  # a local fake, for plumbing tests
     args = p.parse_args()
-    summary = asyncio.run(run_fleet(args.mode, parse_budgets(args.budget), args.upstream))
+    summary = asyncio.run(run_fleet(args.mode, parse_budgets(args.budget), args.upstream, args.auth))
     # The baseline is meant to fail verification; the exit code says whether the run itself went as designed.
     if "aborted" in summary:
         sys.exit(2)

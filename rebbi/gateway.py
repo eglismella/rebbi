@@ -46,13 +46,21 @@ def agent_key(agent_id: str) -> str:
 
 
 class UsageMeter:
-    """Reads token usage out of a Messages API response, streamed (SSE) or not."""
+    """Reads token usage out of one Messages API response, streamed (SSE) or not.
 
-    def __init__(self, streamed: bool):
+    The gateway feeds it raw bytes; the harness, when agents call the API directly, feeds it the
+    already-parsed stream events the Agent SDK forwards (`observe`).
+    """
+
+    def __init__(self, streamed: bool = True):
         self.streamed = streamed
         self.buffer = b""
         self.usage: dict[str, int] = {}
         self.model = ""
+
+    @property
+    def total(self) -> int:
+        return sum(self.usage.values())
 
     def feed(self, chunk: bytes) -> None:
         self.buffer += chunk
@@ -70,7 +78,7 @@ class UsageMeter:
             except ValueError:
                 body = {}
             self._take(body.get("usage"), body.get("model"))
-        return sum(self.usage.values())
+        return self.total
 
     def breakdown(self) -> str:
         short = {"input_tokens": "in", "cache_creation_input_tokens": "cache_write",
@@ -84,6 +92,9 @@ class UsageMeter:
             data = json.loads(line[5:])
         except ValueError:
             return
+        self.observe(data)
+
+    def observe(self, data: dict) -> None:
         if data.get("type") == "message_start":
             message = data.get("message", {})
             self._take(message.get("usage"), message.get("model"))
