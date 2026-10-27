@@ -26,6 +26,11 @@ python -m venv .venv && .venv/Scripts/python -m pip install -e ".[test]"
 .venv/Scripts/python -m rebbi.fleet --mode rebbi    # one run: auditor-01 borrows over MCP and finishes
 ```
 
+No credentials yet? `python -m rebbi.demo --rehearsal` runs the same harness, gateway, MCP server,
+ledger and verifier against `rebbi/scripted_model.py`, a stand-in whose replies and report are
+hard-coded. It shows the video's timing and shot order; every line and run folder says it is scripted,
+and its footage is never the submission. `docs/rehearsal/demo-output.txt` is one such run.
+
 Each run writes `runs/<time>-<mode>/`: `console.log` (what the video shows), one transcript per agent,
 `report.md`, `verify.txt`, the run's own `rebbi.db`, and `summary.json`. `--budget auditor-01=N`
 overrides one agent's budget for a run.
@@ -62,6 +67,7 @@ Without the model, for the ledger and MCP alone:
 | `rebbi/fleet.py` | The demo harness: three Claude Agent SDK agents, the gateway beside them (or harness metering in subscription mode), a low-budget warning hook, verification and the ledger check after each run. |
 | `rebbi/demo.py` | Baseline then Rebbi on the same budgets, then a side-by-side table: the evidence shot for the video. |
 | `rebbi/calibrate.py` | Proposes scenario numbers from a measurement run. |
+| `rebbi/scripted_model.py` | A hard-coded stand-in for the Claude API: the offline tests and `demo --rehearsal`. Never evidence. |
 | `rebbi/verify.py` | Checks a report against the job template's answer key; fails closed. |
 | `rebbi/api.py` | FastAPI read-only views: `/agents`, `/loans`, `/decisions`, `/invariants`. |
 | `specs/dep-audit-v1.md` | The job template: what a finished audit must contain. Draft for Nitya. |

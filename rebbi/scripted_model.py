@@ -1,7 +1,9 @@
-"""A scripted stand-in for the Claude Messages API, for testing the harness's wiring offline.
+"""A scripted stand-in for the Claude Messages API: the harness's wiring, run without a model.
 
-It is NOT the demo: the demo runs real models. This exists so the agent CLI, the gateway, the MCP
-server, the low-budget hook and the verifier can be exercised end to end without spending credits.
+It is NOT evidence and NOT the demo: every reply is hard-coded, including the report, which is built
+from the answer key. It exists so the agent CLI, the gateway, the MCP server, the low-budget hook and
+the verifier can run end to end without credits: in the offline tests, and in
+`python -m rebbi.demo --rehearsal`, which labels every run it makes as scripted.
 
 The auditor script reads, then greps until the harness's budget warning shows up in the conversation,
 asks Rebbi for tokens, and answers with a report built from the answer key. Each call reports
@@ -79,7 +81,7 @@ def _events(model: str, kind: str, payload: dict | str):
     yield {"type": "message_stop"}
 
 
-def create_fake_model(seen: list | None = None) -> FastAPI:
+def create_scripted_model(seen: list | None = None) -> FastAPI:
     app = FastAPI()
 
     @app.post("/v1/messages")

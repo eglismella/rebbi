@@ -65,3 +65,11 @@ table. Every line in the footage is also saved in each run's `console.log`. Shot
 | 52–60 | The limitation | a title card |
 
 The runs take minutes, so speed up the middle and cut to the lines above.
+
+**Rough cut before the real run.** `docs/rehearsal/demo-output.txt` is the whole demo, run against a
+scripted stand-in for the model because no working Claude credential exists yet. Every line in the
+table above appears in it, in the same order, so the cut, captions and timing can be built now. It is
+not footage for the submission: its replies are hard-coded and every banner says "REHEARSAL, scripted
+model, not Claude". The rubric scores mockups and hard-coded results at zero, so swap in the real run's
+output once Eglis records it. The real run's lines look the same except that the model's tool calls and
+token counts vary, and it takes minutes rather than seconds.

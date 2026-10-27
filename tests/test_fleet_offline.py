@@ -1,4 +1,4 @@
-"""The whole harness, run against a scripted stand-in for the model (tests/fake_model.py).
+"""The whole harness, run against a scripted stand-in for the model (rebbi/scripted_model.py).
 
 These start the real agent CLI, the gateway and the MCP servers, so they take tens of seconds.
 Skip them with `pytest -m "not integration"`.
@@ -7,10 +7,10 @@ Skip them with `pytest -m "not integration"`.
 import asyncio
 
 import pytest
-from fake_model import create_fake_model
 
 from rebbi import fleet
 from rebbi.gateway import serve_in_thread
+from rebbi.scripted_model import create_scripted_model
 
 pytestmark = pytest.mark.integration
 
@@ -18,7 +18,7 @@ pytestmark = pytest.mark.integration
 @pytest.fixture(scope="module")
 def fake_upstream():
     port = fleet.free_port()
-    serve_in_thread(create_fake_model(), port)
+    serve_in_thread(create_scripted_model(), port)
     return f"http://127.0.0.1:{port}"
 
 

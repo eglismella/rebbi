@@ -124,6 +124,7 @@ class Run:
     broker: Broker
     gateway_url: str | None  # api-key mode only
     direct_env: dict[str, str]  # subscription mode: how each agent's CLI signs in
+    scripted: bool = False  # the model is rebbi/scripted_model.py, not Claude: a rehearsal, never evidence
 
     @property
     def db(self) -> Path:
@@ -423,14 +424,14 @@ def start(mode: str, budgets: dict[str, int], upstream: str, auth: str,
     sc = scenario.load()
     sc = dataclasses.replace(sc, agents=[dataclasses.replace(a, budget_tokens=budgets.get(a.id, a.budget_tokens))
                                          for a in sc.agents])
-    local = upstream != UPSTREAM  # a scripted stand-in for the model, in tests
+    local = upstream != UPSTREAM  # the scripted stand-in for the model: tests and rehearsals
     # Read the credentials before isolate_from_host() clears the environment.
     if auth == "api-key":
         api_key = "not-used-by-a-local-upstream" if local else real_api_key(ENV_FILE)
     else:
         direct_env = ({"ANTHROPIC_BASE_URL": upstream, "ANTHROPIC_API_KEY": "local-test"} if local
                       else {"CLAUDE_CODE_OAUTH_TOKEN": oauth_token(ENV_FILE)})
-    run_dir = ROOT / "runs" / f"{datetime.now(UTC):%Y%m%d-%H%M%S}-{mode}"
+    run_dir = ROOT / "runs" / f"{datetime.now(UTC):%Y%m%d-%H%M%S}-{mode}{'-scripted' if local else ''}"
     run_dir.mkdir(parents=True)
     configure_logging(run_dir)
     isolate_from_host()
@@ -444,7 +445,7 @@ def start(mode: str, budgets: dict[str, int], upstream: str, auth: str,
         gateway_url, direct_env = f"http://127.0.0.1:{port}", {}
     (run_dir / "scenario.json").write_text(json.dumps({"auth": auth, **dataclasses.asdict(sc)}, indent=2),
                                            encoding="utf-8")
-    return Run(mode, auth, run_dir, sc, ledger, Broker(ledger, sc.rules, now), gateway_url, direct_env)
+    return Run(mode, auth, run_dir, sc, ledger, Broker(ledger, sc.rules, now), gateway_url, direct_env, local)
 
 
 async def run_fleet(mode: str, budgets: dict[str, int], upstream: str = UPSTREAM,
@@ -462,6 +463,9 @@ async def _run(run: Run) -> dict[str, Any]:
     mode = run.mode
     t0 = time.monotonic()
     budgets_line = ", ".join(f"{a.id} {a.budget_tokens}" for a in run.scenario.agents)
+    if run.scripted:
+        log.info("REHEARSAL: the model is a scripted stand-in, not Claude. Its replies and its report are "
+                 "hard-coded, so this run is not evidence.")
     log.info("run %s, mode %s, budgets enforced by the %s: %s; auditing %s@%s", run.dir.name, mode,
              "harness" if run.harness_meters else "gateway", budgets_line,
              run.scenario.target.repo.rsplit("/", 1)[-1], run.scenario.target.commit[:7])
@@ -492,6 +496,7 @@ async def _run(run: Run) -> dict[str, Any]:
         "run": run.dir.name,
         "mode": mode,
         "auth": run.auth,
+        "model": "scripted stand-in" if run.scripted else "claude",
         **outcome,
         "verified": passed(checks),
         "ledger_ok": not problems,
@@ -514,7 +519,7 @@ def main() -> None:
                    help="override one agent's budget for this run, e.g. auditor-01=2000000")
     p.add_argument("--auth", choices=("auto",) + AUTH_MODES, default="auto",
                    help="api-key: through the gateway; subscription: your own Claude login (claude setup-token)")
-    p.add_argument("--upstream", default=UPSTREAM, help=argparse.SUPPRESS)  # a local fake, for plumbing tests
+    p.add_argument("--upstream", default=UPSTREAM, help=argparse.SUPPRESS)  # the scripted model, for plumbing tests
     args = p.parse_args()
     summary = asyncio.run(run_fleet(args.mode, parse_budgets(args.budget), args.upstream, args.auth))
     # The baseline is meant to fail verification; the exit code says whether the run itself went as designed.
