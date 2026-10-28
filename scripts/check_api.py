@@ -45,16 +45,21 @@ async def check_oauth_token(token: str) -> str | None:
     for name in list(os.environ):
         if name.upper().startswith(INHERITED_PREFIXES):
             del os.environ[name]
-    with tempfile.TemporaryDirectory() as config_dir:
+    result = None
+    # On Windows the CLI can still hold its config folder for a moment after it exits.
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as config_dir:
         options = ClaudeAgentOptions(
             model="claude-haiku-5-5", tools=[], max_turns=1, setting_sources=[], cwd=config_dir,
             env={"CLAUDE_CODE_OAUTH_TOKEN": token, "CLAUDE_CONFIG_DIR": config_dir,
                  "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"},
         )
+        # Read to the end rather than returning mid-stream, so the SDK shuts the CLI down cleanly.
         async for message in query(prompt="Reply with the single word ok.", options=options):
             if isinstance(message, ResultMessage):
-                return None if not message.is_error else f"{message.api_error_status}: {message.result}"
-    return "no result from the CLI"
+                result = message
+    if result is None:
+        return "no result from the CLI"
+    return None if not result.is_error else f"{result.api_error_status}: {result.result}"
 
 
 def main() -> int:
