@@ -34,6 +34,11 @@ def _dist(name: str) -> str:
     return name.strip().lower().replace("_", "-")
 
 
+def _package(requirement: str) -> str:
+    """The package a requirement names: 'black>=24.1.1' is black. Optional groups list packages, not versions."""
+    return _dist(re.split(r"[\s\[<>=!~;@(]", requirement.strip(), maxsplit=1)[0])
+
+
 def _path(p: str) -> str:
     return p.strip().replace("\\", "/").removeprefix("./")
 
@@ -83,7 +88,7 @@ def verify_report(report: str, key: dict[str, Any]) -> list[Check]:
                    for d in data["runtime_dependencies"]}),
             _same("optional groups",
                   {(g, _dist(p)) for g, ps in key["optional_groups"].items() for p in ps},
-                  {(g, _dist(p)) for g, ps in data["optional_groups"].items() for p in ps}),
+                  {(g, _package(p)) for g, ps in data["optional_groups"].items() for p in ps}),
             _same("imports per runtime dependency",
                   {(_dist(d), _path(f)) for d, fs in key["imports"].items() for f in fs},
                   {(_dist(d), _path(f)) for d, fs in data["imports"].items() for f in fs}),

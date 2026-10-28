@@ -1,8 +1,13 @@
 # Demo scenario: the owner's setup of the fleet.
 #
-# STAND-IN NUMBERS. Pietro replaces them on Monday (tasks 3 and 4 in the work
-# plan); this is the only file that holds a budget, a reserve or a rule value.
-# Token figures are input + output tokens, as the gateway will count them.
+# Calibrated on Oct 27 from real-model runs (python -m rebbi.calibrate). Full audits of the pinned
+# commit took 2 to 5 calls and 17,000 to 50,505 tokens; the first call is about 5,200 with the rebbi
+# tools and 4,100 without. A call goes ahead only if the balance covers its input, so auditor-01's
+# 7,000 covers the one call in which it asks Rebbi for the difference, and not a second call, which
+# re-sends the first: without Rebbi it is refused before it can write its report. The loan cap and
+# analyst-07's budget cover the largest audit measured. Pietro confirms or changes them (tasks 3 and 4);
+# this is the only file that holds a budget, a reserve or a rule value. Token figures count input,
+# cache writes, cache reads and output.
 
 [rules]
 max_loan_tokens = 60000   # cap on any single loan
@@ -19,13 +24,14 @@ max_usd = 3.0
 repo = "https://github.com/simonw/sqlite-utils"
 commit = "9d7da0606e98713896bbc9fc885a5b0cd54ac2fd"   # tag 3.38
 local_path = "targets/sqlite-utils"
+expected_tokens = 50000   # the most a measured audit of this commit took: 17,000 to 50,505 tokens
 
 [[agents]]
 id = "auditor-01"
 owner = "platform-team"
 model = "claude-sonnet-5-5"
-role = "Runs the dependency audit; set to run out of budget at section 4"
-budget_tokens = 40000
+role = "Runs the dependency audit; its budget covers one call, not the job"
+budget_tokens = 7000
 reserve_tokens = 0
 expected_demand_tokens = 0
 will_lend = false
@@ -36,7 +42,7 @@ id = "analyst-07"
 owner = "platform-team"
 model = "claude-haiku-5-5"
 role = "Idle this window; lends what sits above its reserve"
-budget_tokens = 200000
+budget_tokens = 180000
 reserve_tokens = 80000
 expected_demand_tokens = 20000
 will_lend = true

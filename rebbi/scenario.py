@@ -42,6 +42,7 @@ class AuditTarget:
     repo: str
     commit: str
     local_path: str
+    expected_tokens: int  # what full audits of this commit have cost; the auditor is told it
 
 
 @dataclass(frozen=True)

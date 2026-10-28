@@ -39,7 +39,7 @@ def test_debits_what_a_plain_call_used_and_hides_the_real_key(broker):
     http, upstream = gateway(broker, lambda r: httpx.Response(200, json={"model": "m", "usage": USAGE}))
     assert call(http).status_code == 200
     assert broker.ledger.balance("auditor-01") == 40_000 - 470
-    assert upstream.seen[0].headers["x-api-key"] == "sk-real"
+    assert {r.headers["x-api-key"] for r in upstream.seen} == {"sk-real"}
 
 
 def test_debits_what_a_streamed_call_used(broker):
@@ -63,6 +63,22 @@ def test_refuses_once_the_budget_is_spent_without_calling_upstream(broker, clock
     assert response.status_code == BUDGET_SPENT_STATUS
     assert response.json()["error"]["type"] == "budget_exhausted"
     assert upstream.seen == []
+
+
+def test_refuses_a_call_whose_input_the_balance_cannot_cover(broker, clock):
+    broker.ledger.record_usage("auditor-01", 36_000, clock())  # 4,000 left
+
+    def respond(request):
+        if request.url.path.endswith("count_tokens"):
+            assert set(json.loads(request.content)) == {"model", "messages"}  # max_tokens and stream stripped
+            return httpx.Response(200, json={"input_tokens": 5_000})
+        return httpx.Response(200, json={"usage": USAGE})
+
+    http, upstream = gateway(broker, respond)
+    response = call(http)
+    assert response.status_code == BUDGET_SPENT_STATUS
+    assert "5000 input tokens" in response.json()["error"]["message"]
+    assert [r.url.path for r in upstream.seen] == ["/v1/messages/count_tokens"]
 
 
 def test_a_loan_reopens_the_gate(broker, clock):

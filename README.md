@@ -14,7 +14,7 @@ Put one credential in `.env` (git-ignored). The harness picks the mode from it, 
 | `.env` line | Mode | Who meters and enforces budgets |
 | --- | --- | --- |
 | `ANTHROPIC_API_KEY=...` (a Console key with credits) | `api-key` | The gateway. Each agent gets a stand-in key, `rebbi-<agent_id>`, that works only through it; only the gateway holds the real key. |
-| `CLAUDE_CODE_OAUTH_TOKEN=...` (from `claude setup-token`, your own Claude plan) | `subscription` | The harness. Each agent's unmodified Claude Code binary signs in with your token and calls Anthropic directly; the harness meters every call from the stream and stops an agent once its budget is spent. Rebbi never proxies these requests. |
+| `CLAUDE_CODE_OAUTH_TOKEN=...` (from `claude setup-token`, your own Claude plan) | `subscription` | The harness. Each agent's unmodified Claude Code binary signs in with your token and calls Anthropic directly; the harness meters every call from the stream and stops an agent at the first call its balance cannot cover. Rebbi never proxies these requests. |
 
 `python scripts/check_api.py` says which mode works with what is in `.env`.
 
@@ -22,14 +22,15 @@ Put one credential in `.env` (git-ignored). The harness picks the mode from it, 
 python -m venv .venv && .venv/Scripts/python -m pip install -e ".[test]"
 .venv/Scripts/python -m rebbi fetch-target          # the repo auditor-01 audits, at its pinned commit
 .venv/Scripts/python -m rebbi.demo                  # baseline, then Rebbi, then the side-by-side check
-.venv/Scripts/python -m rebbi.fleet --mode baseline # one run: no Rebbi, auditor-01 stops when its budget is spent
+.venv/Scripts/python -m rebbi.fleet --mode baseline # one run: no Rebbi, auditor-01 is refused once its budget runs short
 .venv/Scripts/python -m rebbi.fleet --mode rebbi    # one run: auditor-01 borrows over MCP and finishes
 ```
 
-No credentials yet? `python -m rebbi.demo --rehearsal` runs the same harness, gateway, MCP server,
-ledger and verifier against `rebbi/scripted_model.py`, a stand-in whose replies and report are
-hard-coded. It shows the video's timing and shot order; every line and run folder says it is scripted,
-and its footage is never the submission. `docs/rehearsal/demo-output.txt` is one such run.
+`docs/demo/real-run-1.txt` to `-3.txt` are three real runs of `python -m rebbi.demo`, one after another.
+
+No credentials? `python -m rebbi.demo --rehearsal` runs the same harness, gateway, MCP server, ledger
+and verifier against `rebbi/scripted_model.py`, a stand-in whose replies and report are hard-coded.
+Every line and run folder says it is scripted, and it is never evidence.
 
 Each run writes `runs/<time>-<mode>/`: `console.log` (what the video shows), one transcript per agent,
 `report.md`, `verify.txt`, the run's own `rebbi.db`, and `summary.json`. `--budget auditor-01=N`
@@ -63,7 +64,7 @@ Without the model, for the ledger and MCP alone:
 | `rebbi/rules.py` | Who can lend and how much: `lendable = balance - reserve - declared demand`, capped per loan. |
 | `rebbi/broker.py` | `post_handoff`, `report_headroom`, `settle`, `budget`. Expires loans before every decision. |
 | `rebbi/mcp_server.py` | Agent-facing MCP server, one stdio process per agent; identity comes from `REBBI_AGENT_ID`, never from a tool argument. |
-| `rebbi/gateway.py` | Pass-through for Claude API calls. Refuses a call once the agent's ledger balance is spent; debits the tokens each call really used (input, cache writes, cache reads, output). Holds the only real API key. |
+| `rebbi/gateway.py` | Pass-through for Claude API calls. Refuses a call unless the agent's ledger balance covers its input (counted with count_tokens); debits the tokens each call really used (input, cache writes, cache reads, output). Holds the only real API key. |
 | `rebbi/fleet.py` | The demo harness: three Claude Agent SDK agents, the gateway beside them (or harness metering in subscription mode), a low-budget warning hook, verification and the ledger check after each run. |
 | `rebbi/demo.py` | Baseline then Rebbi on the same budgets, then a side-by-side table: the evidence shot for the video. |
 | `rebbi/calibrate.py` | Proposes scenario numbers from a measurement run. |

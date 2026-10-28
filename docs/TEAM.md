@@ -20,19 +20,30 @@ the change to Eglis.
     misses them, fails. `trogon` is not on the list because the `tui` extra declares it.
 
 The verifier fails closed: a missing section, a missing JSON appendix or any wrong value is a FAIL.
+One change after the first real run, for you to confirm: optional groups are now compared by package
+name, so `black>=24.1.1` counts as `black`. The template asks for "the packages in it", and the model
+reasonably copied the version from `setup.py`; runtime dependencies are still checked with their
+constraints.
 
 **Facts for the paragraph and the script.**
 
-- Agent-facing capability: an agent about to run out of token budget mid-job calls Rebbi's MCP tool
+- Agent-facing capability: an agent whose token budget will not cover its job calls Rebbi's MCP tool
   `post_handoff` itself; Rebbi books a loan from an agent with spare capacity above its published
-  reserve, and the agent carries on. Lenders publish their own reserve with `report_headroom`.
-- The check: the same job on the same budgets, without and with Rebbi. Without, the auditor stops and
-  the verifier FAILs the report. With Rebbi, it borrows, finishes, and the verifier PASSes every check
-  against the answer key. A second check confirms the ledger: no tokens created or lost, no lender
-  below its reserve, every loan closed.
+  reserve, and the agent does the job. What it does not spend goes back to the lender when the job ends.
+  Lenders publish their own reserve with `report_headroom`.
+- What the real runs show (`docs/demo/real-run-1.txt` to `-3.txt`, Claude Sonnet 5.5, Oct 27):
+  auditor-01 has 7,000 tokens and is told past audits took up to 50,000. Without Rebbi it makes one
+  call, then its next call (9,079 tokens of input) is refused, and the verifier FAILs: no report. With
+  Rebbi it asks for 45,000 before starting, analyst-07 lends it (writer-03 is skipped: no room above
+  its reserve), it finishes in about 30 seconds, the verifier PASSes all 8 checks, and 17,180 unspent
+  tokens go back to analyst-07. Three runs in a row went this way.
+- The check: the same job on the same budgets, without and with Rebbi. A second check confirms the
+  ledger: no tokens created or lost, no lender below its reserve, every loan closed.
 - Current limitation (pick one for the video): Rebbi only lends. A job blocked by a missing tool or
   permission still fails, because hand-off is not built yet. Other true limitations: three agents on
-  one machine; the budget numbers are calibrated for this one job.
+  one machine; the budget numbers are calibrated for this one job; auditor-01 knows how much to ask
+  because we tell it what past audits cost (there is no forecasting yet); budgets are enforced per
+  model call, so a call whose input is covered may overdraw by its output.
 
 ## Pietro: lending rules (task 3) and numbers (task 4), then the video (tasks 7, 9, 12, 15)
 
@@ -45,13 +56,18 @@ The verifier fails closed: a missing section, a missing JSON appendix or any wro
 5. Partial loans: asking above the cap returns the cap, not a refusal.
 6. Repayment: when a loan closes, what the borrower has not spent goes back, up to the loan amount.
    The borrower's own tokens count as spent first, which favours the lender.
+7. Enforcement, added after the first real runs: a model call goes ahead only if the agent's balance
+   covers the call's input. Its output is not known in advance, so it may overdraw by that much.
 
-**The numbers** all live in `config/scenario.toml`. The model spends more tokens than intuition says:
-each call re-sends the whole conversation, so a call late in the job can cost tens of thousands of
-tokens. Use the first measurement run: `python -m rebbi.calibrate runs/<run>` prints what the full
-audit cost and proposes budgets so the auditor stalls about halfway, `analyst-07` can cover the rest,
-and `writer-03` has nothing to lend. Lenders also spend part of their own budget publishing their
-reserve, which leaves less to lend.
+**The numbers** all live in `config/scenario.toml`, now calibrated from real runs; its header says
+why each one is what it is. What the measurements showed: the real audit is only 2 to 5 model calls,
+17,000 to 50,505 tokens in all, because each call re-sends the whole conversation and the model runs
+several searches at once. So a "stalls halfway" budget cannot work: the auditor's second call costs the
+same whether it borrows or writes the whole report, and no budget allows one and stops the other.
+auditor-01 therefore gets 7,000 tokens, enough for the one call in which it asks Rebbi, not enough
+for a second, and is told past audits took up to 50,000 so it asks for enough. A mid-job warning still
+fires if a loan runs low. analyst-07 has 180,000 and writer-03 exactly its reserve plus declared
+demand. `python -m rebbi.calibrate runs/<run>` proposes numbers from any measurement run.
 
 **The video.** `python -m rebbi.demo` runs the baseline, then Rebbi, then prints a side-by-side
 table. Every line in the footage is also saved in each run's `console.log`. Shot by shot:
@@ -59,17 +75,13 @@ table. Every line in the footage is also saved in each run's `console.log`. Shot
 | Seconds | Show | Lines to look for in `console.log` |
 | --- | --- | --- |
 | 0–8 | The fleet and budgets | the first `fleet run ...` line |
-| 8–18 | Baseline stops | `auditor-01 stopped mid-job`, then `verifier FAIL` |
-| 18–40 | Rebbi on: warning, ask, loan, finish | `warning auditor-01`, `-> rebbi.post_handoff`, `<- LEND ... (writer-03: no room above its reserve)`, `settled loan` |
+| 8–18 | Baseline stops | `refused: next call needs 9079 input tokens, 2767 left`, `stopped mid-job`, then `VERIFIER: FAIL` |
+| 18–40 | Rebbi on: ask, loan, finish, repay | `-> rebbi.post_handoff {... "budget_tokens": 45000}`, `<- LEND 45000 from analyst-07 (...; writer-03: no room above its reserve)`, `says: ## 1. Scope`, `settled loan 1: ... 17180 returned to analyst-07` |
 | 40–52 | The check | `verifier PASS` lines, `ledger invariants PASS`, and the demo's final table |
 | 52–60 | The limitation | a title card |
 
-The runs take minutes, so speed up the middle and cut to the lines above.
-
-**Rough cut before the real run.** `docs/rehearsal/demo-output.txt` is the whole demo, run against a
-scripted stand-in for the model because no working Claude credential exists yet. Every line in the
-table above appears in it, in the same order, so the cut, captions and timing can be built now. It is
-not footage for the submission: its replies are hard-coded and every banner says "REHEARSAL, scripted
-model, not Claude". The rubric scores mockups and hard-coded results at zero, so swap in the real run's
-output once Eglis records it. The real run's lines look the same except that the model's tool calls and
-token counts vary, and it takes minutes rather than seconds.
+The whole demo takes about 45 seconds: the baseline about 5, Rebbi about 35, mostly the model
+writing the report. `docs/demo/real-run-1.txt` is the full output of a real run, so the rough cut,
+captions and timing can be built from it now; the numbers quoted above come from it. Eglis's screen
+capture of the same command is the footage. Each real run differs a little (it borrowed 45,000 or
+50,000; between 17,180 and 29,987 went back), so match captions to the run actually recorded.

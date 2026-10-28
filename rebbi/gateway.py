@@ -2,9 +2,11 @@
 
 Each agent's harness sets ANTHROPIC_BASE_URL to this gateway and gives the
 agent a stand-in key, `rebbi-<agent_id>`; the real API key never leaves this
-process. Before a model call the gateway refuses it if the agent's budget in
-the ledger is spent; after it, the gateway debits the tokens the call really
-used, as the API reported them.
+process. Before a model call the gateway refuses it unless the agent's ledger
+balance covers the call's input, which it counts with the count_tokens
+endpoint; after it, the gateway debits the tokens the call really used, as the
+API reported them. Output is not known in advance, so a call may overdraw by
+its own output.
 
     python -m rebbi.gateway --db rebbi.db --port 8701
 """
@@ -37,6 +39,7 @@ UPSTREAM = "https://api.anthropic.com"
 # Budget spent. Not 429: clients retry that, and this budget will not refill by waiting.
 BUDGET_SPENT_STATUS = 402
 USAGE_FIELDS = ("input_tokens", "cache_creation_input_tokens", "cache_read_input_tokens", "output_tokens")
+COUNTED_FIELDS = ("model", "messages", "system", "tools", "tool_choice", "thinking")  # what count_tokens accepts
 DROP_REQUEST_HEADERS = {"host", "content-length", "x-api-key", "authorization", "accept-encoding", "connection"}
 DROP_RESPONSE_HEADERS = {"content-length", "content-encoding", "transfer-encoding", "connection"}
 
@@ -122,6 +125,16 @@ def create_gateway(
     app = FastAPI(title="Rebbi gateway")
     client = httpx.AsyncClient(base_url=upstream, transport=transport, timeout=httpx.Timeout(600, connect=15))
 
+    async def input_tokens(body: bytes, headers: dict[str, str]) -> int | None:
+        """How many input tokens this Messages call will send, or None if count_tokens cannot say."""
+        try:
+            payload = json.loads(body)
+            r = await client.post("/v1/messages/count_tokens", headers=headers,
+                                  json={k: payload[k] for k in COUNTED_FIELDS if k in payload})
+            return int(r.json()["input_tokens"]) if r.status_code == 200 else None
+        except (ValueError, KeyError, TypeError, httpx.HTTPError):
+            return None
+
     @app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE"])
     async def proxy(path: str, request: Request) -> Response:
         presented = request.headers.get("x-api-key") or request.headers.get("authorization", "").removeprefix("Bearer ")
@@ -144,8 +157,19 @@ def create_gateway(
 
         headers = {k: v for k, v in request.headers.items() if k.lower() not in DROP_REQUEST_HEADERS}
         headers.update({"x-api-key": api_key, "accept-encoding": "identity"})
+        body = await request.body()
+        if metered:
+            needed = await input_tokens(body, {k: v for k, v in headers.items() if k.lower() != "content-type"})
+            if needed is None:
+                log.warning("%s: could not count this call's input; checking only that the balance is above zero",
+                            agent_id)
+            elif balance < needed:
+                log.warning("%s refused: next call needs %d input tokens, %d left", agent_id, needed, balance)
+                return _api_error(BUDGET_SPENT_STATUS, "budget_exhausted",
+                                  f"Rebbi: {agent_id} has {balance} tokens left, "
+                                  f"not enough for this call's {needed} input tokens.")
         upstream_request = client.build_request(
-            request.method, "/" + path, params=request.query_params, headers=headers, content=await request.body()
+            request.method, "/" + path, params=request.query_params, headers=headers, content=body
         )
         response = await client.send(upstream_request, stream=True)
         response_headers = {k: v for k, v in response.headers.items() if k.lower() not in DROP_RESPONSE_HEADERS}

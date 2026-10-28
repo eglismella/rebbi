@@ -1,10 +1,13 @@
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
 
 import pytest
 
 from rebbi import scenario
 from rebbi.broker import Broker
 from rebbi.ledger import Ledger
+
+TEST_SCENARIO = Path(__file__).with_name("scenario.toml")
 
 
 class Clock:
@@ -36,8 +39,13 @@ def ledger(db_path):
 
 
 @pytest.fixture
-def demo():
-    return scenario.load()
+def scenario_path():
+    return TEST_SCENARIO
+
+
+@pytest.fixture
+def demo(scenario_path):
+    return scenario.load(scenario_path)
 
 
 @pytest.fixture

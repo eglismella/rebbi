@@ -47,13 +47,14 @@ def test_an_agent_cannot_settle_someone_elses_loan(broker):
     asyncio.run(run())
 
 
-def test_mcp_server_runs_as_its_own_process(db_path, demo, clock):
+def test_mcp_server_runs_as_its_own_process(db_path, demo, scenario_path, clock):
     """What an agent harness does: launch the server over stdio with the agent's identity."""
     scenario.seed(Ledger(db_path), demo, clock())
     params = StdioServerParameters(
         command=sys.executable,
         args=["-m", "rebbi.mcp_server"],
-        env={**os.environ, "REBBI_AGENT_ID": "auditor-01", "REBBI_DB": str(db_path)},
+        env={**os.environ, "REBBI_AGENT_ID": "auditor-01", "REBBI_DB": str(db_path),
+             "REBBI_SCENARIO": str(scenario_path)},
         cwd=str(ROOT),
     )
 

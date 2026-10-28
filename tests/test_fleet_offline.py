@@ -10,7 +10,7 @@ import pytest
 
 from rebbi import fleet
 from rebbi.gateway import serve_in_thread
-from rebbi.scripted_model import create_scripted_model
+from rebbi.scripted_model import BUDGETS, create_scripted_model
 
 pytestmark = pytest.mark.integration
 
@@ -22,12 +22,13 @@ def fake_upstream():
     return f"http://127.0.0.1:{port}"
 
 
-STOPPED_BY = {"api-key": "gateway refused: budget spent", "subscription": "harness stopped it: budget spent"}
+STOPPED_BY = {"api-key": "gateway refused its next call: budget too low",
+              "subscription": "harness refused its next call: budget too low"}
 
 
 @pytest.mark.parametrize("auth", fleet.AUTH_MODES)
 def test_baseline_stops_when_the_budget_is_spent(fake_upstream, auth):
-    s = asyncio.run(fleet.run_fleet("baseline", {}, fake_upstream, auth))
+    s = asyncio.run(fleet.run_fleet("baseline", BUDGETS, fake_upstream, auth))
     assert s["finished"] is False
     assert s["stopped_by"] == STOPPED_BY[auth]
     assert s["verified"] is False
@@ -37,7 +38,7 @@ def test_baseline_stops_when_the_budget_is_spent(fake_upstream, auth):
 
 @pytest.mark.parametrize("auth", fleet.AUTH_MODES)
 def test_rebbi_lends_and_the_job_finishes_and_verifies(fake_upstream, auth):
-    s = asyncio.run(fleet.run_fleet("rebbi", {}, fake_upstream, auth))
+    s = asyncio.run(fleet.run_fleet("rebbi", BUDGETS, fake_upstream, auth))
     assert s["finished"] is True
     assert s["verified"] is True
     assert s["ledger_ok"] is True

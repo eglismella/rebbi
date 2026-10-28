@@ -22,6 +22,8 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from rebbi.verify import DEFAULT_KEY
 
 CALL_TOKENS = 6_000
+# The scripted auditor makes 13 calls of 6,050 tokens, so it needs its own budget: this one runs out partway.
+BUDGETS = {"auditor-01": 40_000}
 _ids = count(1)
 
 

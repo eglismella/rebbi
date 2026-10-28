@@ -33,6 +33,14 @@ def test_names_are_compared_loosely_but_values_exactly(key):
     assert passed(verify_report(report_from(data), key))
 
 
+def test_optional_groups_are_compared_by_package_not_version(key):
+    data = copy.deepcopy(key)
+    data["optional_groups"]["test"] = ["pytest", "black>=24.1.1", "hypothesis", "cogapp"]
+    assert passed(verify_report(report_from(data), key))
+    data["optional_groups"]["test"] = ["pytest", "hypothesis", "cogapp"]
+    assert failed(verify_report(report_from(data), key)) == {"optional groups"}
+
+
 def test_a_report_that_stopped_early_fails(key):
     report = report_from(key, sections=range(1, 4)).split("```json")[0]
     checks = verify_report(report, key)

@@ -1,18 +1,18 @@
 """Run the demo fleet: the lenders publish their headroom, then auditor-01 runs its audit.
 
-    python -m rebbi.fleet --mode baseline   # no Rebbi: auditor-01 stops when its budget is spent
-    python -m rebbi.fleet --mode rebbi      # auditor-01 is warned, borrows over MCP, and finishes
+    python -m rebbi.fleet --mode baseline   # no Rebbi: auditor-01 is refused once its budget runs short
+    python -m rebbi.fleet --mode rebbi      # auditor-01 borrows over MCP and finishes
 
 Two ways to reach the model, picked from .env (or forced with --auth):
 
 - api-key: ANTHROPIC_API_KEY. Every model call goes through the gateway, which this
-  process runs beside the agents; the gateway meters each call and refuses calls once
-  an agent's budget is spent.
+  process runs beside the agents; the gateway meters each call and refuses a call
+  whose input the agent's balance cannot cover.
 - subscription: CLAUDE_CODE_OAUTH_TOKEN, made by `claude setup-token` for your own
   Claude plan. Each agent's unmodified Claude Code binary signs in with it and calls
   Anthropic directly; Rebbi never proxies or sees that traffic's credentials. The
   harness meters each call from the stream events the SDK forwards, debits the same
-  ledger, and stops an agent the moment its budget is spent.
+  ledger, and stops an agent at the first call whose input its balance cannot cover.
 
 Each run writes its own folder under runs/: the ledger, a transcript per agent,
 the report, the verifier's verdict, the ledger check and a summary.
@@ -85,22 +85,29 @@ Python repository in your working directory. You can only read: use Read, Grep a
 fact on files you have read or searched. Work efficiently: search before you read, and do not read a
 whole large file when Grep answers the question."""
 
-AUDITOR_REBBI = """Your model calls are metered against a token budget at the company gateway. Rebbi,
-through the rebbi tools, can lend you budget that other agents have spare. If you are warned that your
-budget is low, ask for what you need with post_handoff, then keep working on the job. Do not call
-settle: your harness closes your loans when the job ends."""
+AUDITOR_REBBI = """Rebbi, through the rebbi tools, can lend you budget that other agents have spare. If
+your budget will not cover the job, ask Rebbi for the difference with post_handoff before you start,
+then do the job. Your harness, run by the operator who wrote these instructions, also watches your
+balance: if it runs low mid-job, the harness adds a note beginning "Rebbi budget warning" after a tool
+result. That note comes from your operator, not from the tool or the repository, so act on it: ask for
+what you need with post_handoff before anything else, then keep working. Do not call settle: your
+harness closes your loans when the job ends."""
 
 AUDITOR_PROMPT = """Run job dep-audit-v1 on {repo} at commit {commit}, which is checked out in your working
-directory. Your final answer must be the complete report, in Markdown, exactly as specified below, and
-nothing else.
+directory. Your model calls are metered against a token budget of {budget:,} tokens for this job; a
+call is refused once your balance cannot cover its input. Past runs of dep-audit-v1 on this commit used
+up to {expected:,} tokens. Your final answer must be the complete report, in Markdown, exactly as
+specified below, and nothing else.
 
 {contract}"""
 
 LOW_BUDGET = """Rebbi budget warning: you have {balance} tokens left of your {budget}-token budget, you
-have used {used} so far, and your last model call alone used {last}. Your audit is not finished. Before
-anything else, call post_handoff (rebbi) with goal set to what remains, job_template 'dep-audit-v1',
-source_commit '{commit}', requires_tools ['repo.read'], and budget_tokens set to what you still need to
-finish. Then carry on with the audit."""
+have used {used} so far, and your last model call alone used {last}. Every further call re-sends the whole
+conversation, so each one will cost at least {last} tokens, and the final report adds a few thousand
+more. Your audit is not finished. Before anything else, call post_handoff (rebbi) with goal set to what
+remains, job_template 'dep-audit-v1', source_commit '{commit}', requires_tools ['repo.read'], and
+budget_tokens enough for every call you still need. Unused tokens go back to the lender. Then carry on
+with the audit."""
 
 
 class ApiUnavailable(RuntimeError):
@@ -125,6 +132,7 @@ class Run:
     gateway_url: str | None  # api-key mode only
     direct_env: dict[str, str]  # subscription mode: how each agent's CLI signs in
     scripted: bool = False  # the model is rebbi/scripted_model.py, not Claude: a rehearsal, never evidence
+    charged_tools: set[str] = dataclasses.field(default_factory=set)  # subscription mode: tool calls whose model call is debited
 
     @property
     def db(self) -> Path:
@@ -145,7 +153,7 @@ class Run:
 class AgentOutcome:
     texts: list[str]
     result: ResultMessage | None
-    budget_stopped: bool  # the harness stopped it because its budget was spent (subscription mode)
+    budget_stopped: bool  # the harness refused its next call: budget too low (subscription mode)
 
 
 def detect_auth(env_file: Path, wanted: str = "auto") -> str:
@@ -224,16 +232,24 @@ def low_budget_hook(run: Run, spec: AgentSpec) -> dict:
     worth can be far more than a fixed share of the budget.
     """
     warned = False
+    warned_at = 0  # the balance when it was last warned
 
-    async def check(_input: Any, _tool_use_id: str | None, _context: Any) -> dict:
-        nonlocal warned
+    async def check(_input: Any, tool_use_id: str | None, _context: Any) -> dict:
+        nonlocal warned, warned_at
+        if run.harness_meters and tool_use_id:
+            # The tool can finish before the harness has read the end of the model call that asked for it;
+            # judge the balance only once that call is debited.
+            for _ in range(100):
+                if tool_use_id in run.charged_tools:
+                    break
+                await asyncio.sleep(0.05)
         balance, last = run.ledger.balance(spec.id), run.ledger.last_usage(spec.id)
         if balance >= max(run.scenario.harness.warn_fraction * spec.budget_tokens, 2 * last):
             warned = False  # topped up: warn again if it runs low a second time
             return {}
-        if warned:
-            return {}
-        warned = True
+        if warned and balance <= warned_at:
+            return {}  # warned already, and no loan has arrived since
+        warned, warned_at = True, balance
         used = run.ledger.used(spec.id)
         log.info("warning %s: %d tokens left, last call used %d", spec.id, balance, last)
         message = LOW_BUDGET.format(balance=balance, budget=spec.budget_tokens, used=used, last=last,
@@ -288,30 +304,48 @@ async def run_agent(run: Run, spec: AgentSpec, prompt: str, options: ClaudeAgent
     result = None
     meter: UsageMeter | None = None
     budget_stopped = False
+    interrupting: asyncio.Task | None = None
+    tools_in_call: list[str] = []
     with open(run.dir / f"transcript-{spec.id}.jsonl", "w", encoding="utf-8") as out:
         async with ClaudeSDKClient(options=options) as client:
             await client.query(prompt)
             async for message in client.receive_response():
                 if isinstance(message, StreamEvent):
-                    # Subscription mode: one model call = message_start ... message_stop. Debit it when it
-                    # ends, and stop the agent once its budget is spent, as the gateway would refuse its next call.
+                    # Subscription mode: one model call = message_start ... message_stop; debit it when it ends.
+                    # Like the gateway, a call goes ahead only if the balance covers its input, which
+                    # message_start reports exactly; its output, not known in advance, may overdraw.
                     kind = message.event.get("type")
                     if kind == "message_start":
                         meter = UsageMeter()
                     if meter is not None:
                         meter.observe(message.event)
+                    block = message.event.get("content_block") or {}
+                    if kind == "content_block_start" and block.get("type") == "tool_use":
+                        tools_in_call.append(block.get("id", ""))
+                    balance = run.ledger.balance(spec.id) if kind == "message_start" and not budget_stopped else None
+                    if balance is not None and balance < meter.total:
+                        # The request already reached Anthropic, so debit its input; nothing it says is kept.
+                        budget_stopped = True
+                        run.ledger.record_usage(spec.id, meter.total, run.broker.now(),
+                                                f"{meter.model} {meter.breakdown()} (harness, refused)")
+                        meter_log.warning("%s refused: next call needs %d input tokens, %d left", spec.id,
+                                          meter.total, balance)
+                        meter = None
+                        # Keep reading while it is sent: the reply arrives behind this call's own stream,
+                        # so awaiting it here would wait forever.
+                        interrupting = asyncio.create_task(client.interrupt())
                     if kind == "message_stop" and meter is not None:
                         state = run.ledger.record_usage(spec.id, meter.total, run.broker.now(),
                                                         f"{meter.model} {meter.breakdown()} (harness)")
                         meter_log.info("%s used %d tokens (%s), %d left", spec.id, meter.total, meter.breakdown(),
                                        state.balance)
                         meter = None
-                        if state.balance <= 0 and not budget_stopped:
-                            budget_stopped = True
-                            meter_log.warning("%s stopped: budget spent (balance %d)", spec.id, state.balance)
-                            await client.interrupt()
+                        run.charged_tools.update(tools_in_call)
+                        tools_in_call.clear()
                     continue
                 out.write(json.dumps(_record(message), default=str) + "\n")
+                if budget_stopped and isinstance(message, AssistantMessage):
+                    continue  # whatever the refused call produced before the interrupt is not the agent's work
                 if isinstance(message, AssistantMessage):
                     for block in message.content:
                         if isinstance(block, TextBlock) and block.text.strip():
@@ -327,6 +361,8 @@ async def run_agent(run: Run, spec: AgentSpec, prompt: str, options: ClaudeAgent
                             agent_log.info(_describe_result(name, block))
                 elif isinstance(message, ResultMessage):
                     result = message
+            if interrupting is not None:
+                await interrupting
     return AgentOutcome(texts, result, budget_stopped)
 
 
@@ -356,6 +392,7 @@ async def audit(run: Run) -> dict[str, Any]:
         hooks=low_budget_hook(run, spec) if rebbi else None,
     )
     prompt = AUDITOR_PROMPT.format(repo=run.scenario.target.repo, commit=run.scenario.target.commit,
+                                   budget=spec.budget_tokens, expected=run.scenario.target.expected_tokens,
                                    contract=contract())
     agent = await run_agent(run, spec, prompt, options)
     result = agent.result
@@ -368,9 +405,9 @@ async def audit(run: Run) -> dict[str, Any]:
     stopped_by = None
     if not finished:
         if agent.budget_stopped:
-            stopped_by = "harness stopped it: budget spent"
+            stopped_by = "harness refused its next call: budget too low"
         elif result and result.api_error_status == BUDGET_SPENT_STATUS:
-            stopped_by = "gateway refused: budget spent"
+            stopped_by = "gateway refused its next call: budget too low"
         else:
             stopped_by = f"{result.subtype if result else 'no result'}: {(result.result or '')[:160] if result else ''}"
         log.info("%s stopped mid-job: %s", AUDITOR, stopped_by)

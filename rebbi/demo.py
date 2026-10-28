@@ -23,7 +23,7 @@ from typing import Any
 
 from rebbi import fleet
 from rebbi.gateway import UPSTREAM, serve_in_thread
-from rebbi.scripted_model import create_scripted_model
+from rebbi.scripted_model import BUDGETS, create_scripted_model
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -74,6 +74,7 @@ async def main_async(auth: str, budgets: dict[str, int], rehearsal: bool = False
         port = fleet.free_port()
         serve_in_thread(create_scripted_model(), port)
         upstream, auth, tag = f"http://127.0.0.1:{port}", "api-key", "REHEARSAL, scripted model, not Claude.  "
+        budgets = {**BUDGETS, **budgets}
     banner(f"{tag}1/2  BASELINE: Rebbi off. auditor-01 has only its own budget.")
     base = await fleet.run_fleet("baseline", budgets, upstream, auth)
     if "aborted" in base:
