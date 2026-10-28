@@ -1,7 +1,7 @@
 # Demo scenario: the owner's setup of the fleet.
 #
 # Calibrated on Oct 27 from real-model runs (python -m rebbi.calibrate). Full audits of the pinned
-# commit took 2 to 5 calls and 17,000 to 50,505 tokens; the first call is about 5,200 with the rebbi
+# commit took 2 to 6 calls and 17,000 to 59,757 tokens; the first call is about 5,200 with the rebbi
 # tools and 4,100 without. A call goes ahead only if the balance covers its input, so auditor-01's
 # 7,000 covers the one call in which it asks Rebbi for the difference, and not a second call, which
 # re-sends the first: without Rebbi it is refused before it can write its report. The loan cap and
@@ -24,7 +24,7 @@ max_usd = 3.0
 repo = "https://github.com/simonw/sqlite-utils"
 commit = "9d7da0606e98713896bbc9fc885a5b0cd54ac2fd"   # tag 3.38
 local_path = "targets/sqlite-utils"
-expected_tokens = 50000   # the most a measured audit of this commit took: 17,000 to 50,505 tokens
+expected_tokens = 60000   # the most a measured audit of this commit took: 17,000 to 59,757 tokens
 
 [[agents]]
 id = "auditor-01"

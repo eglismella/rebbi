@@ -2,58 +2,56 @@
 ==============================================================================
   1/2  BASELINE: Rebbi off. auditor-01 has only its own budget.
 ==============================================================================
-16:38:46  fleet       run 20261028-023846-baseline, mode baseline, budgets enforced by the harness: auditor-01 7000, analyst-07 180000, writer-03 100000; auditing sqlite-utils@9d7da06
-16:38:50  auditor-01  Grep 'install_requires|extras_require|^\\s+"[^"]+",?$|^\\s+[a-z_]+=\\[|^\\s+\\],?$'
-16:38:50  auditor-01  Grep '^\\s*(import|from)\\s+\\w+|^\\s*(try|except)' in *.py
-16:38:50  harness     auditor-01 used 4233 tokens (in=2 cache_write=1184 cache_read=2707 out=340), 2767 left
-16:38:52  harness     auditor-01 refused: next call needs 9079 input tokens, 2767 left
-16:38:52  fleet       auditor-01 stopped mid-job: harness refused its next call: budget too low
-16:38:52  verifier    FAIL  seven numbered sections: missing or empty: [1, 2, 3, 4, 5, 6, 7]
-16:38:52  verifier    FAIL  JSON appendix: no JSON appendix
-16:38:52  verifier    VERIFIER: FAIL
-16:38:52  ledger      invariants PASS
-16:38:52  fleet       RESULT baseline: job STOPPED, verifier FAIL, ledger PASS, auditor-01 used 13312 tokens, 0 loan(s), 6s
+17:04:30  fleet       run 20261028-030430-baseline, mode baseline, budgets enforced by the harness: auditor-01 7000, analyst-07 180000, writer-03 100000; auditing sqlite-utils@9d7da06
+17:04:34  auditor-01  Read setup.py
+17:04:34  auditor-01  Grep '^\\s*(import|from)\\s+\\w+|^\\s*(try|except)' in *.py
+17:04:35  harness     auditor-01 used 4192 tokens (in=2 cache_write=1235 cache_read=2707 out=248), 2808 left
+17:04:36  harness     auditor-01 refused: next call needs 10232 input tokens, 2808 left
+17:04:36  fleet       auditor-01 stopped mid-job: harness refused its next call: budget too low
+17:04:36  verifier    FAIL  seven numbered sections: missing or empty: [1, 2, 3, 4, 5, 6, 7]
+17:04:36  verifier    FAIL  JSON appendix: no JSON appendix
+17:04:36  verifier    VERIFIER: FAIL
+17:04:36  ledger      invariants PASS
+17:04:36  fleet       RESULT baseline: job STOPPED, verifier FAIL, ledger PASS, auditor-01 used 14424 tokens, 0 loan(s), 6s
 
 ==============================================================================
   2/2  REBBI ON: same fleet, same budgets. auditor-01 can borrow over MCP.
 ==============================================================================
-16:38:52  fleet       run 20261028-023852-rebbi, mode rebbi, budgets enforced by the harness: auditor-01 7000, analyst-07 180000, writer-03 100000; auditing sqlite-utils@9d7da06
-16:38:55  analyst-07  -> rebbi.report_headroom {"reserve_tokens": 80000, "will_lend": true}
-16:38:55  harness     analyst-07 used 2094 tokens (in=2 cache_write=529 cache_read=1474 out=89), 177906 left
-16:38:55  analyst-07  <- published reserve 80000, lendable 80000
-16:38:56  analyst-07  says: Published a reserve of 80,000 tokens with lending enabled; 80,000 tokens are lendable against a balance of 180
-16:38:56  harness     analyst-07 used 2270 tokens (in=2 cache_write=219 cache_read=2003 out=46), 175636 left
-16:38:59  writer-03   -> rebbi.report_headroom {"reserve_tokens": 70000, "will_lend": true}
-16:38:59  harness     writer-03 used 2092 tokens (in=2 cache_write=529 cache_read=1472 out=89), 97908 left
-16:38:59  writer-03   <- published reserve 70000, lendable 0
-16:39:00  writer-03   says: Published a 70,000-token reserve with lending on; Rebbi reports 0 lendable, since the 30,000 expected demand c
-16:39:00  harness     writer-03 used 2282 tokens (in=2 cache_write=213 cache_read=2001 out=66), 95626 left
-16:39:04  auditor-01  -> rebbi.post_handoff {"goal": "Complete dep-audit-v1 on sqlite-utils; budget of 7,000 is insufficient, past runs used up to 50,000", "budget_tokens": 45000}
-16:39:05  auditor-01  Grep 'install_requires|extras_require' in setup.py
-16:39:05  harness     auditor-01 used 5492 tokens (in=2 cache_write=1349 cache_read=3858 out=283), 46508 left
-16:39:05  auditor-01  <- LEND 45000 from analyst-07 (asked 45000; analyst-07: can lend 45000; writer-03: no room above its reserve)
-16:39:06  auditor-01  Read setup.py
-16:39:07  auditor-01  Grep '^\\s*(import|from)\\s+\\w+' in *.py
-16:39:07  harness     auditor-01 used 6073 tokens (in=2 cache_write=582 cache_read=5207 out=282), 40435 left
-16:39:10  auditor-01  Read sqlite_utils\db.py
-16:39:11  auditor-01  Read sqlite_utils\utils.py
-16:39:12  auditor-01  Read sqlite_utils\cli.py
-16:39:12  harness     auditor-01 used 9884 tokens (in=2 cache_write=3515 cache_read=5789 out=578), 30551 left
-16:39:26  auditor-01  says: ## 1. Scope
-16:39:26  harness     auditor-01 used 13371 tokens (in=2 cache_write=1671 cache_read=9304 out=2394), 17180 left
-16:39:26  broker      auditor-01 settled loan 1 (done): returned 17180 to analyst-07
-16:39:26  fleet       settled loan 1: auditor-01 used 27820 of 45000, 17180 returned to analyst-07
-16:39:26  verifier    PASS  seven numbered sections
-16:39:26  verifier    PASS  JSON appendix
-16:39:26  verifier    PASS  runtime dependencies
-16:39:26  verifier    PASS  optional groups
-16:39:26  verifier    PASS  imports per runtime dependency
-16:39:26  verifier    PASS  unused dependencies
-16:39:26  verifier    PASS  undeclared imports
-16:39:26  verifier    PASS  unpinned dependencies
-16:39:26  verifier    VERIFIER: PASS
-16:39:26  ledger      invariants PASS
-16:39:26  fleet       RESULT rebbi: job finished, verifier PASS, ledger PASS, auditor-01 used 34820 tokens, 1 loan(s), 34s
+17:04:36  fleet       run 20261028-030436-rebbi, mode rebbi, budgets enforced by the harness: auditor-01 7000, analyst-07 180000, writer-03 100000; auditing sqlite-utils@9d7da06
+17:04:39  analyst-07  -> rebbi.report_headroom {"reserve_tokens": 80000, "will_lend": true}
+17:04:39  harness     analyst-07 used 2094 tokens (in=2 cache_write=529 cache_read=1474 out=89), 177906 left
+17:04:39  analyst-07  <- published reserve 80000, lendable 80000
+17:04:40  analyst-07  says: Published a reserve of 80,000 tokens with lending enabled (lendable: 80,000 of my 180,000 balance).
+17:04:40  harness     analyst-07 used 2267 tokens (in=2 cache_write=219 cache_read=2003 out=43), 175639 left
+17:04:43  writer-03   -> rebbi.report_headroom {"reserve_tokens": 70000, "will_lend": true}
+17:04:43  harness     writer-03 used 2092 tokens (in=2 cache_write=529 cache_read=1472 out=89), 97908 left
+17:04:43  writer-03   <- published reserve 70000, lendable 0
+17:04:44  writer-03   says: Published a 70,000-token reserve with lending enabled; Rebbi shows 0 lendable right now because the 30,000-tok
+17:04:44  harness     writer-03 used 2283 tokens (in=2 cache_write=213 cache_read=2001 out=67), 95625 left
+17:04:49  auditor-01  -> rebbi.post_handoff {"goal": "Complete dep-audit-v1 on sqlite-utils at 9d7da06; budget of 7,000 is below the ~50,000 past runs needed", "budget_tokens": 45000, "source_commit": "9d7da0606e98713896bbc9fc885a5b0cd54ac2fd"}
+17:04:49  harness     auditor-01 used 5501 tokens (in=2 cache_write=1400 cache_read=3858 out=241), 46499 left
+17:04:49  auditor-01  <- LEND 45000 from analyst-07 (asked 45000; analyst-07: can lend 45000; writer-03: no room above its reserve)
+17:04:50  auditor-01  Read setup.py
+17:04:51  auditor-01  Grep '^\\s*(import|from)\\s+\\w+|^\\s*(try|except)\\b' in *.py
+17:04:51  harness     auditor-01 used 5963 tokens (in=2 cache_write=453 cache_read=5258 out=250), 40536 left
+17:05:05  auditor-01  says: ## 1. Scope
+17:05:05  harness     auditor-01 used 14360 tokens (in=2 cache_write=6283 cache_read=5711 out=2364), 26176 left
+17:05:05  broker      auditor-01 settled loan 1 (done): returned 26176 to analyst-07
+17:05:05  fleet       settled loan 1: auditor-01 used 18824 of 45000, 26176 returned to analyst-07
+17:05:05  verifier    PASS  seven numbered sections
+17:05:05  verifier    PASS  JSON appendix
+17:05:05  verifier    PASS  commit
+17:05:05  verifier    PASS  runtime dependencies
+17:05:05  verifier    PASS  optional group names
+17:05:05  verifier    PASS  optional groups
+17:05:05  verifier    PASS  dependencies in imports
+17:05:05  verifier    PASS  imports per runtime dependency
+17:05:05  verifier    PASS  unused dependencies
+17:05:05  verifier    PASS  undeclared imports
+17:05:05  verifier    PASS  unpinned dependencies
+17:05:05  verifier    VERIFIER: PASS
+17:05:05  ledger      invariants PASS
+17:05:05  fleet       RESULT rebbi: job finished, verifier PASS, ledger PASS, auditor-01 used 25824 tokens, 1 loan(s), 29s
 
 ==============================================================================
   RESULT: the same job, the same budgets
@@ -61,11 +59,11 @@
                    baseline: Rebbi off                                      Rebbi on
 model              claude                                                   claude
 job                STOPPED (harness refused its next call: budget too low)  finished
-verifier           FAIL (first failure: seven numbered sections)            PASS (all 8 checks)
-loan               none                                                     45000 from analyst-07, 17180 returned
-lender reserve     -                                                        intact (130636 >= 80000)
+verifier           FAIL (first failure: seven numbered sections)            PASS (all 11 checks)
+loan               none                                                     45000 from analyst-07, 26176 returned
+lender reserve     -                                                        intact (130639 >= 80000)
 ledger invariants  PASS                                                     PASS
-auditor-01 tokens  13,312                                                   34,820
-run folder         20261028-023846-baseline                                 20261028-023852-rebbi
+auditor-01 tokens  14,424                                                   25,824
+run folder         20261028-030430-baseline                                 20261028-030436-rebbi
 
-saved runs\20261028-023926-demo-comparison.txt
+saved runs\20261028-030505-demo-comparison.txt

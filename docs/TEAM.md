@@ -20,10 +20,15 @@ the change to Eglis.
     misses them, fails. `trogon` is not on the list because the `tui` extra declares it.
 
 The verifier fails closed: a missing section, a missing JSON appendix or any wrong value is a FAIL.
-One change after the first real run, for you to confirm: optional groups are now compared by package
-name, so `black>=24.1.1` counts as `black`. The template asks for "the packages in it", and the model
-reasonably copied the version from `setup.py`; runtime dependencies are still checked with their
-constraints.
+
+**Your review is applied** (Oct 27). The verifier now also checks the commit (the full hash or at least
+7 characters of it), the optional group names on their own (a made-up empty group failed nothing
+before), and the dependency names in `imports` (a made-up dependency with no files likewise). The
+template now asks for the commit in the JSON appendix, package names only in section 3, undeclared
+modules exactly as imported in section 5, and at least one recommendation in section 7. One thing
+kept on top of your suggestion: optional-group packages are compared by name, so `black>=24.1.1` still
+counts as `black` if the model adds the version anyway; runtime dependencies are still checked with
+their constraints. There are now 11 checks, and real reports pass all of them.
 
 **Facts for the paragraph and the script.**
 
@@ -31,12 +36,13 @@ constraints.
   `post_handoff` itself; Rebbi books a loan from an agent with spare capacity above its published
   reserve, and the agent does the job. What it does not spend goes back to the lender when the job ends.
   Lenders publish their own reserve with `report_headroom`.
-- What the real runs show (`docs/demo/real-run-1.txt` to `-3.txt`, Claude Sonnet 5.5, Oct 27):
-  auditor-01 has 7,000 tokens and is told past audits took up to 50,000. Without Rebbi it makes one
-  call, then its next call (9,079 tokens of input) is refused, and the verifier FAILs: no report. With
-  Rebbi it asks for 45,000 before starting, analyst-07 lends it (writer-03 is skipped: no room above
-  its reserve), it finishes in about 30 seconds, the verifier PASSes all 8 checks, and 17,180 unspent
-  tokens go back to analyst-07. Three runs in a row went this way.
+- What the real runs show (`docs/demo/real-run-3.txt`, Claude Sonnet 5.5, Oct 27, current settings):
+  auditor-01 has 7,000 tokens and is told past audits took up to 60,000. Without Rebbi it makes one
+  call, then its next call (10,237 tokens of input) is refused, and the verifier FAILs: no report. With
+  Rebbi it asks for 60,000 before starting, analyst-07 lends it (writer-03 is skipped: no room above
+  its reserve), it finishes in about 35 seconds, the verifier PASSes all 11 checks, and 32,484 unspent
+  tokens go back to analyst-07. In `real-run-2.txt` the first loan ran low mid-job, the harness warned
+  auditor-01, and it borrowed a second time on its own. All three saved runs went as designed.
 - The check: the same job on the same budgets, without and with Rebbi. A second check confirms the
   ledger: no tokens created or lost, no lender below its reserve, every loan closed.
 - Current limitation (pick one for the video): Rebbi only lends. A job blocked by a missing tool or
@@ -75,13 +81,14 @@ table. Every line in the footage is also saved in each run's `console.log`. Shot
 | Seconds | Show | Lines to look for in `console.log` |
 | --- | --- | --- |
 | 0–8 | The fleet and budgets | the first `fleet run ...` line |
-| 8–18 | Baseline stops | `refused: next call needs 9079 input tokens, 2767 left`, `stopped mid-job`, then `VERIFIER: FAIL` |
-| 18–40 | Rebbi on: ask, loan, finish, repay | `-> rebbi.post_handoff {... "budget_tokens": 45000}`, `<- LEND 45000 from analyst-07 (...; writer-03: no room above its reserve)`, `says: ## 1. Scope`, `settled loan 1: ... 17180 returned to analyst-07` |
+| 8–18 | Baseline stops | `refused: next call needs 10237 input tokens, 2808 left`, `stopped mid-job`, then `VERIFIER: FAIL` |
+| 18–40 | Rebbi on: ask, loan, finish, repay | `-> rebbi.post_handoff {... "budget_tokens": 60000 ...}`, `<- LEND 60000 from analyst-07 (...; writer-03: no room above its reserve)`, `says: ## 1. Scope`, `settled loan 1: ... 32484 returned to analyst-07` |
 | 40–52 | The check | `verifier PASS` lines, `ledger invariants PASS`, and the demo's final table |
 | 52–60 | The limitation | a title card |
 
 The whole demo takes about 45 seconds: the baseline about 5, Rebbi about 35, mostly the model
-writing the report. `docs/demo/real-run-1.txt` is the full output of a real run, so the rough cut,
-captions and timing can be built from it now; the numbers quoted above come from it. Eglis's screen
-capture of the same command is the footage. Each real run differs a little (it borrowed 45,000 or
-50,000; between 17,180 and 29,987 went back), so match captions to the run actually recorded.
+writing the report. `docs/demo/real-run-3.txt` is the full output of a real run on the current
+settings, so the rough cut, captions and timing can be built from it now; the numbers quoted above come
+from it. Eglis's screen capture of the same command is the footage. Each real run differs a little
+(how much it borrows, how much goes back, sometimes a second loan), so match captions to the run
+actually recorded.

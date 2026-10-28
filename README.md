@@ -26,7 +26,8 @@ python -m venv .venv && .venv/Scripts/python -m pip install -e ".[test]"
 .venv/Scripts/python -m rebbi.fleet --mode rebbi    # one run: auditor-01 borrows over MCP and finishes
 ```
 
-`docs/demo/real-run-1.txt` to `-3.txt` are three real runs of `python -m rebbi.demo`, one after another.
+`docs/demo/real-run-1.txt` to `-3.txt` are three real runs of `python -m rebbi.demo` on Oct 27. In the
+first two the auditor was told past audits took up to 50,000 tokens; the third uses the current 60,000.
 
 No credentials? `python -m rebbi.demo --rehearsal` runs the same harness, gateway, MCP server, ledger
 and verifier against `rebbi/scripted_model.py`, a stand-in whose replies and report are hard-coded.

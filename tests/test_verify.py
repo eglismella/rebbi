@@ -13,7 +13,7 @@ def key():
 
 def report_from(data, sections=range(1, 8)):
     body = "\n\n".join(f"## {n}. Section {n}\n\nFindings for section {n}." for n in sections)
-    appendix = {k: data[k] for k in ("runtime_dependencies", "optional_groups", "imports", "unused_dependencies",
+    appendix = {k: data[k] for k in ("commit", "runtime_dependencies", "optional_groups", "imports", "unused_dependencies",
                                       "undeclared_imports", "unpinned")}
     return f"# Dependency audit\n\n{body}\n\n```json\n{json.dumps(appendix, indent=2)}\n```\n"
 
@@ -39,6 +39,25 @@ def test_optional_groups_are_compared_by_package_not_version(key):
     assert passed(verify_report(report_from(data), key))
     data["optional_groups"]["test"] = ["pytest", "hypothesis", "cogapp"]
     assert failed(verify_report(report_from(data), key)) == {"optional groups"}
+
+
+def test_the_report_must_name_the_pinned_commit(key):
+    data = copy.deepcopy(key)
+    data["commit"] = key["commit"][:7].upper()
+    assert passed(verify_report(report_from(data), key))
+    data["commit"] = "1234567"
+    assert failed(verify_report(report_from(data), key)) == {"commit"}
+    data["commit"] = ""
+    assert failed(verify_report(report_from(data), key)) == {"commit"}
+
+
+def test_a_made_up_empty_group_or_dependency_fails(key):
+    data = copy.deepcopy(key)
+    data["optional_groups"]["extra"] = []
+    assert failed(verify_report(report_from(data), key)) == {"optional group names"}
+    data = copy.deepcopy(key)
+    data["imports"]["requests"] = []
+    assert failed(verify_report(report_from(data), key)) == {"dependencies in imports"}
 
 
 def test_a_report_that_stopped_early_fails(key):

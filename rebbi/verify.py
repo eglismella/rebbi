@@ -39,6 +39,13 @@ def _package(requirement: str) -> str:
     return _dist(re.split(r"[\s\[<>=!~;@(]", requirement.strip(), maxsplit=1)[0])
 
 
+def _commit(found: Any, expected: str) -> Check:
+    """The report names the pinned commit: the full hash, or an abbreviation of at least 7 characters."""
+    sha = str(found or "").strip().lower()
+    ok = len(sha) >= 7 and expected.lower().startswith(sha)
+    return Check("commit", ok, "" if ok else f"expected {expected[:7]}, found {sha or 'none'}")
+
+
 def _path(p: str) -> str:
     return p.strip().replace("\\", "/").removeprefix("./")
 
@@ -82,13 +89,18 @@ def verify_report(report: str, key: dict[str, Any]) -> list[Check]:
 
     try:
         checks += [
+            _commit(data.get("commit"), key["commit"]),
             _same("runtime dependencies",
                   {(_dist(d["name"]), d["constraint"].strip()) for d in key["runtime_dependencies"]},
                   {(_dist(d["name"]), str(d.get("constraint") or "").strip())
                    for d in data["runtime_dependencies"]}),
+            # Group names on their own too: a made-up empty group adds no (group, package) pair.
+            _same("optional group names", set(key["optional_groups"]), set(data["optional_groups"])),
             _same("optional groups",
                   {(g, _dist(p)) for g, ps in key["optional_groups"].items() for p in ps},
                   {(g, _package(p)) for g, ps in data["optional_groups"].items() for p in ps}),
+            # Likewise a made-up dependency listed with no files.
+            _same("dependencies in imports", {_dist(d) for d in key["imports"]}, {_dist(d) for d in data["imports"]}),
             _same("imports per runtime dependency",
                   {(_dist(d), _path(f)) for d, fs in key["imports"].items() for f in fs},
                   {(_dist(d), _path(f)) for d, fs in data["imports"].items() for f in fs}),

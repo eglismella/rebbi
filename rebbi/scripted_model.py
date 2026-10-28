@@ -30,7 +30,7 @@ _ids = count(1)
 def _report() -> str:
     key = json.loads(DEFAULT_KEY.read_text(encoding="utf-8"))
     sections = "\n\n".join(f"## {n}. Section {n}\n\nScripted findings." for n in range(1, 8))
-    appendix = {k: key[k] for k in ("runtime_dependencies", "optional_groups", "imports", "unused_dependencies",
+    appendix = {k: key[k] for k in ("commit", "runtime_dependencies", "optional_groups", "imports", "unused_dependencies",
                                      "undeclared_imports", "unpinned")}
     return f"# Dependency audit\n\n{sections}\n\n```json\n{json.dumps(appendix)}\n```"
 
