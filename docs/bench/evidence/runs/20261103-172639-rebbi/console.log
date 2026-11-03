@@ -1,0 +1,22 @@
+12:26:39  fleet       run 20261103-172639-rebbi, mode rebbi, budgets enforced by the harness: auditor-01 7000, analyst-07 180000, writer-03 100000; auditing sqlite-utils@9d7da06
+12:26:47  analyst-07  -> rebbi.report_headroom {"reserve_tokens": 80000, "will_lend": true}
+12:26:47  harness     analyst-07 used 2094 tokens (in=2 cache_write=529 cache_read=1474 out=89), 177906 left
+12:26:47  analyst-07  <- published reserve 80000, lendable 80000
+12:26:47  analyst-07  says: Published a reserve of 80,000 tokens with lending enabled; 80,000 is lendable against a balance of 180,000.
+12:26:47  harness     analyst-07 used 2267 tokens (in=2 cache_write=219 cache_read=2003 out=43), 175639 left
+12:26:51  writer-03   -> rebbi.report_headroom {"reserve_tokens": 70000, "will_lend": true}
+12:26:51  harness     writer-03 used 2092 tokens (in=2 cache_write=529 cache_read=1472 out=89), 97908 left
+12:26:51  writer-03   <- published reserve 70000, lendable 0
+12:26:52  writer-03   says: Published a 70,000-token reserve with lending on; Rebbi shows 0 lendable right now, since the 100,000 balance 
+12:26:52  harness     writer-03 used 2284 tokens (in=2 cache_write=213 cache_read=2001 out=68), 95624 left
+12:26:56  auditor-01  Grep 'install_requires|extras_require' in setup.py
+12:26:56  auditor-01  Grep '^\\s*(import|from)\\s+\\w+' in *.py
+12:26:56  harness     auditor-01 used 5567 tokens (in=2 cache_write=0 cache_read=5253 out=312), 1433 left
+12:26:56  fleet       warning auditor-01: 1433 tokens left, last call used 5567
+12:26:58  harness     auditor-01 refused: next call needs 8084 input tokens, 1433 left
+12:26:58  fleet       auditor-01 stopped mid-job: harness refused its next call: budget too low
+12:26:58  verifier    FAIL  seven numbered sections: missing or empty: [1, 2, 3, 4, 5, 6, 7]
+12:26:58  verifier    FAIL  JSON appendix: no JSON appendix
+12:26:58  verifier    VERIFIER: FAIL
+12:26:58  ledger      invariants PASS
+12:26:58  fleet       RESULT rebbi: job STOPPED, verifier FAIL, ledger PASS, auditor-01 used 13651 tokens, 0 loan(s), 19s

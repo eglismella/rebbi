@@ -1,0 +1,53 @@
+# The HW7 benchmark cases, fixed on Nov 3 before any benchmark run. docs/bench/PLAN.md gives the claim,
+# the arms and the pass rule; `python -m rebbi.bench` runs these cases.
+#
+# A case is a target from config/targets.toml, plus budget overrides for the fleet if it needs them.
+# kind: ordinary, hard or failure. split: "tuning" cases may be looked at to choose the one change after
+# the stress runs; "fresh" cases are held back to check that change.
+
+repeats = 3
+arms = ["baseline", "upfront", "rebbi"]
+
+[[cases]]
+name = "sqlite-utils-3.38"
+target = "sqlite-utils-3.38"
+kind = "ordinary"
+split = "tuning"
+why = "The HW6 demo job: 7 files, 6 runtime dependencies, 5 undeclared optional imports"
+
+[[cases]]
+name = "csvs-to-sqlite-1.3.1"
+target = "csvs-to-sqlite-1.3.1"
+kind = "ordinary"
+split = "tuning"
+why = "Smallest package (4 files); py-lru-cache is imported as lru; numpy is imported but never declared"
+
+[[cases]]
+name = "sqlite-utils-3.30"
+target = "sqlite-utils-3.30"
+kind = "ordinary"
+split = "fresh"
+why = "An older release of the demo repo; click-default-group-wheel is imported as click_default_group"
+
+[[cases]]
+name = "db-to-sqlite-1.5"
+target = "db-to-sqlite-1.5"
+kind = "ordinary"
+split = "fresh"
+why = "Simplest dependency picture (3 files, 3 runtime dependencies, 5 optional groups)"
+
+[[cases]]
+name = "llm-0.12"
+target = "llm-0.12"
+kind = "hard"
+split = "fresh"
+why = "Largest package (15 files, 11 runtime dependencies); three import names differ from the package names; pip is run but never imported, so it counts as unused"
+
+[[cases]]
+name = "no-lender-room"
+target = "sqlite-utils-3.38"
+kind = "failure"
+split = "tuning"
+arms = ["upfront", "rebbi"]   # the baseline never borrows, so it is the same as sqlite-utils-3.38's
+budgets = { "analyst-07" = 100000 }
+why = "analyst-07 holds exactly its reserve plus declared demand, so nobody can lend: Rebbi must refuse cleanly and no reserve may break"

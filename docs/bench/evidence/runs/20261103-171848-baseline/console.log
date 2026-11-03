@@ -1,0 +1,11 @@
+12:18:48  fleet       run 20261103-171848-baseline, mode baseline, budgets enforced by the harness: auditor-01 7000, analyst-07 180000, writer-03 100000; auditing sqlite-utils@9d7da06
+12:18:50  auditor-01  Read setup.py
+12:18:51  auditor-01  Grep '^\\s*(import|from)\\s+\\w+|^\\s*(try|except)' in *.py
+12:18:51  harness     auditor-01 used 4209 tokens (in=2 cache_write=0 cache_read=3937 out=270), 2791 left
+12:18:52  harness     auditor-01 refused: next call needs 10250 input tokens, 2791 left
+12:18:52  fleet       auditor-01 stopped mid-job: harness refused its next call: budget too low
+12:18:52  verifier    FAIL  seven numbered sections: missing or empty: [1, 2, 3, 4, 5, 6, 7]
+12:18:52  verifier    FAIL  JSON appendix: no JSON appendix
+12:18:52  verifier    VERIFIER: FAIL
+12:18:52  ledger      invariants PASS
+12:18:52  fleet       RESULT baseline: job STOPPED, verifier FAIL, ledger PASS, auditor-01 used 14459 tokens, 0 loan(s), 4s

@@ -1,0 +1,22 @@
+17:16:28  fleet       run 20261103-221628-upfront, mode upfront, budgets enforced by the harness: auditor-01 22000, analyst-07 165000, writer-03 100000; auditing csvs-to-sqlite@33b79ed
+17:16:28  fleet       upfront: the owner moved 15000 tokens from analyst-07 to auditor-01 before the job; they are not given back
+17:16:33  auditor-01  Read setup.py
+17:16:33  auditor-01  Grep '^\\s*(import|from)\\s+\\w+|^\\s*(try|except)\\b'
+17:16:34  auditor-01  Glob *
+17:16:34  harness     auditor-01 used 4241 tokens (in=2 cache_write=1239 cache_read=2707 out=293), 17759 left
+17:16:45  auditor-01  says: # csvs-to-sqlite dependency audit (dep-audit-v1)
+17:16:45  harness     auditor-01 used 8531 tokens (in=2 cache_write=2984 cache_read=3946 out=1599), 9228 left
+17:16:45  verifier    PASS  seven numbered sections
+17:16:45  verifier    PASS  JSON appendix
+17:16:45  verifier    PASS  commit
+17:16:45  verifier    PASS  runtime dependencies
+17:16:45  verifier    PASS  optional group names
+17:16:45  verifier    PASS  optional groups
+17:16:45  verifier    PASS  dependencies in imports
+17:16:45  verifier    PASS  imports per runtime dependency
+17:16:45  verifier    PASS  unused dependencies
+17:16:45  verifier    PASS  undeclared imports
+17:16:45  verifier    PASS  unpinned dependencies
+17:16:45  verifier    VERIFIER: PASS
+17:16:45  ledger      invariants PASS
+17:16:45  fleet       RESULT upfront: job finished, verifier PASS, ledger PASS, auditor-01 used 12772 tokens, 0 loan(s), 17s

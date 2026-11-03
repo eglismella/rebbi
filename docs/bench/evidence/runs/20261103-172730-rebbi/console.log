@@ -1,0 +1,22 @@
+12:27:30  fleet       run 20261103-172730-rebbi, mode rebbi, budgets enforced by the harness: auditor-01 7000, analyst-07 180000, writer-03 100000; auditing sqlite-utils@9d7da06
+12:27:33  analyst-07  -> rebbi.report_headroom {"reserve_tokens": 80000, "will_lend": true}
+12:27:33  harness     analyst-07 used 2094 tokens (in=2 cache_write=529 cache_read=1474 out=89), 177906 left
+12:27:33  analyst-07  <- published reserve 80000, lendable 80000
+12:27:34  analyst-07  says: Published a reserve of 80,000 tokens with lending enabled; 80,000 is currently lendable against a 20,000-token
+12:27:34  harness     analyst-07 used 2272 tokens (in=2 cache_write=219 cache_read=2003 out=48), 175634 left
+12:27:42  writer-03   -> rebbi.report_headroom {"reserve_tokens": 70000, "will_lend": true}
+12:27:42  harness     writer-03 used 2092 tokens (in=2 cache_write=529 cache_read=1472 out=89), 97908 left
+12:27:42  writer-03   <- published reserve 70000, lendable 0
+12:27:43  writer-03   says: Published a 70,000-token reserve with lending on; Rebbi reports 0 lendable right now because the 30,000 expect
+12:27:43  harness     writer-03 used 2276 tokens (in=2 cache_write=213 cache_read=2001 out=60), 95632 left
+12:27:47  auditor-01  Grep 'install_requires|extras_require' in setup.py
+12:27:47  auditor-01  Grep '^\\s*(import|from)\\s+\\w+' in *.py
+12:27:47  harness     auditor-01 used 5522 tokens (in=2 cache_write=0 cache_read=5253 out=267), 1478 left
+12:27:47  fleet       warning auditor-01: 1478 tokens left, last call used 5522
+12:27:48  harness     auditor-01 refused: next call needs 8044 input tokens, 1478 left
+12:27:48  fleet       auditor-01 stopped mid-job: harness refused its next call: budget too low
+12:27:48  verifier    FAIL  seven numbered sections: missing or empty: [1, 2, 3, 4, 5, 6, 7]
+12:27:48  verifier    FAIL  JSON appendix: no JSON appendix
+12:27:48  verifier    VERIFIER: FAIL
+12:27:48  ledger      invariants PASS
+12:27:48  fleet       RESULT rebbi: job STOPPED, verifier FAIL, ledger PASS, auditor-01 used 13566 tokens, 0 loan(s), 18s

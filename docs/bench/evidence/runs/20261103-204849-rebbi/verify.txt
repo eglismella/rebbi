@@ -1,0 +1,12 @@
+PASS  seven numbered sections
+PASS  JSON appendix
+PASS  commit
+PASS  runtime dependencies
+PASS  optional group names
+PASS  optional groups
+PASS  dependencies in imports
+PASS  imports per runtime dependency
+PASS  unused dependencies
+PASS  undeclared imports
+PASS  unpinned dependencies
+VERIFIER: PASS

@@ -6,5 +6,5 @@ __pycache__/
 *.db-wal
 *.db-shm
 targets/
-runs/
+/runs/
 .pytest_cache/

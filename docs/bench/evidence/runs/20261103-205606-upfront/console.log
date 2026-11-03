@@ -1,0 +1,17 @@
+15:56:06  fleet       run 20261103-205606-upfront, mode upfront, budgets enforced by the harness: auditor-01 22000, analyst-07 165000, writer-03 100000; auditing sqlite-utils@9d7da06
+15:56:06  fleet       upfront: the owner moved 15000 tokens from analyst-07 to auditor-01 before the job; they are not given back
+15:56:08  auditor-01  Read setup.py
+15:56:09  auditor-01  Grep '^\\s*(import|from)\\s+\\w+' in *.py
+15:56:09  auditor-01  Glob *.{toml,cfg,txt,in}
+15:56:09  harness     auditor-01 used 4237 tokens (in=2 cache_write=3937 cache_read=0 out=298), 17763 left
+15:56:20  auditor-01  Read sqlite_utils\db.py
+15:56:20  auditor-01  Read sqlite_utils\utils.py
+15:56:20  auditor-01  Read sqlite_utils\cli.py
+15:56:20  harness     auditor-01 used 8276 tokens (in=2 cache_write=3793 cache_read=3937 out=544), 9487 left
+15:56:26  harness     auditor-01 refused: next call needs 10364 input tokens, 9487 left
+15:56:26  fleet       auditor-01 stopped mid-job: harness refused its next call: budget too low
+15:56:26  verifier    FAIL  seven numbered sections: missing or empty: [1, 2, 3, 4, 5, 6, 7]
+15:56:26  verifier    FAIL  JSON appendix: no JSON appendix
+15:56:26  verifier    VERIFIER: FAIL
+15:56:26  ledger      invariants PASS
+15:56:26  fleet       RESULT upfront: job STOPPED, verifier FAIL, ledger PASS, auditor-01 used 22877 tokens, 0 loan(s), 21s

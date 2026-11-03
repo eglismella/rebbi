@@ -27,8 +27,10 @@ BUDGETS = {"auditor-01": 40_000}
 _ids = count(1)
 
 
-def _report() -> str:
-    key = json.loads(DEFAULT_KEY.read_text(encoding="utf-8"))
+def _report(history: str) -> str:
+    """A report built from the answer key of the commit the prompt names (the demo's, if none matches)."""
+    keys = [json.loads(p.read_text(encoding="utf-8")) for p in DEFAULT_KEY.parent.glob("answer-key-*.json")]
+    key = next((k for k in keys if k["commit"] in history), None) or json.loads(DEFAULT_KEY.read_text(encoding="utf-8"))
     sections = "\n\n".join(f"## {n}. Section {n}\n\nScripted findings." for n in range(1, 8))
     appendix = {k: key[k] for k in ("commit", "runtime_dependencies", "optional_groups", "imports", "unused_dependencies",
                                      "undeclared_imports", "unpinned")}
@@ -61,7 +63,7 @@ def _next_step(body: dict) -> tuple[str, dict | str]:
         return "tool", {"name": "Read", "input": {"file_path": "setup.py"}}
     if calls < 12:
         return "tool", {"name": "Grep", "input": {"pattern": "^import|^from", "glob": "*.py"}}
-    return "text", _report()
+    return "text", _report(history)
 
 
 def _events(model: str, kind: str, payload: dict | str):

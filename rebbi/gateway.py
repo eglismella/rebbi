@@ -6,7 +6,8 @@ process. Before a model call the gateway refuses it unless the agent's ledger
 balance covers the call's input, which it counts with the count_tokens
 endpoint; after it, the gateway debits the tokens the call really used, as the
 API reported them. Output is not known in advance, so a call may overdraw by
-its own output.
+its own output. With `top_up` (Rebbi on), a call the balance cannot cover first
+asks Rebbi for a loan on the agent's behalf, and is refused only if none comes.
 
     python -m rebbi.gateway --db rebbi.db --port 8701
 """
@@ -121,6 +122,7 @@ def create_gateway(
     upstream: str = UPSTREAM,
     now: Callable[[], datetime] = utcnow,
     transport: httpx.AsyncBaseTransport | None = None,
+    top_up: Callable[[str, int, int], int] | None = None,  # (agent, input needed, balance) -> balance after
 ) -> FastAPI:
     app = FastAPI(title="Rebbi gateway")
     client = httpx.AsyncClient(base_url=upstream, transport=transport, timeout=httpx.Timeout(600, connect=15))
@@ -150,7 +152,7 @@ def create_gateway(
         if metered:
             ledger.expire_loans(now())
             balance = ledger.balance(agent_id)
-            if balance <= 0:
+            if balance <= 0 and top_up is None:
                 log.warning("%s refused: budget spent (balance %d)", agent_id, balance)
                 return _api_error(BUDGET_SPENT_STATUS, "budget_exhausted",
                                   f"Rebbi: {agent_id} has no token budget left (balance {balance}).")
@@ -160,7 +162,13 @@ def create_gateway(
         body = await request.body()
         if metered:
             needed = await input_tokens(body, {k: v for k, v in headers.items() if k.lower() != "content-type"})
+            if top_up is not None and balance < (needed or 1):
+                balance = top_up(agent_id, needed or 0, balance)
             if needed is None:
+                if balance <= 0:
+                    log.warning("%s refused: budget spent (balance %d)", agent_id, balance)
+                    return _api_error(BUDGET_SPENT_STATUS, "budget_exhausted",
+                                      f"Rebbi: {agent_id} has no token budget left (balance {balance}).")
                 log.warning("%s: could not count this call's input; checking only that the balance is above zero",
                             agent_id)
             elif balance < needed:

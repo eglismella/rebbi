@@ -1,0 +1,18 @@
+{
+  "label": "stress-scarce",
+  "cases": [
+    "sqlite-utils-3.38",
+    "csvs-to-sqlite-1.3.1"
+  ],
+  "arms": [
+    "upfront",
+    "rebbi"
+  ],
+  "repeats": 3,
+  "hint_tokens": null,
+  "budgets": {
+    "analyst-07": 120000
+  },
+  "auth": "auto",
+  "rehearsal": false
+}

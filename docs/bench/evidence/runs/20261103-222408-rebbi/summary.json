@@ -1,0 +1,185 @@
+{
+  "run": "20261103-222408-rebbi",
+  "mode": "rebbi",
+  "auth": "subscription",
+  "model": "claude",
+  "target": "sqlite-utils@9d7da06",
+  "hint_tokens": 60000,
+  "upfront": null,
+  "finished": false,
+  "stopped_by": "harness refused its next call: budget too low",
+  "turns": 5,
+  "cost_usd_reported": 0.0330586,
+  "verified": false,
+  "checks": [
+    {
+      "name": "seven numbered sections",
+      "ok": false,
+      "detail": "missing or empty: [1, 2, 3, 4, 5, 6, 7]"
+    },
+    {
+      "name": "JSON appendix",
+      "ok": false,
+      "detail": "no JSON appendix"
+    }
+  ],
+  "ledger_ok": true,
+  "loans": [
+    {
+      "loan_id": 1,
+      "lender": "analyst-07",
+      "borrower": "auditor-01",
+      "tokens": 15636,
+      "status": "settled",
+      "lender_balance_after": 100000,
+      "lender_reserve": 80000,
+      "created_at": "2026-11-03T22:24:38+00:00",
+      "expires_at": "2026-11-03T22:39:38+00:00",
+      "closed_at": "2026-11-03T22:24:42+00:00",
+      "returned_tokens": 0
+    }
+  ],
+  "agents": [
+    {
+      "agent_id": "analyst-07",
+      "owner": "platform-team",
+      "balance": 100000,
+      "reserve_tokens": 80000,
+      "expected_demand_tokens": 20000,
+      "will_lend": true,
+      "used": 4364
+    },
+    {
+      "agent_id": "auditor-01",
+      "owner": "platform-team",
+      "balance": -7597,
+      "reserve_tokens": 0,
+      "expected_demand_tokens": 0,
+      "will_lend": false,
+      "used": 30233
+    },
+    {
+      "agent_id": "writer-03",
+      "owner": "platform-team",
+      "balance": 95627,
+      "reserve_tokens": 70000,
+      "expected_demand_tokens": 30000,
+      "will_lend": true,
+      "used": 4373
+    }
+  ],
+  "decisions": [
+    {
+      "decision_id": 1,
+      "requester": "auditor-01",
+      "decision": "LEND",
+      "request": {
+        "goal": "harness top-up: the next call needs 11800 input tokens and 1497 are left",
+        "budget_tokens": 54497,
+        "job_template": "dep-audit-v1",
+        "source_commit": "9d7da0606e98713896bbc9fc885a5b0cd54ac2fd",
+        "requires_tools": [
+          "repo.read"
+        ],
+        "requires_scopes": [],
+        "context_ref": "",
+        "deadline_s": 0
+      },
+      "response": {
+        "decision": "LEND",
+        "loan_id": 1,
+        "tokens": 15636,
+        "requested": 54497,
+        "from": "analyst-07",
+        "expires_at": "2026-11-03T22:39:38+00:00",
+        "lender_reserve_intact": true,
+        "considered": [
+          {
+            "agent": "analyst-07",
+            "lendable": 15636,
+            "reason": "can lend 15636"
+          },
+          {
+            "agent": "writer-03",
+            "lendable": 0,
+            "reason": "no room above its reserve"
+          }
+        ]
+      },
+      "at": "2026-11-03T22:24:38+00:00"
+    },
+    {
+      "decision_id": 2,
+      "requester": "auditor-01",
+      "decision": "CANNOT_MOVE",
+      "request": {
+        "goal": "Finish dep-audit-v1 report for sqlite-utils: write the final 7-section Markdown report plus JSON appendix; may need a few more Grep checks.",
+        "budget_tokens": 20000,
+        "job_template": "dep-audit-v1",
+        "source_commit": "9d7da0606e98713896bbc9fc885a5b0cd54ac2fd",
+        "requires_tools": [
+          "repo.read"
+        ],
+        "requires_scopes": [],
+        "context_ref": "",
+        "deadline_s": 0
+      },
+      "response": {
+        "decision": "CANNOT_MOVE",
+        "requested": 20000,
+        "blocker": "no agent has spare capacity above its reserve",
+        "next_step": "wait and ask again, or finish on a cheaper model",
+        "considered": [
+          {
+            "agent": "analyst-07",
+            "lendable": 0,
+            "reason": "no room above its reserve"
+          },
+          {
+            "agent": "writer-03",
+            "lendable": 0,
+            "reason": "no room above its reserve"
+          }
+        ]
+      },
+      "at": "2026-11-03T22:24:40+00:00"
+    },
+    {
+      "decision_id": 3,
+      "requester": "auditor-01",
+      "decision": "CANNOT_MOVE",
+      "request": {
+        "goal": "harness top-up: the next call needs 12599 input tokens and 5002 are left",
+        "budget_tokens": 42366,
+        "job_template": "dep-audit-v1",
+        "source_commit": "9d7da0606e98713896bbc9fc885a5b0cd54ac2fd",
+        "requires_tools": [
+          "repo.read"
+        ],
+        "requires_scopes": [],
+        "context_ref": "",
+        "deadline_s": 0
+      },
+      "response": {
+        "decision": "CANNOT_MOVE",
+        "requested": 42366,
+        "blocker": "no agent has spare capacity above its reserve",
+        "next_step": "wait and ask again, or finish on a cheaper model",
+        "considered": [
+          {
+            "agent": "analyst-07",
+            "lendable": 0,
+            "reason": "no room above its reserve"
+          },
+          {
+            "agent": "writer-03",
+            "lendable": 0,
+            "reason": "no room above its reserve"
+          }
+        ]
+      },
+      "at": "2026-11-03T22:24:41+00:00"
+    }
+  ],
+  "seconds": 34
+}

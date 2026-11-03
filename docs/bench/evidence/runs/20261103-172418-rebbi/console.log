@@ -1,0 +1,39 @@
+12:24:19  fleet       run 20261103-172418-rebbi, mode rebbi, budgets enforced by the harness: auditor-01 7000, analyst-07 180000, writer-03 100000; auditing sqlite-utils@9d7da06
+12:24:22  analyst-07  -> rebbi.report_headroom {"reserve_tokens": 80000, "will_lend": true}
+12:24:22  harness     analyst-07 used 2094 tokens (in=2 cache_write=529 cache_read=1474 out=89), 177906 left
+12:24:22  analyst-07  <- published reserve 80000, lendable 80000
+12:24:22  analyst-07  says: Published a reserve of 80,000 tokens with lending enabled (lendable: 80,000 of my 180,000 balance).
+12:24:22  harness     analyst-07 used 2267 tokens (in=2 cache_write=219 cache_read=2003 out=43), 175639 left
+12:24:25  writer-03   -> rebbi.report_headroom {"reserve_tokens": 70000, "will_lend": true}
+12:24:25  harness     writer-03 used 2092 tokens (in=2 cache_write=529 cache_read=1472 out=89), 97908 left
+12:24:25  writer-03   <- published reserve 70000, lendable 0
+12:24:26  writer-03   says: Published to Rebbi: reserve of 70,000 tokens, lending enabled (balance 100,000, so 0 currently lendable after 
+12:24:26  harness     writer-03 used 2273 tokens (in=2 cache_write=213 cache_read=2001 out=57), 95635 left
+12:24:32  auditor-01  -> rebbi.post_handoff {"goal": "Complete dep-audit-v1 on sqlite-utils at pinned commit; need more tokens than 7,000 budget", "budget_tokens": 60000}
+12:24:32  harness     auditor-01 used 5419 tokens (in=2 cache_write=0 cache_read=5257 out=160), 61581 left
+12:24:32  auditor-01  <- LEND 60000 from analyst-07 (asked 60000; analyst-07: can lend 60000; writer-03: no room above its reserve)
+12:24:34  auditor-01  Read setup.py
+12:24:34  auditor-01  Grep '^\\s*(import|from)\\s+\\w+' in *.py
+12:24:34  harness     auditor-01 used 5866 tokens (in=2 cache_write=369 cache_read=5257 out=238), 55715 left
+12:24:38  auditor-01  Read sqlite_utils\db.py
+12:24:38  auditor-01  Read sqlite_utils\utils.py
+12:24:38  auditor-01  Read sqlite_utils\cli.py
+12:24:38  harness     auditor-01 used 9786 tokens (in=2 cache_write=3675 cache_read=5626 out=483), 45929 left
+12:24:52  auditor-01  says: ## 1. Scope
+12:24:52  harness     auditor-01 used 13249 tokens (in=2 cache_write=1589 cache_read=9301 out=2357), 32680 left
+12:24:53  broker      auditor-01 settled loan 1 (done): returned 32680 to analyst-07
+12:24:53  fleet       settled loan 1: auditor-01 used 27320 of 60000, 32680 returned to analyst-07
+12:24:53  verifier    PASS  seven numbered sections
+12:24:53  verifier    PASS  JSON appendix
+12:24:53  verifier    PASS  commit
+12:24:53  verifier    PASS  runtime dependencies
+12:24:53  verifier    PASS  optional group names
+12:24:53  verifier    PASS  optional groups
+12:24:53  verifier    PASS  dependencies in imports
+12:24:53  verifier    PASS  imports per runtime dependency
+12:24:53  verifier    PASS  unused dependencies
+12:24:53  verifier    PASS  undeclared imports
+12:24:53  verifier    PASS  unpinned dependencies
+12:24:53  verifier    VERIFIER: PASS
+12:24:53  ledger      invariants PASS
+12:24:53  fleet       RESULT rebbi: job finished, verifier PASS, ledger PASS, auditor-01 used 34320 tokens, 1 loan(s), 34s

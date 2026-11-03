@@ -1,0 +1,47 @@
+15:43:02  fleet       run 20261103-204302-rebbi, mode rebbi, budgets enforced by the harness: auditor-01 7000, analyst-07 180000, writer-03 100000; auditing sqlite-utils@fb8f495
+15:43:05  analyst-07  -> rebbi.report_headroom {"reserve_tokens": 80000, "will_lend": true}
+15:43:05  harness     analyst-07 used 2094 tokens (in=2 cache_write=529 cache_read=1474 out=89), 177906 left
+15:43:05  analyst-07  <- published reserve 80000, lendable 80000
+15:43:06  analyst-07  says: I published a reserve of 80,000 tokens with lending enabled; Rebbi shows 80,000 lendable against a balance of 
+15:43:06  harness     analyst-07 used 2273 tokens (in=2 cache_write=219 cache_read=2003 out=49), 175633 left
+15:43:09  writer-03   -> rebbi.report_headroom {"reserve_tokens": 70000, "will_lend": true}
+15:43:09  harness     writer-03 used 2092 tokens (in=2 cache_write=529 cache_read=1472 out=89), 97908 left
+15:43:09  writer-03   <- published reserve 70000, lendable 0
+15:43:10  writer-03   says: Published a 70,000-token reserve with lending enabled; Rebbi reports 0 lendable because the 30,000 expected de
+15:43:10  harness     writer-03 used 2278 tokens (in=2 cache_write=213 cache_read=2001 out=62), 95630 left
+15:43:14  auditor-01  Grep 'install_requires|extras_require' in setup.py
+15:43:14  auditor-01  Grep '^\\s*(import|from)\\s+\\w+' in *.py
+15:43:15  harness     auditor-01 used 5496 tokens (in=2 cache_write=1395 cache_read=3858 out=241), 1504 left
+15:43:15  fleet       warning auditor-01: 1504 tokens left, last call used 5496
+15:43:15  broker      post_handoff from auditor-01 for 54504 tokens -> LEND
+15:43:15  fleet       harness top-up: auditor-01 needs 7653 input tokens, has 1504; asked Rebbi for 54504 -> LEND 54504 from analyst-07
+15:43:17  auditor-01  -> rebbi.post_handoff {"goal": "Finish dep-audit-v1: read setup.py deps/extras, check try/except imports, write the full report", "budget_tokens": 30000, "job_template": "dep-audit-v1", "source_commit": "fb8f495582f68d8d49f57b42d12a66802f9ac238", "requires_tools": ["repo.read"]}
+15:43:17  harness     auditor-01 used 7849 tokens (in=2 cache_write=2365 cache_read=5253 out=229), 69288 left
+15:43:17  auditor-01  <- LEND 21129 from analyst-07 (asked 30000; analyst-07: can lend 21129; writer-03: no room above its reserve)
+15:43:18  auditor-01  Read setup.py
+15:43:19  auditor-01  Read sqlite_utils\utils.py
+15:43:19  auditor-01  Grep 'sqlite_fts4|pysqlite3|dateutil|tabulate|click_default_group'
+15:43:19  harness     auditor-01 used 8440 tokens (in=2 cache_write=438 cache_read=7618 out=382), 60848 left
+15:43:22  auditor-01  Read sqlite_utils\db.py
+15:43:22  auditor-01  Grep 'tabulate|dateutil' in *.py
+15:43:23  harness     auditor-01 used 9852 tokens (in=2 cache_write=1417 cache_read=8056 out=377), 50996 left
+15:43:34  auditor-01  says: # dep-audit-v1 report: simonw/sqlite-utils
+15:43:35  harness     auditor-01 used 12112 tokens (in=2 cache_write=751 cache_read=9473 out=1886), 38884 left
+15:43:35  broker      auditor-01 settled loan 1 (done): returned 38884 to analyst-07
+15:43:35  fleet       settled loan 1: auditor-01 used 15620 of 54504, 38884 returned to analyst-07
+15:43:35  broker      auditor-01 settled loan 2 (done): returned 0 to analyst-07
+15:43:35  fleet       settled loan 2: auditor-01 used 21129 of 21129, 0 returned to analyst-07
+15:43:35  verifier    PASS  seven numbered sections
+15:43:35  verifier    PASS  JSON appendix
+15:43:35  verifier    PASS  commit
+15:43:35  verifier    PASS  runtime dependencies
+15:43:35  verifier    PASS  optional group names
+15:43:35  verifier    PASS  optional groups
+15:43:35  verifier    PASS  dependencies in imports
+15:43:35  verifier    PASS  imports per runtime dependency
+15:43:35  verifier    PASS  unused dependencies
+15:43:35  verifier    PASS  undeclared imports
+15:43:35  verifier    PASS  unpinned dependencies
+15:43:35  verifier    VERIFIER: PASS
+15:43:35  ledger      invariants PASS
+15:43:35  fleet       RESULT rebbi: job finished, verifier PASS, ledger PASS, auditor-01 used 43749 tokens, 2 loan(s), 33s

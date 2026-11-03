@@ -1,0 +1,22 @@
+12:14:43  fleet       run 20261103-171442-rebbi, mode rebbi, budgets enforced by the harness: auditor-01 7000, analyst-07 100000, writer-03 100000; auditing sqlite-utils@9d7da06
+12:14:46  analyst-07  -> rebbi.report_headroom {"reserve_tokens": 80000, "will_lend": true}
+12:14:46  harness     analyst-07 used 2094 tokens (in=2 cache_write=529 cache_read=1474 out=89), 97906 left
+12:14:46  analyst-07  <- published reserve 80000, lendable 0
+12:14:46  analyst-07  says: Published a reserve of 80,000 tokens with lending on; currently 0 lendable since the 20,000 expected demand si
+12:14:46  harness     analyst-07 used 2281 tokens (in=2 cache_write=218 cache_read=2003 out=58), 95625 left
+12:14:49  writer-03   -> rebbi.report_headroom {"reserve_tokens": 70000, "will_lend": true}
+12:14:49  harness     writer-03 used 2092 tokens (in=2 cache_write=529 cache_read=1472 out=89), 97908 left
+12:14:49  writer-03   <- published reserve 70000, lendable 0
+12:14:51  writer-03   says: Published a 70,000-token reserve with lending on; Rebbi reports 0 lendable tokens right now, since my 100,000 
+12:14:51  harness     writer-03 used 2293 tokens (in=2 cache_write=213 cache_read=2001 out=77), 95615 left
+12:14:55  auditor-01  Grep 'install_requires|extras_require' in setup.py
+12:14:55  auditor-01  Grep '^\\s*(import|from)\\s+\\w+'
+12:14:55  harness     auditor-01 used 5520 tokens (in=2 cache_write=0 cache_read=5253 out=265), 1480 left
+12:14:55  fleet       warning auditor-01: 1480 tokens left, last call used 5520
+12:14:57  harness     auditor-01 refused: next call needs 8047 input tokens, 1480 left
+12:14:57  fleet       auditor-01 stopped mid-job: harness refused its next call: budget too low
+12:14:57  verifier    FAIL  seven numbered sections: missing or empty: [1, 2, 3, 4, 5, 6, 7]
+12:14:57  verifier    FAIL  JSON appendix: no JSON appendix
+12:14:57  verifier    VERIFIER: FAIL
+12:14:57  ledger      invariants PASS
+12:14:57  fleet       RESULT rebbi: job STOPPED, verifier FAIL, ledger PASS, auditor-01 used 13567 tokens, 0 loan(s), 14s

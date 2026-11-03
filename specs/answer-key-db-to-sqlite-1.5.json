@@ -1,0 +1,57 @@
+{
+  "job_template": "dep-audit-v1",
+  "repo": "https://github.com/simonw/db-to-sqlite",
+  "commit": "b7c95fcfe853ca5fc2236bfbf7e4a80ca9239969",
+  "manifest": "setup.py",
+  "runtime_dependencies": [
+    {
+      "name": "sqlalchemy",
+      "constraint": ""
+    },
+    {
+      "name": "sqlite-utils",
+      "constraint": ">=2.9.1"
+    },
+    {
+      "name": "click",
+      "constraint": ""
+    }
+  ],
+  "optional_groups": {
+    "test": [
+      "pytest",
+      "pytest-timeout"
+    ],
+    "test_mysql": [
+      "mysqlclient",
+      "pytest"
+    ],
+    "test_postgresql": [
+      "psycopg2",
+      "pytest"
+    ],
+    "mysql": [
+      "mysqlclient"
+    ],
+    "postgresql": [
+      "psycopg2"
+    ]
+  },
+  "imports": {
+    "sqlalchemy": [
+      "db_to_sqlite/cli.py"
+    ],
+    "sqlite-utils": [
+      "db_to_sqlite/cli.py"
+    ],
+    "click": [
+      "db_to_sqlite/cli.py"
+    ]
+  },
+  "unpinned": [
+    "click",
+    "sqlalchemy"
+  ],
+  "unused_dependencies": [],
+  "undeclared_imports": []
+}

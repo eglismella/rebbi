@@ -4,6 +4,8 @@
     python -m rebbi status           # agents, loans and broker decisions
     python -m rebbi check            # ledger invariants; exit 1 if any is broken
     python -m rebbi fetch-target     # clone the audit repo at its pinned commit
+    python -m rebbi fetch-target --all             # every repo in config/targets.toml
+    python -m rebbi fetch-target --target llm-0.12
 """
 
 from __future__ import annotations
@@ -19,6 +21,23 @@ from rebbi.broker import utcnow
 from rebbi.ledger import Ledger
 
 
+def fetch(target: scenario.AuditTarget) -> int:
+    dest = scenario.DEFAULT_SCENARIO.parent.parent / target.local_path
+    if not dest.exists():
+        dest.mkdir(parents=True)
+        git = lambda *a: subprocess.run(["git", "-C", str(dest), *a], check=True)  # noqa: E731
+        git("init", "-q")
+        git("fetch", "-q", "--depth", "1", target.repo, target.commit)
+        git("checkout", "-q", "FETCH_HEAD")
+    head = subprocess.run(["git", "-C", str(dest), "rev-parse", "HEAD"], capture_output=True, text=True,
+                          check=True).stdout.strip()
+    if head != target.commit:
+        print(f"{dest} is at {head}, not the pinned {target.commit}")
+        return 1
+    print(f"{dest} is at the pinned commit {head}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="rebbi")
     p.add_argument("--db", default="rebbi.db")
@@ -28,25 +47,16 @@ def main(argv: list[str] | None = None) -> int:
     seed.add_argument("--reset", action="store_true", help="delete the existing ledger first")
     sub.add_parser("status", help="show agents, loans and decisions")
     sub.add_parser("check", help="check the ledger invariants")
-    sub.add_parser("fetch-target", help="clone the audit repo at the commit pinned in the scenario")
+    fetch_target = sub.add_parser("fetch-target", help="clone the audit repo at the commit pinned in the scenario")
+    fetch_target.add_argument("--target", help="a repo from config/targets.toml instead of the scenario's")
+    fetch_target.add_argument("--all", action="store_true", help="every repo in config/targets.toml")
     args = p.parse_args(argv)
 
     if args.cmd == "fetch-target":
-        target = scenario.load(args.scenario).target
-        dest = scenario.DEFAULT_SCENARIO.parent.parent / target.local_path
-        if not dest.exists():
-            dest.mkdir(parents=True)
-            git = lambda *a: subprocess.run(["git", "-C", str(dest), *a], check=True)  # noqa: E731
-            git("init", "-q")
-            git("fetch", "-q", "--depth", "1", target.repo, target.commit)
-            git("checkout", "-q", "FETCH_HEAD")
-        head = subprocess.run(["git", "-C", str(dest), "rev-parse", "HEAD"], capture_output=True, text=True,
-                              check=True).stdout.strip()
-        if head != target.commit:
-            print(f"{dest} is at {head}, not the pinned {target.commit}")
-            return 1
-        print(f"{dest} is at the pinned commit {head}")
-        return 0
+        known = scenario.targets()
+        chosen = (list(known.values()) if args.all else [known[args.target]] if args.target
+                  else [scenario.load(args.scenario).target])
+        return max(fetch(t) for t in chosen)
 
     if args.cmd == "seed":
         if args.reset:

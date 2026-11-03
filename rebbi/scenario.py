@@ -1,7 +1,8 @@
 """The demo scenario: the owner's setup of the fleet, read from one TOML file.
 
 Pietro's numbers (task 4) and the audit target go in config/scenario.toml;
-no other file holds a budget, a reserve or a rule value.
+no other file holds a budget, a reserve or a rule value. The other repositories
+the audit can run on are in config/targets.toml.
 """
 
 from __future__ import annotations
@@ -15,6 +16,7 @@ from rebbi.ledger import Ledger
 from rebbi.rules import LendingRules
 
 DEFAULT_SCENARIO = Path(__file__).resolve().parent.parent / "config" / "scenario.toml"
+DEFAULT_TARGETS = DEFAULT_SCENARIO.with_name("targets.toml")
 
 
 @dataclass(frozen=True)
@@ -42,7 +44,8 @@ class AuditTarget:
     repo: str
     commit: str
     local_path: str
-    expected_tokens: int  # what full audits of this commit have cost; the auditor is told it
+    key: str  # the answer key the verifier checks reports against, relative to the project root
+    expected_tokens: int  # what past audits have cost; the auditor is told it (0: told nothing)
 
 
 @dataclass(frozen=True)
@@ -64,6 +67,11 @@ def load(path: str | Path = DEFAULT_SCENARIO) -> Scenario:
         target=AuditTarget(**data["target"]),
         harness=HarnessSettings(**data["harness"]),
     )
+
+
+def targets(path: str | Path = DEFAULT_TARGETS) -> dict[str, AuditTarget]:
+    data = tomllib.loads(Path(path).read_text(encoding="utf-8"))
+    return {name: AuditTarget(**t) for name, t in data.items()}
 
 
 def seed(ledger: Ledger, scenario: Scenario, now: datetime) -> None:

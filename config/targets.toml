@@ -1,0 +1,46 @@
+# Repositories dep-audit-v1 can audit, each pinned to one tagged commit, with the answer key the
+# verifier checks a report against. `python -m rebbi fetch-target --all` clones them; `--target NAME`
+# picks one for a run. config/scenario.toml's [target] is the demo's default (sqlite-utils-3.38).
+#
+# Picked on Nov 3 for the HW7 benchmark, before any benchmark run: small Python packages by the same
+# author whose setup.py lists its dependencies literally (the only manifest scripts/make_answer_key.py
+# reads). datasette 0.65.1 was considered and dropped: it vendors another library, so its key is
+# ambiguous. Every key was drafted by the script and checked by hand against the source.
+#
+# expected_tokens is what the auditor is told past audits cost. It is one job-level figure for every
+# target, the largest audit measured on sqlite-utils 3.38, because the others were never measured.
+
+["sqlite-utils-3.38"]
+repo = "https://github.com/simonw/sqlite-utils"
+commit = "9d7da0606e98713896bbc9fc885a5b0cd54ac2fd"
+local_path = "targets/sqlite-utils"
+key = "specs/answer-key-sqlite-utils-3.38.json"
+expected_tokens = 60000
+
+["sqlite-utils-3.30"]
+repo = "https://github.com/simonw/sqlite-utils"
+commit = "fb8f495582f68d8d49f57b42d12a66802f9ac238"
+local_path = "targets/sqlite-utils-3.30"
+key = "specs/answer-key-sqlite-utils-3.30.json"
+expected_tokens = 60000
+
+["csvs-to-sqlite-1.3.1"]
+repo = "https://github.com/simonw/csvs-to-sqlite"
+commit = "33b79ed80a688ceae4486ebdcca28ae689f54c03"
+local_path = "targets/csvs-to-sqlite-1.3.1"
+key = "specs/answer-key-csvs-to-sqlite-1.3.1.json"
+expected_tokens = 60000
+
+["db-to-sqlite-1.5"]
+repo = "https://github.com/simonw/db-to-sqlite"
+commit = "b7c95fcfe853ca5fc2236bfbf7e4a80ca9239969"
+local_path = "targets/db-to-sqlite-1.5"
+key = "specs/answer-key-db-to-sqlite-1.5.json"
+expected_tokens = 60000
+
+["llm-0.12"]
+repo = "https://github.com/simonw/llm"
+commit = "e9a6998ca38946cfef75bdb7535d8bdc652ef381"
+local_path = "targets/llm-0.12"
+key = "specs/answer-key-llm-0.12.json"
+expected_tokens = 60000

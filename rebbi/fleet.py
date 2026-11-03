@@ -1,7 +1,9 @@
 """Run the demo fleet: the lenders publish their headroom, then auditor-01 runs its audit.
 
     python -m rebbi.fleet --mode baseline   # no Rebbi: auditor-01 is refused once its budget runs short
+    python -m rebbi.fleet --mode upfront    # no Rebbi: the owner moves the job's expected cost to auditor-01 first
     python -m rebbi.fleet --mode rebbi      # auditor-01 borrows over MCP and finishes
+    python -m rebbi.fleet --mode rebbi --target llm-0.12 --hint-tokens 15000   # another repo, a wrong hint
 
 Two ways to reach the model, picked from .env (or forced with --auth):
 
@@ -14,6 +16,10 @@ Two ways to reach the model, picked from .env (or forced with --auth):
   harness meters each call from the stream events the SDK forwards, debits the same
   ledger, and stops an agent at the first call whose input its balance cannot cover.
 
+With Rebbi on, either way, a call the auditor's balance cannot cover first makes the harness or the
+gateway ask Rebbi for a loan on the auditor's behalf (auto-borrow, `top_up`); it is refused only if
+none comes.
+
 Each run writes its own folder under runs/: the ledger, a transcript per agent,
 the report, the verifier's verdict, the ledger check and a summary.
 """
@@ -23,6 +29,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import dataclasses
+import functools
 import json
 import logging
 import os
@@ -49,7 +56,7 @@ from claude_agent_sdk import (
 from dotenv import dotenv_values
 
 from rebbi import scenario
-from rebbi.broker import Broker, utcnow
+from rebbi.broker import Broker, HandoffRequest, utcnow
 from rebbi.gateway import (
     BUDGET_SPENT_STATUS,
     UPSTREAM,
@@ -60,8 +67,8 @@ from rebbi.gateway import (
     serve_in_thread,
 )
 from rebbi.ledger import Ledger
-from rebbi.scenario import AgentSpec, Scenario
-from rebbi.verify import DEFAULT_KEY, passed, render, verify_report
+from rebbi.scenario import AgentSpec, AuditTarget, Scenario
+from rebbi.verify import passed, render, verify_report
 
 ROOT = Path(__file__).resolve().parent.parent
 ENV_FILE = ROOT / ".env"
@@ -72,6 +79,7 @@ REBBI_TOOLS = [f"mcp__rebbi__{t}" for t in ("get_budget", "report_headroom", "po
 # environment. The agents must reach the model only with the credentials this harness gives them.
 INHERITED_PREFIXES = ("CLAUDE", "ANTHROPIC", "USE_LOCAL_OAUTH", "USE_STAGING_OAUTH")
 AUTH_MODES = ("api-key", "subscription")
+MODES = ("baseline", "upfront", "rebbi")  # Rebbi off; Rebbi off with the expected cost moved in advance; Rebbi on
 
 log = logging.getLogger("rebbi.fleet")
 meter_log = logging.getLogger("rebbi.harness")
@@ -95,11 +103,12 @@ harness closes your loans when the job ends."""
 
 AUDITOR_PROMPT = """Run job dep-audit-v1 on {repo} at commit {commit}, which is checked out in your working
 directory. Your model calls are metered against a token budget of {budget:,} tokens for this job; a
-call is refused once your balance cannot cover its input. Past runs of dep-audit-v1 on this commit used
-up to {expected:,} tokens. Your final answer must be the complete report, in Markdown, exactly as
-specified below, and nothing else.
+call is refused once your balance cannot cover its input.{hint} Your final answer must be the complete
+report, in Markdown, exactly as specified below, and nothing else.
 
 {contract}"""
+
+COST_HINT = " Past runs of dep-audit-v1 used up to {expected:,} tokens."
 
 LOW_BUDGET = """Rebbi budget warning: you have {balance} tokens left of your {budget}-token budget, you
 have used {used} so far, and your last model call alone used {last}. Every further call re-sends the whole
@@ -108,6 +117,8 @@ more. Your audit is not finished. Before anything else, call post_handoff (rebbi
 remains, job_template 'dep-audit-v1', source_commit '{commit}', requires_tools ['repo.read'], and
 budget_tokens enough for every call you still need. Unused tokens go back to the lender. Then carry on
 with the audit."""
+
+AUTO_GOAL = "harness top-up"  # how auto-borrow's requests are told apart from the agent's own
 
 
 class ApiUnavailable(RuntimeError):
@@ -133,6 +144,8 @@ class Run:
     direct_env: dict[str, str]  # subscription mode: how each agent's CLI signs in
     scripted: bool = False  # the model is rebbi/scripted_model.py, not Claude: a rehearsal, never evidence
     charged_tools: set[str] = dataclasses.field(default_factory=set)  # subscription mode: tool calls whose model call is debited
+    upfront: dict[str, Any] | None = None  # upfront mode: what the owner moved to the auditor before the job
+    top_up: Callable[[str, int, int], int] | None = None  # rebbi mode: auto-borrow before refusing a call
 
     @property
     def db(self) -> Path:
@@ -323,6 +336,8 @@ async def run_agent(run: Run, spec: AgentSpec, prompt: str, options: ClaudeAgent
                     if kind == "content_block_start" and block.get("type") == "tool_use":
                         tools_in_call.append(block.get("id", ""))
                     balance = run.ledger.balance(spec.id) if kind == "message_start" and not budget_stopped else None
+                    if balance is not None and balance < meter.total and run.top_up:
+                        balance = run.top_up(spec.id, meter.total, balance)
                     if balance is not None and balance < meter.total:
                         # The request already reached Anthropic, so debit its input; nothing it says is kept.
                         budget_stopped = True
@@ -391,8 +406,9 @@ async def audit(run: Run) -> dict[str, Any]:
         cwd=target_dir,
         hooks=low_budget_hook(run, spec) if rebbi else None,
     )
+    expected = run.scenario.target.expected_tokens
     prompt = AUDITOR_PROMPT.format(repo=run.scenario.target.repo, commit=run.scenario.target.commit,
-                                   budget=spec.budget_tokens, expected=run.scenario.target.expected_tokens,
+                                   budget=spec.budget_tokens, hint=COST_HINT.format(expected=expected) if expected else "",
                                    contract=contract())
     agent = await run_agent(run, spec, prompt, options)
     result = agent.result
@@ -413,6 +429,27 @@ async def audit(run: Run) -> dict[str, Any]:
         log.info("%s stopped mid-job: %s", AUDITOR, stopped_by)
     return {"finished": finished, "stopped_by": stopped_by, "turns": result.num_turns if result else 0,
             "cost_usd_reported": result.total_cost_usd if result else None}
+
+
+def top_up(broker: Broker, target: AuditTarget, agent_id: str, needed: int, balance: int) -> int:
+    """Auto-borrow, with Rebbi on: before a call the auditor's balance cannot cover is refused, ask Rebbi
+    for a loan on its behalf. Returns the balance after Rebbi's answer.
+
+    Added after the HW7 main run (docs/bench/PLAN.md): left to the agent, borrowing hung on whether it
+    chose to ask before its first call, and once that call had spent most of its budget, the call that
+    would have asked was itself refused. It asks for what the job is still expected to need, and at least
+    enough for this call and one more of its size; what goes unspent goes back when the job ends.
+    """
+    if agent_id != AUDITOR:
+        return balance
+    ask = max(target.expected_tokens - broker.ledger.used(agent_id), 2 * needed - balance)
+    answer = broker.post_handoff(agent_id, HandoffRequest(
+        goal=f"{AUTO_GOAL}: the next call needs {needed} input tokens and {balance} are left",
+        budget_tokens=ask, job_template="dep-audit-v1", source_commit=target.commit, requires_tools=["repo.read"]))
+    got = f"{answer['tokens']} from {answer['from']}" if answer["decision"] == "LEND" else answer["blocker"]
+    log.info("%s: %s needs %d input tokens, has %d; asked Rebbi for %d -> %s %s", AUTO_GOAL, agent_id, needed,
+             balance, ask, answer["decision"], got)
+    return broker.ledger.balance(agent_id)
 
 
 def close_loans(run: Run, finished: bool) -> None:
@@ -456,11 +493,34 @@ def parse_budgets(pairs: list[str]) -> dict[str, int]:
     return {agent: int(tokens) for agent, tokens in (p.split("=", 1) for p in pairs)}
 
 
+def upfront(sc: Scenario) -> tuple[Scenario, dict[str, Any] | None]:
+    """The upfront arm: before the job, the owner moves its expected cost to the auditor from the agent
+    with the most room above its reserve and declared demand (what Rebbi would lend, by the same rule),
+    sized in advance and never given back. The fleet's total budget does not change."""
+    def room(a: AgentSpec) -> int:  # rules.lendable, on the owner's numbers before anything is spent
+        return max(0, a.budget_tokens - a.reserve_tokens - a.expected_demand_tokens) if a.will_lend else 0
+
+    lender = max((a for a in sc.agents if a.id != AUDITOR), key=room)
+    tokens = min(sc.target.expected_tokens, room(lender))
+    if tokens <= 0:
+        return sc, None
+    change = {AUDITOR: tokens, lender.id: -tokens}
+    agents = [dataclasses.replace(a, budget_tokens=a.budget_tokens + change.get(a.id, 0)) for a in sc.agents]
+    return dataclasses.replace(sc, agents=agents), {"from": lender.id, "tokens": tokens}
+
+
 def start(mode: str, budgets: dict[str, int], upstream: str, auth: str,
-          now: Callable[[], datetime] = utcnow) -> Run:
+          now: Callable[[], datetime] = utcnow, target: str | None = None, hint: int | None = None) -> Run:
     sc = scenario.load()
+    if target:
+        sc = dataclasses.replace(sc, target=scenario.targets()[target])
+    if hint is not None:
+        sc = dataclasses.replace(sc, target=dataclasses.replace(sc.target, expected_tokens=hint))
     sc = dataclasses.replace(sc, agents=[dataclasses.replace(a, budget_tokens=budgets.get(a.id, a.budget_tokens))
                                          for a in sc.agents])
+    moved = None
+    if mode == "upfront":
+        sc, moved = upfront(sc)
     local = upstream != UPSTREAM  # the scripted stand-in for the model: tests and rehearsals
     # Read the credentials before isolate_from_host() clears the environment.
     if auth == "api-key":
@@ -475,23 +535,25 @@ def start(mode: str, budgets: dict[str, int], upstream: str, auth: str,
 
     ledger = Ledger(run_dir / "rebbi.db")
     scenario.seed(ledger, sc, now())
+    broker = Broker(ledger, sc.rules, now)
+    auto = functools.partial(top_up, broker, sc.target) if mode == "rebbi" else None
     gateway_url = None
     if auth == "api-key":
         port = free_port()
-        serve_in_thread(create_gateway(Ledger(run_dir / "rebbi.db"), api_key, upstream=upstream), port)
+        serve_in_thread(create_gateway(Ledger(run_dir / "rebbi.db"), api_key, upstream=upstream, top_up=auto), port)
         gateway_url, direct_env = f"http://127.0.0.1:{port}", {}
     (run_dir / "scenario.json").write_text(json.dumps({"auth": auth, **dataclasses.asdict(sc)}, indent=2),
                                            encoding="utf-8")
-    return Run(mode, auth, run_dir, sc, ledger, Broker(ledger, sc.rules, now), gateway_url, direct_env, local)
+    return Run(mode, auth, run_dir, sc, ledger, broker, gateway_url, direct_env, local, upfront=moved, top_up=auto)
 
 
 async def run_fleet(mode: str, budgets: dict[str, int], upstream: str = UPSTREAM,
-                    auth: str = "auto") -> dict[str, Any]:
+                    auth: str = "auto", target: str | None = None, hint: int | None = None) -> dict[str, Any]:
     """One full run; returns what it writes to summary.json."""
     if auth == "auto":
         auth = "api-key" if upstream != UPSTREAM else detect_auth(ENV_FILE)
     try:
-        return await _run(start(mode, budgets, upstream, auth))
+        return await _run(start(mode, budgets, upstream, auth, target=target, hint=hint))
     finally:
         detach_logging()
 
@@ -503,9 +565,12 @@ async def _run(run: Run) -> dict[str, Any]:
     if run.scripted:
         log.info("REHEARSAL: the model is a scripted stand-in, not Claude. Its replies and its report are "
                  "hard-coded, so this run is not evidence.")
-    log.info("run %s, mode %s, budgets enforced by the %s: %s; auditing %s@%s", run.dir.name, mode,
-             "harness" if run.harness_meters else "gateway", budgets_line,
-             run.scenario.target.repo.rsplit("/", 1)[-1], run.scenario.target.commit[:7])
+    target = f"{run.scenario.target.repo.rsplit('/', 1)[-1]}@{run.scenario.target.commit[:7]}"
+    log.info("run %s, mode %s, budgets enforced by the %s: %s; auditing %s", run.dir.name, mode,
+             "harness" if run.harness_meters else "gateway", budgets_line, target)
+    if run.upfront:
+        log.info("upfront: the owner moved %d tokens from %s to %s before the job; they are not given back",
+                 run.upfront["tokens"], run.upfront["from"], AUDITOR)
 
     try:
         if mode == "rebbi":
@@ -518,7 +583,7 @@ async def _run(run: Run) -> dict[str, Any]:
         close_loans(run, outcome["finished"])
 
     checks = verify_report((run.dir / "report.md").read_text(encoding="utf-8"),
-                           json.loads(DEFAULT_KEY.read_text(encoding="utf-8")))
+                           json.loads((ROOT / run.scenario.target.key).read_text(encoding="utf-8")))
     verdict = render(checks)
     (run.dir / "verify.txt").write_text(verdict + "\n", encoding="utf-8")
     for line in verdict.splitlines():
@@ -534,8 +599,12 @@ async def _run(run: Run) -> dict[str, Any]:
         "mode": mode,
         "auth": run.auth,
         "model": "scripted stand-in" if run.scripted else "claude",
+        "target": target,
+        "hint_tokens": run.scenario.target.expected_tokens,
+        "upfront": run.upfront,
         **outcome,
         "verified": passed(checks),
+        "checks": [dataclasses.asdict(c) for c in checks],
         "ledger_ok": not problems,
         "loans": run.ledger.loans(),
         "agents": [{**a.to_dict(), "used": run.ledger.used(a.agent_id)} for a in run.ledger.agents()],
@@ -551,14 +620,19 @@ async def _run(run: Run) -> dict[str, Any]:
 
 def main() -> None:
     p = argparse.ArgumentParser(prog="rebbi.fleet")
-    p.add_argument("--mode", choices=["baseline", "rebbi"], required=True)
+    p.add_argument("--mode", choices=MODES, required=True)
     p.add_argument("--budget", action="append", default=[], metavar="AGENT=TOKENS",
                    help="override one agent's budget for this run, e.g. auditor-01=2000000")
+    p.add_argument("--target", choices=sorted(scenario.targets()),
+                   help="audit this repository from config/targets.toml instead of the scenario's")
+    p.add_argument("--hint-tokens", type=int, metavar="TOKENS",
+                   help="what the auditor is told past audits cost; 0 tells it nothing")
     p.add_argument("--auth", choices=("auto",) + AUTH_MODES, default="auto",
                    help="api-key: through the gateway; subscription: your own Claude login (claude setup-token)")
     p.add_argument("--upstream", default=UPSTREAM, help=argparse.SUPPRESS)  # the scripted model, for plumbing tests
     args = p.parse_args()
-    summary = asyncio.run(run_fleet(args.mode, parse_budgets(args.budget), args.upstream, args.auth))
+    summary = asyncio.run(run_fleet(args.mode, parse_budgets(args.budget), args.upstream, args.auth,
+                                    target=args.target, hint=args.hint_tokens))
     # The baseline is meant to fail verification; the exit code says whether the run itself went as designed.
     if "aborted" in summary:
         sys.exit(2)

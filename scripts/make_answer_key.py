@@ -3,7 +3,8 @@
 Reads setup.py and every module under the package with `ast`; nothing in the
 target is imported or executed. Nitya reviews the output by hand (task 5).
 
-    python -I scripts/make_answer_key.py targets/sqlite-utils sqlite_utils > specs/answer-key-sqlite-utils-3.38.json
+    python -I scripts/make_answer_key.py targets/sqlite-utils sqlite_utils https://github.com/simonw/sqlite-utils \
+        > specs/answer-key-sqlite-utils-3.38.json
 """
 
 import ast
@@ -14,7 +15,10 @@ import sys
 from pathlib import Path
 
 # Distribution name -> the module name code imports. Only the ones that differ.
-IMPORT_NAMES = {"python-dateutil": "dateutil"}
+# setuptools ships pkg_resources, which is what these packages import from it.
+IMPORT_NAMES = {"python-dateutil": "dateutil", "pyyaml": "yaml", "python-ulid": "ulid", "py-lru-cache": "lru",
+                "click-default-group-wheel": "click_default_group", "setuptools": "pkg_resources",
+                "beautifulsoup4": "bs4"}
 
 
 def setup_kwargs(setup_py: Path) -> dict:
@@ -69,7 +73,7 @@ def imports_by_file(package_dir: Path, root: Path) -> tuple[dict[str, set[str]],
     return found, always_guarded
 
 
-def main(repo: str, package: str) -> None:
+def main(repo: str, package: str, url: str) -> None:
     root = Path(repo)
     kw = setup_kwargs(root / "setup.py")
     runtime = [split_requirement(r) for r in kw["install_requires"]]
@@ -80,7 +84,7 @@ def main(repo: str, package: str) -> None:
 
     key = {
         "job_template": "dep-audit-v1",
-        "repo": "https://github.com/simonw/sqlite-utils",
+        "repo": url,
         "commit": subprocess.run(["git", "-C", repo, "rev-parse", "HEAD"], capture_output=True, text=True,
                                  check=True).stdout.strip(),
         "manifest": "setup.py",
@@ -99,4 +103,4 @@ def main(repo: str, package: str) -> None:
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2])
+    main(sys.argv[1], sys.argv[2], sys.argv[3])

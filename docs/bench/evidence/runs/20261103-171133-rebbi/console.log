@@ -1,0 +1,22 @@
+12:11:33  fleet       run 20261103-171133-rebbi, mode rebbi, budgets enforced by the harness: auditor-01 7000, analyst-07 180000, writer-03 100000; auditing sqlite-utils@9d7da06
+12:11:35  analyst-07  -> rebbi.report_headroom {"reserve_tokens": 80000, "will_lend": true}
+12:11:36  harness     analyst-07 used 2094 tokens (in=2 cache_write=2003 cache_read=0 out=89), 177906 left
+12:11:36  analyst-07  <- published reserve 80000, lendable 80000
+12:11:36  analyst-07  says: Published to Rebbi: reserve of 80,000 tokens, lending enabled (80,000 lendable against a 180,000 balance).
+12:11:36  harness     analyst-07 used 2271 tokens (in=2 cache_write=219 cache_read=2003 out=47), 175635 left
+12:11:42  writer-03   -> rebbi.report_headroom {"reserve_tokens": 70000, "will_lend": true}
+12:11:42  harness     writer-03 used 2092 tokens (in=2 cache_write=714 cache_read=1287 out=89), 97908 left
+12:11:42  writer-03   <- published reserve 70000, lendable 0
+12:11:43  writer-03   says: Published a reserve of 70,000 tokens with lending on; Rebbi reports 0 lendable because the 30,000 expected dem
+12:11:43  harness     writer-03 used 2274 tokens (in=2 cache_write=213 cache_read=2001 out=58), 95634 left
+12:11:47  auditor-01  Grep 'install_requires|extras_require' in setup.py
+12:11:48  auditor-01  Grep '^\\s*(import|from)\\s+\\w+' in *.py
+12:11:48  harness     auditor-01 used 5518 tokens (in=2 cache_write=5253 cache_read=0 out=263), 1482 left
+12:11:48  fleet       warning auditor-01: 1482 tokens left, last call used 5518
+12:11:49  harness     auditor-01 refused: next call needs 7665 input tokens, 1482 left
+12:11:49  fleet       auditor-01 stopped mid-job: harness refused its next call: budget too low
+12:11:49  verifier    FAIL  seven numbered sections: missing or empty: [1, 2, 3, 4, 5, 6, 7]
+12:11:49  verifier    FAIL  JSON appendix: no JSON appendix
+12:11:49  verifier    VERIFIER: FAIL
+12:11:49  ledger      invariants PASS
+12:11:49  fleet       RESULT rebbi: job STOPPED, verifier FAIL, ledger PASS, auditor-01 used 13183 tokens, 0 loan(s), 16s

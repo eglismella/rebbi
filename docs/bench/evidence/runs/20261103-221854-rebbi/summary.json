@@ -1,0 +1,210 @@
+{
+  "run": "20261103-221854-rebbi",
+  "mode": "rebbi",
+  "auth": "subscription",
+  "model": "claude",
+  "target": "sqlite-utils@9d7da06",
+  "hint_tokens": 0,
+  "upfront": null,
+  "finished": true,
+  "stopped_by": null,
+  "turns": 8,
+  "cost_usd_reported": 0.0572049,
+  "verified": true,
+  "checks": [
+    {
+      "name": "seven numbered sections",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "JSON appendix",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "commit",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "runtime dependencies",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "optional group names",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "optional groups",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "dependencies in imports",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "imports per runtime dependency",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "unused dependencies",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "undeclared imports",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "unpinned dependencies",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "ledger_ok": true,
+  "loans": [
+    {
+      "loan_id": 1,
+      "lender": "analyst-07",
+      "borrower": "auditor-01",
+      "tokens": 14681,
+      "status": "settled",
+      "lender_balance_after": 160945,
+      "lender_reserve": 80000,
+      "created_at": "2026-11-03T22:19:16+00:00",
+      "expires_at": "2026-11-03T22:34:16+00:00",
+      "closed_at": "2026-11-03T22:19:33+00:00",
+      "returned_tokens": 5857
+    },
+    {
+      "loan_id": 2,
+      "lender": "analyst-07",
+      "borrower": "auditor-01",
+      "tokens": 20000,
+      "status": "settled",
+      "lender_balance_after": 140945,
+      "lender_reserve": 80000,
+      "created_at": "2026-11-03T22:19:18+00:00",
+      "expires_at": "2026-11-03T22:34:18+00:00",
+      "closed_at": "2026-11-03T22:19:33+00:00",
+      "returned_tokens": 0
+    }
+  ],
+  "agents": [
+    {
+      "agent_id": "analyst-07",
+      "owner": "platform-team",
+      "balance": 146802,
+      "reserve_tokens": 80000,
+      "expected_demand_tokens": 20000,
+      "will_lend": true,
+      "used": 4374
+    },
+    {
+      "agent_id": "auditor-01",
+      "owner": "platform-team",
+      "balance": 0,
+      "reserve_tokens": 0,
+      "expected_demand_tokens": 0,
+      "will_lend": false,
+      "used": 35824
+    },
+    {
+      "agent_id": "writer-03",
+      "owner": "platform-team",
+      "balance": 95631,
+      "reserve_tokens": 70000,
+      "expected_demand_tokens": 30000,
+      "will_lend": true,
+      "used": 4369
+    }
+  ],
+  "decisions": [
+    {
+      "decision_id": 1,
+      "requester": "auditor-01",
+      "decision": "LEND",
+      "request": {
+        "goal": "harness top-up: the next call needs 8066 input tokens and 1451 are left",
+        "budget_tokens": 14681,
+        "job_template": "dep-audit-v1",
+        "source_commit": "9d7da0606e98713896bbc9fc885a5b0cd54ac2fd",
+        "requires_tools": [
+          "repo.read"
+        ],
+        "requires_scopes": [],
+        "context_ref": "",
+        "deadline_s": 0
+      },
+      "response": {
+        "decision": "LEND",
+        "loan_id": 1,
+        "tokens": 14681,
+        "requested": 14681,
+        "from": "analyst-07",
+        "expires_at": "2026-11-03T22:34:16+00:00",
+        "lender_reserve_intact": true,
+        "considered": [
+          {
+            "agent": "analyst-07",
+            "lendable": 75626,
+            "reason": "can lend 14681"
+          },
+          {
+            "agent": "writer-03",
+            "lendable": 0,
+            "reason": "no room above its reserve"
+          }
+        ]
+      },
+      "at": "2026-11-03T22:19:16+00:00"
+    },
+    {
+      "decision_id": 2,
+      "requester": "auditor-01",
+      "decision": "LEND",
+      "request": {
+        "goal": "Finish dep-audit-v1 on sqlite-utils: read setup.py install_requires/extras_require, check try/except import context, write final report",
+        "budget_tokens": 20000,
+        "job_template": "dep-audit-v1",
+        "source_commit": "9d7da0606e98713896bbc9fc885a5b0cd54ac2fd",
+        "requires_tools": [
+          "repo.read"
+        ],
+        "requires_scopes": [],
+        "context_ref": "",
+        "deadline_s": 0
+      },
+      "response": {
+        "decision": "LEND",
+        "loan_id": 2,
+        "tokens": 20000,
+        "requested": 20000,
+        "from": "analyst-07",
+        "expires_at": "2026-11-03T22:34:18+00:00",
+        "lender_reserve_intact": true,
+        "considered": [
+          {
+            "agent": "analyst-07",
+            "lendable": 60945,
+            "reason": "can lend 20000"
+          },
+          {
+            "agent": "writer-03",
+            "lendable": 0,
+            "reason": "no room above its reserve"
+          }
+        ]
+      },
+      "at": "2026-11-03T22:19:18+00:00"
+    }
+  ],
+  "seconds": 39
+}

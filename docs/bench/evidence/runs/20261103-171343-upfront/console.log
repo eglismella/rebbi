@@ -1,0 +1,28 @@
+12:13:43  fleet       run 20261103-171343-upfront, mode upfront, budgets enforced by the harness: auditor-01 67000, analyst-07 120000, writer-03 100000; auditing llm@e9a6998
+12:13:43  fleet       upfront: the owner moved 60000 tokens from analyst-07 to auditor-01 before the job; they are not given back
+12:13:46  auditor-01  Glob *
+12:13:46  auditor-01  Grep '^\\s*(import|from)\\s+\\w+|^\\s+(import|from)\\s+\\w+' in *.py
+12:13:46  harness     auditor-01 used 4150 tokens (in=2 cache_write=1221 cache_read=2707 out=220), 62850 left
+12:13:48  auditor-01  Glob {setup.py,setup.cfg,pyproject.toml,requirements*.txt}
+12:13:49  auditor-01  Grep '^\\s*(import|from)\\s+(?!llm)\\w+' in **/*.py
+12:13:49  harness     auditor-01 used 9422 tokens (in=2 cache_write=5247 cache_read=3928 out=245), 53428 left
+12:13:50  auditor-01  Read setup.py
+12:13:51  auditor-01  Grep '^\\s*(import|from)\\s+(pkg_resources|pluggy|ulid|yaml|openai|requests|sqlite_migrate|sqlite_utils|pydantic|click)'
+12:13:52  auditor-01  Read llm\embeddings.py
+12:13:52  harness     auditor-01 used 10073 tokens (in=2 cache_write=519 cache_read=9175 out=377), 43355 left
+12:14:07  auditor-01  says: ## 1. Scope
+12:14:07  harness     auditor-01 used 14009 tokens (in=2 cache_write=1613 cache_read=9694 out=2700), 29346 left
+12:14:07  verifier    PASS  seven numbered sections
+12:14:07  verifier    PASS  JSON appendix
+12:14:07  verifier    PASS  commit
+12:14:07  verifier    PASS  runtime dependencies
+12:14:07  verifier    PASS  optional group names
+12:14:07  verifier    PASS  optional groups
+12:14:07  verifier    PASS  dependencies in imports
+12:14:07  verifier    PASS  imports per runtime dependency
+12:14:07  verifier    PASS  unused dependencies
+12:14:07  verifier    PASS  undeclared imports
+12:14:07  verifier    PASS  unpinned dependencies
+12:14:07  verifier    VERIFIER: PASS
+12:14:07  ledger      invariants PASS
+12:14:07  fleet       RESULT upfront: job finished, verifier PASS, ledger PASS, auditor-01 used 37654 tokens, 0 loan(s), 24s

@@ -1,0 +1,65 @@
+{
+  "job_template": "dep-audit-v1",
+  "repo": "https://github.com/simonw/csvs-to-sqlite",
+  "commit": "33b79ed80a688ceae4486ebdcca28ae689f54c03",
+  "manifest": "setup.py",
+  "runtime_dependencies": [
+    {
+      "name": "click",
+      "constraint": ">=7.0"
+    },
+    {
+      "name": "dateparser",
+      "constraint": ">=1.0"
+    },
+    {
+      "name": "pandas",
+      "constraint": ">=1.0"
+    },
+    {
+      "name": "py-lru-cache",
+      "constraint": "~=0.1.4"
+    },
+    {
+      "name": "six",
+      "constraint": ""
+    }
+  ],
+  "optional_groups": {
+    "test": [
+      "cogapp",
+      "pytest"
+    ]
+  },
+  "imports": {
+    "click": [
+      "csvs_to_sqlite/cli.py",
+      "csvs_to_sqlite/utils.py"
+    ],
+    "dateparser": [
+      "csvs_to_sqlite/utils.py"
+    ],
+    "pandas": [
+      "csvs_to_sqlite/utils.py"
+    ],
+    "py-lru-cache": [
+      "csvs_to_sqlite/utils.py"
+    ],
+    "six": [
+      "csvs_to_sqlite/utils.py"
+    ]
+  },
+  "unpinned": [
+    "six"
+  ],
+  "unused_dependencies": [],
+  "undeclared_imports": [
+    {
+      "module": "numpy",
+      "files": [
+        "csvs_to_sqlite/utils.py"
+      ],
+      "optional": false
+    }
+  ]
+}

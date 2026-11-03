@@ -1,0 +1,156 @@
+{
+  "run": "20261103-172129-rebbi",
+  "mode": "rebbi",
+  "auth": "subscription",
+  "model": "claude",
+  "target": "llm@e9a6998",
+  "hint_tokens": 60000,
+  "upfront": null,
+  "finished": true,
+  "stopped_by": null,
+  "turns": 5,
+  "cost_usd_reported": 0.0513834,
+  "verified": true,
+  "checks": [
+    {
+      "name": "seven numbered sections",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "JSON appendix",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "commit",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "runtime dependencies",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "optional group names",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "optional groups",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "dependencies in imports",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "imports per runtime dependency",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "unused dependencies",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "undeclared imports",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "unpinned dependencies",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "ledger_ok": true,
+  "loans": [
+    {
+      "loan_id": 1,
+      "lender": "analyst-07",
+      "borrower": "auditor-01",
+      "tokens": 55000,
+      "status": "settled",
+      "lender_balance_after": 120639,
+      "lender_reserve": 80000,
+      "created_at": "2026-11-03T17:21:40+00:00",
+      "expires_at": "2026-11-03T17:36:40+00:00",
+      "closed_at": "2026-11-03T17:21:57+00:00",
+      "returned_tokens": 37757
+    }
+  ],
+  "agents": [
+    {
+      "agent_id": "analyst-07",
+      "owner": "platform-team",
+      "balance": 158396,
+      "reserve_tokens": 80000,
+      "expected_demand_tokens": 20000,
+      "will_lend": true,
+      "used": 4361
+    },
+    {
+      "agent_id": "auditor-01",
+      "owner": "platform-team",
+      "balance": 0,
+      "reserve_tokens": 0,
+      "expected_demand_tokens": 0,
+      "will_lend": false,
+      "used": 24243
+    },
+    {
+      "agent_id": "writer-03",
+      "owner": "platform-team",
+      "balance": 95628,
+      "reserve_tokens": 70000,
+      "expected_demand_tokens": 30000,
+      "will_lend": true,
+      "used": 4372
+    }
+  ],
+  "decisions": [
+    {
+      "decision_id": 1,
+      "requester": "auditor-01",
+      "decision": "LEND",
+      "request": {
+        "goal": "Complete dep-audit-v1 on simonw/llm at e9a6998; budget of 7,000 is below the typical 60,000 usage",
+        "budget_tokens": 55000,
+        "job_template": "",
+        "source_commit": "",
+        "requires_tools": [],
+        "requires_scopes": [],
+        "context_ref": "",
+        "deadline_s": 0
+      },
+      "response": {
+        "decision": "LEND",
+        "loan_id": 1,
+        "tokens": 55000,
+        "requested": 55000,
+        "from": "analyst-07",
+        "expires_at": "2026-11-03T17:36:40+00:00",
+        "lender_reserve_intact": true,
+        "considered": [
+          {
+            "agent": "analyst-07",
+            "lendable": 75639,
+            "reason": "can lend 55000"
+          },
+          {
+            "agent": "writer-03",
+            "lendable": 0,
+            "reason": "no room above its reserve"
+          }
+        ]
+      },
+      "at": "2026-11-03T17:21:40+00:00"
+    }
+  ],
+  "seconds": 29
+}

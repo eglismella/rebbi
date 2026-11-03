@@ -7,6 +7,10 @@ replies `LEND` (or `CANNOT_MOVE` with the reason each candidate gave).
 
 HW6 MVP scope: lending only. Hand-off, WAIT and forecasting come later.
 
+Auto-borrow (added in HW7, `docs/bench/PLAN.md`): with Rebbi on, a model call the auditor's balance
+cannot cover no longer simply fails. The harness, or the gateway, first asks Rebbi for a loan on the
+auditor's behalf, so borrowing no longer depends on the agent remembering to ask before it starts.
+
 ## Run the demo
 
 Put one credential in `.env` (git-ignored). The harness picks the mode from it, or force one with `--auth`:
@@ -45,6 +49,23 @@ then let the helper propose consistent values for `config/scenario.toml`:
 .venv/Scripts/python -m rebbi.calibrate runs/<that run>
 ```
 
+## The HW7 benchmark
+
+`docs/bench/PLAN.md` is the plan, written before any benchmark run: the claim, the arms, the cases and
+what counts as success. Three arms run the same job on the same fleet: `baseline` (Rebbi off),
+`upfront` (Rebbi off, but the job's expected cost is moved to the auditor before it starts) and `rebbi`.
+
+```bash
+.venv/Scripts/python -m rebbi fetch-target --all             # the five repos in config/targets.toml
+.venv/Scripts/python -m rebbi.bench --label main             # every case in config/bench.toml, every arm, 3 runs each
+.venv/Scripts/python -m rebbi.bench --resume runs/bench/<folder>   # finish one that stopped
+.venv/Scripts/python -m rebbi.bench --rehearsal --repeats 1  # the scripted model: plumbing only, never evidence
+.venv/Scripts/python -m rebbi.fleet --mode upfront --target llm-0.12 --hint-tokens 15000   # one run, by hand
+```
+
+A benchmark writes `runs/bench/<time>-<label>/`: `results.csv` (one row per run, naming its run folder),
+`table.md` (success and costs per case and arm) and the exact command.
+
 Without the model, for the ledger and MCP alone:
 
 ```bash
@@ -65,15 +86,19 @@ Without the model, for the ledger and MCP alone:
 | `rebbi/rules.py` | Who can lend and how much: `lendable = balance - reserve - declared demand`, capped per loan. |
 | `rebbi/broker.py` | `post_handoff`, `report_headroom`, `settle`, `budget`. Expires loans before every decision. |
 | `rebbi/mcp_server.py` | Agent-facing MCP server, one stdio process per agent; identity comes from `REBBI_AGENT_ID`, never from a tool argument. |
-| `rebbi/gateway.py` | Pass-through for Claude API calls. Refuses a call unless the agent's ledger balance covers its input (counted with count_tokens); debits the tokens each call really used (input, cache writes, cache reads, output). Holds the only real API key. |
+| `rebbi/gateway.py` | Pass-through for Claude API calls. Refuses a call unless the agent's ledger balance covers its input (counted with count_tokens), after auto-borrow if Rebbi is on; debits the tokens each call really used (input, cache writes, cache reads, output). Holds the only real API key. |
 | `rebbi/fleet.py` | The demo harness: three Claude Agent SDK agents, the gateway beside them (or harness metering in subscription mode), a low-budget warning hook, verification and the ledger check after each run. |
 | `rebbi/demo.py` | Baseline then Rebbi on the same budgets, then a side-by-side table: the evidence shot for the video. |
 | `rebbi/calibrate.py` | Proposes scenario numbers from a measurement run. |
+| `rebbi/bench.py` | The HW7 benchmark: cases × arms × repeats, one results row per run. |
+| `config/targets.toml` | The repositories the audit can run on, each pinned to a commit with its own answer key. |
+| `config/bench.toml` | The benchmark cases: target, kind (ordinary, hard, failure), tuning or fresh, budget overrides. |
+| `docs/bench/PLAN.md` | The benchmark plan, fixed before the runs. |
 | `rebbi/scripted_model.py` | A hard-coded stand-in for the Claude API: the offline tests and `demo --rehearsal`. Never evidence. |
 | `rebbi/verify.py` | Checks a report against the job template's answer key; fails closed. |
 | `rebbi/api.py` | FastAPI read-only views: `/agents`, `/loans`, `/decisions`, `/invariants`. |
 | `specs/dep-audit-v1.md` | The job template: what a finished audit must contain. Draft for Nitya. |
-| `specs/answer-key-sqlite-utils-3.38.json` | The key the verifier checks against, drafted by `scripts/make_answer_key.py` from the pinned repo. |
+| `specs/answer-key-*.json` | One key per target, which the verifier checks against, drafted by `scripts/make_answer_key.py` from the pinned repo and checked by hand. |
 
 ## Ledger invariants
 

@@ -24,6 +24,7 @@ max_usd = 3.0
 repo = "https://github.com/simonw/sqlite-utils"
 commit = "9d7da0606e98713896bbc9fc885a5b0cd54ac2fd"   # tag 3.38
 local_path = "targets/sqlite-utils"
+key = "specs/answer-key-sqlite-utils-3.38.json"
 expected_tokens = 60000   # the most a measured audit of this commit took: 17,000 to 59,757 tokens
 
 [[agents]]

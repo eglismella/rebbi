@@ -1,0 +1,102 @@
+{
+  "job_template": "dep-audit-v1",
+  "repo": "https://github.com/simonw/sqlite-utils",
+  "commit": "fb8f495582f68d8d49f57b42d12a66802f9ac238",
+  "manifest": "setup.py",
+  "runtime_dependencies": [
+    {
+      "name": "sqlite-fts4",
+      "constraint": ""
+    },
+    {
+      "name": "click",
+      "constraint": ""
+    },
+    {
+      "name": "click-default-group-wheel",
+      "constraint": ""
+    },
+    {
+      "name": "tabulate",
+      "constraint": ""
+    },
+    {
+      "name": "python-dateutil",
+      "constraint": ""
+    }
+  ],
+  "optional_groups": {
+    "test": [
+      "black",
+      "cogapp",
+      "hypothesis",
+      "pytest"
+    ],
+    "docs": [
+      "beanbag-docutils",
+      "codespell",
+      "furo",
+      "sphinx-autobuild",
+      "sphinx-copybutton"
+    ],
+    "mypy": [
+      "data-science-types",
+      "mypy",
+      "types-click",
+      "types-python-dateutil",
+      "types-tabulate"
+    ],
+    "flake8": [
+      "flake8"
+    ]
+  },
+  "imports": {
+    "sqlite-fts4": [
+      "sqlite_utils/db.py"
+    ],
+    "click": [
+      "sqlite_utils/cli.py",
+      "sqlite_utils/utils.py"
+    ],
+    "click-default-group-wheel": [
+      "sqlite_utils/cli.py"
+    ],
+    "tabulate": [
+      "sqlite_utils/cli.py"
+    ],
+    "python-dateutil": [
+      "sqlite_utils/recipes.py"
+    ]
+  },
+  "unpinned": [
+    "click",
+    "click-default-group-wheel",
+    "python-dateutil",
+    "sqlite-fts4",
+    "tabulate"
+  ],
+  "unused_dependencies": [],
+  "undeclared_imports": [
+    {
+      "module": "numpy",
+      "files": [
+        "sqlite_utils/db.py"
+      ],
+      "optional": true
+    },
+    {
+      "module": "pandas",
+      "files": [
+        "sqlite_utils/db.py"
+      ],
+      "optional": true
+    },
+    {
+      "module": "pysqlite3",
+      "files": [
+        "sqlite_utils/utils.py"
+      ],
+      "optional": true
+    }
+  ]
+}

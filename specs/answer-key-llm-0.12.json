@@ -1,0 +1,128 @@
+{
+  "job_template": "dep-audit-v1",
+  "repo": "https://github.com/simonw/llm",
+  "commit": "e9a6998ca38946cfef75bdb7535d8bdc652ef381",
+  "manifest": "setup.py",
+  "runtime_dependencies": [
+    {
+      "name": "click",
+      "constraint": ""
+    },
+    {
+      "name": "openai",
+      "constraint": "<1.0"
+    },
+    {
+      "name": "click-default-group",
+      "constraint": ">=1.2.3"
+    },
+    {
+      "name": "sqlite-utils",
+      "constraint": ">=3.35.0"
+    },
+    {
+      "name": "sqlite-migrate",
+      "constraint": ">=0.1a2"
+    },
+    {
+      "name": "pydantic",
+      "constraint": ">=1.10.2"
+    },
+    {
+      "name": "pyyaml",
+      "constraint": ""
+    },
+    {
+      "name": "pluggy",
+      "constraint": ""
+    },
+    {
+      "name": "python-ulid",
+      "constraint": ""
+    },
+    {
+      "name": "setuptools",
+      "constraint": ""
+    },
+    {
+      "name": "pip",
+      "constraint": ""
+    }
+  ],
+  "optional_groups": {
+    "test": [
+      "black",
+      "cogapp",
+      "mypy",
+      "numpy",
+      "pytest",
+      "requests-mock",
+      "ruff",
+      "types-click",
+      "types-pyyaml",
+      "types-requests",
+      "types-setuptools"
+    ]
+  },
+  "imports": {
+    "click": [
+      "llm/__init__.py",
+      "llm/cli.py",
+      "llm/default_plugins/openai_models.py"
+    ],
+    "openai": [
+      "llm/default_plugins/openai_models.py"
+    ],
+    "click-default-group": [
+      "llm/cli.py"
+    ],
+    "sqlite-utils": [
+      "llm/cli.py",
+      "llm/embeddings.py"
+    ],
+    "sqlite-migrate": [
+      "llm/embeddings_migrations.py"
+    ],
+    "pydantic": [
+      "llm/cli.py",
+      "llm/default_plugins/openai_models.py",
+      "llm/models.py",
+      "llm/templates.py"
+    ],
+    "pyyaml": [
+      "llm/cli.py",
+      "llm/default_plugins/openai_models.py"
+    ],
+    "pluggy": [
+      "llm/hookspecs.py",
+      "llm/plugins.py"
+    ],
+    "python-ulid": [
+      "llm/models.py"
+    ],
+    "setuptools": [
+      "llm/plugins.py"
+    ],
+    "pip": []
+  },
+  "unpinned": [
+    "click",
+    "pip",
+    "pluggy",
+    "python-ulid",
+    "pyyaml",
+    "setuptools"
+  ],
+  "unused_dependencies": [
+    "pip"
+  ],
+  "undeclared_imports": [
+    {
+      "module": "requests",
+      "files": [
+        "llm/default_plugins/openai_models.py"
+      ],
+      "optional": false
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "run": "20261103-172559-rebbi",
+  "mode": "rebbi",
+  "auth": "subscription",
+  "model": "claude",
+  "target": "sqlite-utils@9d7da06",
+  "hint_tokens": 60000,
+  "upfront": null,
+  "finished": false,
+  "stopped_by": "harness refused its next call: budget too low",
+  "turns": 4,
+  "cost_usd_reported": 0.0030293000000000004,
+  "verified": false,
+  "checks": [
+    {
+      "name": "seven numbered sections",
+      "ok": false,
+      "detail": "missing or empty: [1, 2, 3, 4, 5, 6, 7]"
+    },
+    {
+      "name": "JSON appendix",
+      "ok": false,
+      "detail": "no JSON appendix"
+    }
+  ],
+  "ledger_ok": true,
+  "loans": [],
+  "agents": [
+    {
+      "agent_id": "analyst-07",
+      "owner": "platform-team",
+      "balance": 175637,
+      "reserve_tokens": 80000,
+      "expected_demand_tokens": 20000,
+      "will_lend": true,
+      "used": 4363
+    },
+    {
+      "agent_id": "auditor-01",
+      "owner": "platform-team",
+      "balance": -10305,
+      "reserve_tokens": 0,
+      "expected_demand_tokens": 0,
+      "will_lend": false,
+      "used": 17305
+    },
+    {
+      "agent_id": "writer-03",
+      "owner": "platform-team",
+      "balance": 95635,
+      "reserve_tokens": 70000,
+      "expected_demand_tokens": 30000,
+      "will_lend": true,
+      "used": 4365
+    }
+  ],
+  "decisions": [],
+  "seconds": 13
+}

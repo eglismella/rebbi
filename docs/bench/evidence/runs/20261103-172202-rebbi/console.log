@@ -1,0 +1,23 @@
+12:22:02  fleet       run 20261103-172202-rebbi, mode rebbi, budgets enforced by the harness: auditor-01 7000, analyst-07 100000, writer-03 100000; auditing sqlite-utils@9d7da06
+12:22:04  analyst-07  -> rebbi.report_headroom {"reserve_tokens": 80000, "will_lend": true}
+12:22:04  harness     analyst-07 used 2094 tokens (in=2 cache_write=529 cache_read=1474 out=89), 97906 left
+12:22:04  analyst-07  <- published reserve 80000, lendable 0
+12:22:05  analyst-07  says: I published a reserve of 80,000 tokens with lending enabled; currently 0 tokens are lendable because the 20,00
+12:22:05  harness     analyst-07 used 2292 tokens (in=2 cache_write=218 cache_read=2003 out=69), 95614 left
+12:22:08  writer-03   -> rebbi.report_headroom {"reserve_tokens": 70000, "will_lend": true}
+12:22:08  harness     writer-03 used 2092 tokens (in=2 cache_write=529 cache_read=1472 out=89), 97908 left
+12:22:08  writer-03   <- published reserve 70000, lendable 0
+12:22:09  writer-03   says: Published a 70,000-token reserve with lending on; Rebbi reports 0 lendable tokens because the 30,000 expected 
+12:22:09  harness     writer-03 used 2277 tokens (in=2 cache_write=213 cache_read=2001 out=61), 95631 left
+12:22:13  auditor-01  -> rebbi.post_handoff {"goal": "Run dep-audit-v1 on sqlite-utils: read setup.py, grep imports, produce report", "budget_tokens": 55000}
+12:22:14  auditor-01  Grep 'install_requires|extras_require' in {setup.py,setup.cfg,pyproject.toml}
+12:22:14  harness     auditor-01 used 5551 tokens (in=2 cache_write=0 cache_read=5253 out=296), 1449 left
+12:22:14  fleet       warning auditor-01: 1449 tokens left, last call used 5551
+12:22:14  auditor-01  <- CANNOT_MOVE no agent has spare capacity above its reserve (asked 55000; analyst-07: no room above its reserve; writer-03: no room above its reserve)
+12:22:15  harness     auditor-01 refused: next call needs 6106 input tokens, 1449 left
+12:22:15  fleet       auditor-01 stopped mid-job: harness refused its next call: budget too low
+12:22:15  verifier    FAIL  seven numbered sections: missing or empty: [1, 2, 3, 4, 5, 6, 7]
+12:22:15  verifier    FAIL  JSON appendix: no JSON appendix
+12:22:15  verifier    VERIFIER: FAIL
+12:22:15  ledger      invariants PASS
+12:22:15  fleet       RESULT rebbi: job STOPPED, verifier FAIL, ledger PASS, auditor-01 used 11657 tokens, 0 loan(s), 13s

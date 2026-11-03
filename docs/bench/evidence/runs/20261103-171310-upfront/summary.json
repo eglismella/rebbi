@@ -1,0 +1,107 @@
+{
+  "run": "20261103-171310-upfront",
+  "mode": "upfront",
+  "auth": "subscription",
+  "model": "claude",
+  "target": "db-to-sqlite@b7c95fc",
+  "hint_tokens": 60000,
+  "upfront": {
+    "from": "analyst-07",
+    "tokens": 60000
+  },
+  "finished": true,
+  "stopped_by": null,
+  "turns": 5,
+  "cost_usd_reported": 0.032501699999999994,
+  "verified": true,
+  "checks": [
+    {
+      "name": "seven numbered sections",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "JSON appendix",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "commit",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "runtime dependencies",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "optional group names",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "optional groups",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "dependencies in imports",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "imports per runtime dependency",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "unused dependencies",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "undeclared imports",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "unpinned dependencies",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "ledger_ok": true,
+  "loans": [],
+  "agents": [
+    {
+      "agent_id": "analyst-07",
+      "owner": "platform-team",
+      "balance": 120000,
+      "reserve_tokens": 80000,
+      "expected_demand_tokens": 20000,
+      "will_lend": true,
+      "used": 0
+    },
+    {
+      "agent_id": "auditor-01",
+      "owner": "platform-team",
+      "balance": 50737,
+      "reserve_tokens": 0,
+      "expected_demand_tokens": 0,
+      "will_lend": false,
+      "used": 16263
+    },
+    {
+      "agent_id": "writer-03",
+      "owner": "platform-team",
+      "balance": 100000,
+      "reserve_tokens": 70000,
+      "expected_demand_tokens": 30000,
+      "will_lend": true,
+      "used": 0
+    }
+  ],
+  "decisions": [],
+  "seconds": 15
+}

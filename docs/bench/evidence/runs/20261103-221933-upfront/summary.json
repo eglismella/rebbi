@@ -1,0 +1,59 @@
+{
+  "run": "20261103-221933-upfront",
+  "mode": "upfront",
+  "auth": "subscription",
+  "model": "claude",
+  "target": "csvs-to-sqlite@33b79ed",
+  "hint_tokens": 0,
+  "upfront": null,
+  "finished": false,
+  "stopped_by": "harness refused its next call: budget too low",
+  "turns": 4,
+  "cost_usd_reported": 0.002846,
+  "verified": false,
+  "checks": [
+    {
+      "name": "seven numbered sections",
+      "ok": false,
+      "detail": "missing or empty: [1, 2, 3, 4, 5, 6, 7]"
+    },
+    {
+      "name": "JSON appendix",
+      "ok": false,
+      "detail": "no JSON appendix"
+    }
+  ],
+  "ledger_ok": true,
+  "loans": [],
+  "agents": [
+    {
+      "agent_id": "analyst-07",
+      "owner": "platform-team",
+      "balance": 180000,
+      "reserve_tokens": 80000,
+      "expected_demand_tokens": 20000,
+      "will_lend": true,
+      "used": 0
+    },
+    {
+      "agent_id": "auditor-01",
+      "owner": "platform-team",
+      "balance": -2885,
+      "reserve_tokens": 0,
+      "expected_demand_tokens": 0,
+      "will_lend": false,
+      "used": 9885
+    },
+    {
+      "agent_id": "writer-03",
+      "owner": "platform-team",
+      "balance": 100000,
+      "reserve_tokens": 70000,
+      "expected_demand_tokens": 30000,
+      "will_lend": true,
+      "used": 0
+    }
+  ],
+  "decisions": [],
+  "seconds": 5
+}

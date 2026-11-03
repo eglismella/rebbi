@@ -1,0 +1,25 @@
+12:12:27  fleet       run 20261103-171227-upfront, mode upfront, budgets enforced by the harness: auditor-01 67000, analyst-07 120000, writer-03 100000; auditing sqlite-utils@fb8f495
+12:12:27  fleet       upfront: the owner moved 60000 tokens from analyst-07 to auditor-01 before the job; they are not given back
+12:12:29  auditor-01  Read setup.py
+12:12:30  auditor-01  Grep '^\\s*(import|from)\\s+\\w+|^\\s*(import|from) '
+12:12:30  auditor-01  Glob *.{toml,cfg,txt,in}
+12:12:30  harness     auditor-01 used 4231 tokens (in=2 cache_write=1230 cache_read=2707 out=292), 62769 left
+12:12:33  auditor-01  Read sqlite_utils\utils.py
+12:12:34  auditor-01  Read sqlite_utils\db.py
+12:12:34  harness     auditor-01 used 7889 tokens (in=2 cache_write=3547 cache_read=3937 out=403), 54880 left
+12:12:45  auditor-01  says: ## 1. Scope
+12:12:45  harness     auditor-01 used 10143 tokens (in=2 cache_write=790 cache_read=7484 out=1867), 44737 left
+12:12:45  verifier    PASS  seven numbered sections
+12:12:45  verifier    PASS  JSON appendix
+12:12:45  verifier    PASS  commit
+12:12:45  verifier    PASS  runtime dependencies
+12:12:45  verifier    PASS  optional group names
+12:12:45  verifier    PASS  optional groups
+12:12:45  verifier    PASS  dependencies in imports
+12:12:45  verifier    PASS  imports per runtime dependency
+12:12:45  verifier    PASS  unused dependencies
+12:12:45  verifier    PASS  undeclared imports
+12:12:45  verifier    PASS  unpinned dependencies
+12:12:45  verifier    VERIFIER: PASS
+12:12:45  ledger      invariants PASS
+12:12:45  fleet       RESULT upfront: job finished, verifier PASS, ledger PASS, auditor-01 used 22263 tokens, 0 loan(s), 18s

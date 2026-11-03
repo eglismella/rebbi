@@ -1,0 +1,22 @@
+12:17:23  fleet       run 20261103-171723-rebbi, mode rebbi, budgets enforced by the harness: auditor-01 7000, analyst-07 180000, writer-03 100000; auditing db-to-sqlite@b7c95fc
+12:17:25  analyst-07  -> rebbi.report_headroom {"reserve_tokens": 80000, "will_lend": true}
+12:17:25  harness     analyst-07 used 2094 tokens (in=2 cache_write=529 cache_read=1474 out=89), 177906 left
+12:17:25  analyst-07  <- published reserve 80000, lendable 80000
+12:17:26  analyst-07  says: Published a reserve of 80,000 tokens with lending enabled (currently 80,000 lendable against a balance of 180,
+12:17:26  harness     analyst-07 used 2268 tokens (in=2 cache_write=219 cache_read=2003 out=44), 175638 left
+12:17:30  writer-03   -> rebbi.report_headroom {"reserve_tokens": 70000, "will_lend": true}
+12:17:30  harness     writer-03 used 2092 tokens (in=2 cache_write=529 cache_read=1472 out=89), 97908 left
+12:17:30  writer-03   <- published reserve 70000, lendable 0
+12:17:31  writer-03   says: Published a 70,000-token reserve with lending enabled; Rebbi reports 0 lendable right now because the 30,000 e
+12:17:31  harness     writer-03 used 2279 tokens (in=2 cache_write=213 cache_read=2001 out=63), 95629 left
+12:17:34  auditor-01  Grep 'install_requires|extras_require|^\\s*(import|from) |^\\s*(try|except)' in {setup.py,db_to_sqlite/*.py}
+12:17:34  auditor-01  Glob *.{py,toml,cfg,txt}
+12:17:34  harness     auditor-01 used 5462 tokens (in=2 cache_write=0 cache_read=5259 out=201), 1538 left
+12:17:34  fleet       warning auditor-01: 1538 tokens left, last call used 5462
+12:17:35  harness     auditor-01 refused: next call needs 6265 input tokens, 1538 left
+12:17:35  fleet       auditor-01 stopped mid-job: harness refused its next call: budget too low
+12:17:35  verifier    FAIL  seven numbered sections: missing or empty: [1, 2, 3, 4, 5, 6, 7]
+12:17:35  verifier    FAIL  JSON appendix: no JSON appendix
+12:17:35  verifier    VERIFIER: FAIL
+12:17:35  ledger      invariants PASS
+12:17:35  fleet       RESULT rebbi: job STOPPED, verifier FAIL, ledger PASS, auditor-01 used 11727 tokens, 0 loan(s), 13s

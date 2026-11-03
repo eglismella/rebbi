@@ -1,0 +1,20 @@
+{
+  "label": "main",
+  "cases": [
+    "sqlite-utils-3.38",
+    "csvs-to-sqlite-1.3.1",
+    "sqlite-utils-3.30",
+    "db-to-sqlite-1.5",
+    "llm-0.12",
+    "no-lender-room"
+  ],
+  "arms": [
+    "baseline",
+    "upfront",
+    "rebbi"
+  ],
+  "repeats": 3,
+  "hint_tokens": null,
+  "auth": "auto",
+  "rehearsal": false
+}

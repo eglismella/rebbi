@@ -1,0 +1,23 @@
+12:20:18  fleet       run 20261103-172018-rebbi, mode rebbi, budgets enforced by the harness: auditor-01 7000, analyst-07 180000, writer-03 100000; auditing sqlite-utils@fb8f495
+12:20:21  analyst-07  -> rebbi.report_headroom {"reserve_tokens": 80000, "will_lend": true}
+12:20:21  harness     analyst-07 used 2094 tokens (in=2 cache_write=529 cache_read=1474 out=89), 177906 left
+12:20:21  analyst-07  <- published reserve 80000, lendable 80000
+12:20:22  analyst-07  says: Published a reserve of 80,000 tokens with lending enabled; 80,000 is lendable against a balance of 180,000.
+12:20:22  harness     analyst-07 used 2267 tokens (in=2 cache_write=219 cache_read=2003 out=43), 175639 left
+12:20:24  writer-03   -> rebbi.report_headroom {"reserve_tokens": 70000, "will_lend": true}
+12:20:24  harness     writer-03 used 2092 tokens (in=2 cache_write=529 cache_read=1472 out=89), 97908 left
+12:20:24  writer-03   <- published reserve 70000, lendable 0
+12:20:25  writer-03   says: Published a 70,000-token reserve with lending enabled; Rebbi shows 0 lendable right now because the 30,000 exp
+12:20:25  harness     writer-03 used 2277 tokens (in=2 cache_write=213 cache_read=2001 out=61), 95631 left
+12:20:29  auditor-01  Grep 'install_requires|extras_require' in setup.py
+12:20:30  auditor-01  Read setup.py
+12:20:30  auditor-01  Grep '^\\s*(import|from)\\s+\\w+|^\\s*(try|except)' in *.py
+12:20:30  harness     auditor-01 used 5707 tokens (in=2 cache_write=0 cache_read=5253 out=452), 1293 left
+12:20:30  fleet       warning auditor-01: 1293 tokens left, last call used 5707
+12:20:31  harness     auditor-01 refused: next call needs 10938 input tokens, 1293 left
+12:20:31  fleet       auditor-01 stopped mid-job: harness refused its next call: budget too low
+12:20:31  verifier    FAIL  seven numbered sections: missing or empty: [1, 2, 3, 4, 5, 6, 7]
+12:20:31  verifier    FAIL  JSON appendix: no JSON appendix
+12:20:31  verifier    VERIFIER: FAIL
+12:20:32  ledger      invariants PASS
+12:20:32  fleet       RESULT rebbi: job STOPPED, verifier FAIL, ledger PASS, auditor-01 used 16645 tokens, 0 loan(s), 14s

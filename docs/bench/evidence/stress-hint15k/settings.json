@@ -1,0 +1,16 @@
+{
+  "label": "stress-hint15k",
+  "cases": [
+    "sqlite-utils-3.38",
+    "csvs-to-sqlite-1.3.1"
+  ],
+  "arms": [
+    "upfront",
+    "rebbi"
+  ],
+  "repeats": 3,
+  "hint_tokens": 15000,
+  "budgets": {},
+  "auth": "auto",
+  "rehearsal": false
+}
