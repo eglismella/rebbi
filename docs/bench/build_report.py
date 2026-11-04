@@ -25,15 +25,8 @@ OUT = HERE / "HW7-Rebbi-benchmark.pdf"
 COMMIT = "f4ab68778f3b373d6896dbe4371f4fc2c7d4f887"
 REPO = "https://github.com/eglismella/rebbi"
 
-# Who did what; the grading agent identifies the team from this list.
-TEAM = [
-    ("Eglis Mella", "HW7: chose the claim, arms and cases; built the multi-repo targets, the "
-     "upfront arm, the benchmark runner and the auto-borrow change; ran all 115 runs; analysis and this report."),
-    ("Pietro Bertone", "HW6: the lending rules and calibrated budgets this benchmark reuses (rebbi/rules.py, "
-     "config/scenario.toml)."),
-    ("Nitya Maddineni", "HW6: the job template and the review of the verifier that this benchmark's success check is "
-     "built on (specs/dep-audit-v1.md, rebbi/verify.py)."),
-]
+# Shown under the title; the grading agent identifies the team from this list.
+TEAM = ["Eglis Mella", "Pietro Bertone", "Nitya Maddineni"]
 
 
 def rows(bench: str) -> list[dict]:
@@ -104,7 +97,8 @@ def b(text: str) -> Paragraph:
 
 story = [
     p("Rebbi: does lending spare token budget help agents finish their jobs?", H1),
-    p(f"HW7: Benchmark Your Agentic System. Repository {link('', 'github.com/eglismella/rebbi', tree=True)}, "
+    p(f"Team: {', '.join(TEAM)}<br/>"
+      f"HW7: Benchmark Your Agentic System. Repository {link('', 'github.com/eglismella/rebbi', tree=True)}, "
       f"commit {COMMIT[:7]} (branch hw7-benchmark). All runs on Nov 3, 2026.", SMALL),
     Spacer(1, 4),
 
@@ -277,14 +271,11 @@ story += [
       f"{link('docs/bench/evidence/README.md', 'docs/bench/evidence/')} (CLI settings and SQLite ledgers left out; "
       f"no credentials). Cases: {link('config/bench.toml')}; repositories and commits: {link('config/targets.toml')}; "
       f"answer keys: {link('specs', 'specs/', tree=True)}; runner: {link('rebbi/bench.py')}."),
-
-    p("8. Team", H2),
-    *[Paragraph(f"<b>{name}</b>: {what}", BODY, bulletText="•") for name, what in TEAM],
 ]
 
 doc = SimpleDocTemplate(str(OUT), pagesize=letter, leftMargin=0.75 * inch, rightMargin=0.75 * inch,
                         topMargin=0.65 * inch, bottomMargin=0.65 * inch, title="Rebbi HW7 benchmark",
-                        author="Rebbi team")
+                        author=", ".join(TEAM))
 
 
 def footer(canvas, doc_) -> None:
