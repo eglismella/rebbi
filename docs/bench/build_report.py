@@ -22,7 +22,7 @@ from reportlab.platypus import KeepTogether, Paragraph, SimpleDocTemplate, Space
 HERE = Path(__file__).resolve().parent
 EVIDENCE = HERE / "evidence"
 OUT = HERE / "HW7-Rebbi-benchmark.pdf"
-COMMIT = "f4ab68778f3b373d6896dbe4371f4fc2c7d4f887"
+COMMIT = "99848ca2c633a341ebaf34449ca256e35ae52a51"
 REPO = "https://github.com/eglismella/rebbi"
 
 # Shown under the title; the grading agent identifies the team from this list.
@@ -212,7 +212,7 @@ story += [
                     f"{link('docs/bench/evidence/retest-autoborrow/results.csv', 'retest-autoborrow/results.csv')}, "
                     f"{link('docs/bench/evidence/main/results.csv', 'main/results.csv')}.", SMALL)]),
     p("<b>What improved:</b> success went from 0/6 to 6/6 on the tuning cases and from 4/9 to 9/9 on the fresh "
-      "cases, so the fix holds where it was not designed. Auto-borrow fired in 12 of 15 runs; in the other 3 the "
+      "cases, so the fix holds where it was not designed. Auto-borrow fired in 11 of 15 runs; in the other 4 the "
       "agent asked on its own. No-lender-room still fails, correctly. <b>What did not:</b> cost. Rebbi now spends "
       "about 1.5 times upfront's auditor tokens and twice its fleet tokens, and takes about twice as long. Two "
       "causes, both visible in the logs: the lenders spend about 8,700 tokens publishing their reserves, and a "
