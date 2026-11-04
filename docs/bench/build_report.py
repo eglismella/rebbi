@@ -26,8 +26,16 @@ OUT = HERE / "HW7-Rebbi-benchmark.pdf"
 COMMIT = "99848ca2c633a341ebaf34449ca256e35ae52a51"
 REPO = "https://github.com/eglismella/rebbi"
 
-# Shown under the title; the grading agent identifies the team from this list.
-TEAM = ["Eglis Mella", "Pietro Bertone", "Nitya Maddineni"]
+# Names under the title, contributions in section 8; the grading agent identifies the team from this list.
+TEAM = [
+    ("Eglis Mella", "designed the benchmark (claim, arms, cases), built the runner and the auto-borrow change, ran "
+     "all 115 runs, and wrote the analysis and this report."),
+    ("Pietro Bertone", "independent check of the results: recomputed every number in the results tables from the raw "
+     "results files, and traced sampled runs from their logs to those files."),
+    ("Nitya Maddineni", "independent check of the ground truth: re-derived the answer key for the hardest repository "
+     "(llm 0.12) from its source code and compared it with ours."),
+]
+NAMES = ", ".join(name for name, _ in TEAM)
 
 
 def rows(bench: str) -> list[dict]:
@@ -98,7 +106,7 @@ def b(text: str) -> Paragraph:
 
 story = [
     p("Rebbi: does lending spare token budget help agents finish their jobs?", H1),
-    p(f"Team: {', '.join(TEAM)}<br/>"
+    p(f"Team: {NAMES}<br/>"
       f"HW7: Benchmark Your Agentic System. Repository {link('', 'github.com/eglismella/rebbi', tree=True)}, "
       f"commit {COMMIT[:7]} (branch hw7-benchmark). All runs on Nov 3, 2026.", SMALL),
     Spacer(1, 4),
@@ -260,7 +268,7 @@ story += [
         "not before as planned, and covered only the two tuning repositories.",
         "<b>Scope:</b> one job type, one auditor model, five small repositories by one author, three agents on one "
         "machine, one borrower at a time. Our answer keys, though hand-checked, could hold an error; it would hit "
-        "every arm alike. Dollar figures are the CLI's estimate for the auditor only; tokens are the main cost "
+        "every arm alike. Only the hardest key (llm 0.12) was re-checked by a second person. Dollar figures are the CLI's estimate for the auditor only; tokens are the main cost "
         "measure. The baseline fails by construction.",
         "<b>Unproven:</b> many borrowers competing for one lender, loans expiring mid-job, longer or different "
         "jobs, other models, and whether removing the stale warning closes the cost gap.",
@@ -272,7 +280,11 @@ story += [
       f"{link('docs/bench/evidence/README.md', 'docs/bench/evidence/')} (CLI settings and SQLite ledgers left out; "
       f"no credentials). Cases: {link('config/bench.toml')}; repositories and commits: {link('config/targets.toml')}; "
       f"answer keys: {link('specs', 'specs/', tree=True)}; runner: {link('rebbi/bench.py')}. "
-      "The appendix shows two runs' logs."),
+      "The appendix shows two runs' logs. Two team members who did not run the benchmark checked it on their own "
+      "(section 8)."),
+
+    p("8. Team", H2),
+    *[Paragraph(f"<b>{name}</b>: {what}", BODY, bulletText="•") for name, what in TEAM],
 ]
 
 
@@ -343,7 +355,7 @@ story += [
 
 doc = SimpleDocTemplate(str(OUT), pagesize=letter, leftMargin=0.75 * inch, rightMargin=0.75 * inch,
                         topMargin=0.65 * inch, bottomMargin=0.65 * inch, title="Rebbi HW7 benchmark",
-                        author=", ".join(TEAM))
+                        author=NAMES)
 
 
 def footer(canvas, doc_) -> None:
