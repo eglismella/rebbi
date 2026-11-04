@@ -1,5 +1,10 @@
 # Hand-offs for Pietro and Nitya
 
+**HW7 (due Nov 4, 11:59pm): one check each, results to Eglis by 9pm.**
+Pietro: [check our results, from raw logs to report](bench/tasks/pietro.md).
+Nitya: [check the answer key for the hardest repository](bench/tasks/nitya.md).
+The rest of this page is the HW6 hand-off.
+
 What the code already does, what each of you decides, and where it goes. Times and owners follow
 the work plan's task tracker. Nothing here needs you to run code; edit the files on GitHub or send
 the change to Eglis.
