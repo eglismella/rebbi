@@ -121,8 +121,10 @@ fix works where it was designed; fresh cases show whether it holds where it was 
 
 **Nov 3, retest** (`runs/bench/20261103-204142-retest-autoborrow`, 18 runs). Rebbi with auto-borrow passed
 15/15 ordinary and hard runs (tuning 6/6, fresh 9/9), up from 4/15 in the main run; no-lender-room still
-0/3, refused cleanly. No reserve broke and every ledger check passed. Auto-borrow fired in 12 of the 15
-runs; in the other 3 (llm-0.12 three times, sqlite-utils-3.38 once) the agent asked first on its own.
+0/3, refused cleanly. No reserve broke and every ledger check passed. Auto-borrow fired in 11 of the 15
+runs; in the other 4 (llm-0.12 three times, sqlite-utils-3.38 once) the agent asked first on its own.
+(Corrected Nov 4: this line first said "12 of the 15" and "the other 3"; the `auto_requests` column of
+`results.csv` shows 11.)
 
 Cost, against the main run's upfront arm (medians): auditor 25,704 tokens against 17,317; fleet 34,430
 against 17,317; 31 s against 17 s. Two causes. (1) Rebbi's fixed overhead: the two lenders spend about
