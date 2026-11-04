@@ -17,7 +17,8 @@ from reportlab.lib.enums import TA_LEFT
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
-from reportlab.platypus import KeepTogether, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+from reportlab.platypus import (KeepTogether, PageBreak, Paragraph, Preformatted, SimpleDocTemplate, Spacer, Table,
+                                TableStyle)
 
 HERE = Path(__file__).resolve().parent
 EVIDENCE = HERE / "evidence"
@@ -270,7 +271,74 @@ story += [
       f"Every run's console log, report, verifier output, summary and agent transcripts: "
       f"{link('docs/bench/evidence/README.md', 'docs/bench/evidence/')} (CLI settings and SQLite ledgers left out; "
       f"no credentials). Cases: {link('config/bench.toml')}; repositories and commits: {link('config/targets.toml')}; "
-      f"answer keys: {link('specs', 'specs/', tree=True)}; runner: {link('rebbi/bench.py')}."),
+      f"answer keys: {link('specs', 'specs/', tree=True)}; runner: {link('rebbi/bench.py')}. "
+      "The appendix shows two runs' logs."),
+]
+
+
+# Appendix: real log lines, read from the evidence files when the PDF is built, never retyped.
+MONO = ParagraphStyle("mono", parent=BODY, fontName="Courier", fontSize=6.5, leading=7.7, spaceAfter=3)
+BEFORE, AFTER = "20261103-171245-rebbi", "20261103-204302-rebbi"  # sqlite-utils-3.30 (fresh), rebbi arm
+WIDTH, INDENT = 128, " " * 22  # a log line is "HH:MM:SS  <who, 12 wide><what>"
+
+
+def keep(line: str) -> bool:
+    """Leave out the lenders' chat replies and writer-03, which has no room to lend."""
+    who, what = line[10:22].strip(), line[22:]
+    if who == "writer-03" or (who == "harness" and what.startswith("writer-03")):
+        return False
+    return not (what.startswith("says: ") and who != "auditor-01")
+
+
+def wrap(line: str) -> list[str]:
+    """At most two printed rows per log line; anything longer is cut and ends with '...'."""
+    if len(line) <= WIDTH:
+        return [line]
+    cut = line.rfind(" ", len(INDENT), WIDTH + 1)  # break between words where possible
+    cut = cut if cut > 0 else WIDTH
+    rest = INDENT + line[cut:].lstrip()
+    return [line[:cut], rest if len(rest) <= WIDTH else rest[:WIDTH - 3] + "..."]
+
+
+def excerpt(run: str) -> Preformatted:
+    lines = (EVIDENCE / "runs" / run / "console.log").read_text(encoding="utf-8").splitlines()
+    out, last = [], -1
+    for i, line in enumerate(lines):
+        if not keep(line):
+            continue
+        if i != last + 1:
+            out.append("  ...")
+        out += wrap(line)
+        last = i
+    if last != len(lines) - 1:
+        out.append("  ...")
+    return Preformatted("\n".join(out), MONO)
+
+
+def run_link(run: str) -> str:
+    return link(f"docs/bench/evidence/runs/{run}", run, tree=True)
+
+
+story += [
+    PageBreak(),
+    p("Appendix: two runs, straight from the logs", H2),
+    p("Both runs audit the same fresh repository (sqlite-utils 3.30) with Rebbi on: one from the main run, before "
+      "the change, and one from the retest, after it. The PDF's build script copies these lines from each run's "
+      "console.log; \"...\" marks lines left out (the lenders' chat replies, and writer-03, which has no room to "
+      "lend), and very long lines are cut. Each line is time (US Eastern; run names are UTC), who, and what. Token "
+      "counts are per model call.", SMALL),
+    p(f"<b>A. Before the change: stopped, verifier FAIL.</b> Run {run_link(BEFORE)}.", SMALL),
+    excerpt(BEFORE),
+    p("The auditor started the audit without asking Rebbi. Its first call used 5,511 of its 7,000 tokens, the next "
+      "needed 10,989, and the call was refused. \"used 16500 tokens\" counts that refused call's input: the request "
+      "had already reached the model service when the harness stopped it.", SMALL),
+    p(f"<b>B. After the change: finished, verifier PASS.</b> Run {run_link(AFTER)}.", SMALL),
+    excerpt(AFTER),
+    p("Same start, but auto-borrow (\"harness top-up\") asks Rebbi before refusing the call, and analyst-07 lends "
+      "54,504. The auditor then asks for 21,129 more on its own, because of the stale low-budget warning (section "
+      "4); that second loan is the extra cost. What is unspent goes back at the end (38,884). This is the most "
+      "expensive passing run in the benchmark (43,749 auditor tokens), picked because it audits the same "
+      "repository as A, not because it looks best.", SMALL),
 ]
 
 doc = SimpleDocTemplate(str(OUT), pagesize=letter, leftMargin=0.75 * inch, rightMargin=0.75 * inch,
