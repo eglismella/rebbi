@@ -23,7 +23,10 @@ INSTRUCTIONS = """Rebbi lends spare token budget between agents in your fleet.
 Call get_budget to see what you have left. When you are about to run out in the
 middle of a job, call post_handoff with the tokens you need to finish: a LEND
 reply means the tokens are already in your budget, so carry on. When the job is
-done, call settle with the loan_id so unspent tokens go back to the lender."""
+done, call settle with the loan_id so unspent tokens go back to the lender.
+Give each post_handoff a request_id of your own; if you never saw the answer,
+resend it with the same request_id and you get the first answer back, never a
+second loan. Ask again later with a new request_id."""
 
 
 def build_server(broker: Broker, agent_id: str) -> MCPServer:
@@ -54,12 +57,18 @@ def build_server(broker: Broker, agent_id: str) -> MCPServer:
         requires_scopes: list[str] | None = None,
         context_ref: str = "",
         deadline_s: int = 0,
+        request_id: str = "",
     ) -> dict[str, Any]:
         """Ask for the tokens you need to finish a job you cannot finish within your budget.
 
         Returns decision LEND (the tokens are already added to your budget; keep
         working and call settle when done) or CANNOT_MOVE (with the blocker and
         what each possible lender said).
+
+        request_id is your own id for this request, up to 128 characters. Resending
+        the same request with the same id returns the first decision, marked
+        replayed, instead of booking a second loan; the same id with a different
+        request is an error. Without one, every call is a new request.
         """
         request = HandoffRequest(
             goal=goal,
@@ -70,12 +79,16 @@ def build_server(broker: Broker, agent_id: str) -> MCPServer:
             requires_scopes=requires_scopes or [],
             context_ref=context_ref,
             deadline_s=deadline_s,
+            request_id=request_id,
         )
         return broker.post_handoff(agent_id, request)
 
     @server.tool()
     def settle(loan_id: int, outcome: Literal["done", "abandoned"] = "done") -> dict[str, Any]:
-        """Close a loan you borrowed once the job is done or abandoned; unspent tokens go back to the lender."""
+        """Close a loan you borrowed once the job is done or abandoned; unspent tokens go back to the lender.
+
+        Safe to resend: a loan that is already closed comes back as it is, marked already_closed.
+        """
         return broker.settle(agent_id, loan_id, outcome)
 
     return server

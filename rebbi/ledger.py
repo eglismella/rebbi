@@ -12,7 +12,7 @@ import json
 import sqlite3
 import threading
 from collections.abc import Callable, Iterator
-from contextlib import contextmanager
+from contextlib import AbstractContextManager, contextmanager
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
@@ -60,8 +60,15 @@ CREATE TABLE IF NOT EXISTS decisions (
     decision      TEXT NOT NULL,
     request_json  TEXT NOT NULL,
     response_json TEXT NOT NULL,
-    at            TEXT NOT NULL
+    at            TEXT NOT NULL,
+    request_id    TEXT  -- the requester's own id for a request it may resend; NULL if it gave none
 );
+"""
+
+# Run after SCHEMA, so a ledger created before request ids gains the column first.
+MIGRATIONS = """
+CREATE UNIQUE INDEX IF NOT EXISTS decisions_by_request ON decisions(requester, request_id)
+    WHERE request_id IS NOT NULL;
 """
 
 LOAN_KINDS = ("loan_out", "loan_in", "return_out", "return_in")
@@ -106,6 +113,11 @@ class Ledger:
         self._conn.execute("PRAGMA journal_mode=WAL")
         self._conn.execute("PRAGMA foreign_keys=ON")
         self._conn.executescript(SCHEMA)
+        columns = {r["name"] for r in self._conn.execute("PRAGMA table_info(decisions)")}
+        if "request_id" not in columns:
+            self._conn.execute("ALTER TABLE decisions ADD COLUMN request_id TEXT")
+        self._conn.executescript(MIGRATIONS)
+        self._in_tx = False
 
     def close(self) -> None:
         self._conn.close()
@@ -113,13 +125,25 @@ class Ledger:
     @contextmanager
     def _tx(self) -> Iterator[sqlite3.Connection]:
         with self._lock:
+            if self._in_tx:
+                # Inside atomic(): the outer transaction commits or rolls back for both.
+                yield self._conn
+                return
             self._conn.execute("BEGIN IMMEDIATE")
+            self._in_tx = True
             try:
                 yield self._conn
             except BaseException:
                 self._conn.execute("ROLLBACK")
                 raise
-            self._conn.execute("COMMIT")
+            else:
+                self._conn.execute("COMMIT")
+            finally:
+                self._in_tx = False
+
+    def atomic(self) -> AbstractContextManager[sqlite3.Connection]:
+        """One write transaction around several ledger calls, held against every other process."""
+        return self._tx()
 
     def _read(self, sql: str, args: tuple = ()) -> list[sqlite3.Row]:
         with self._lock:
@@ -306,12 +330,24 @@ class Ledger:
     def log_decision(
         self, requester: str, request: dict[str, Any], response: dict[str, Any], now: datetime
     ) -> int:
+        """A request that names a request_id can be logged once per requester; a second copy fails."""
         with self._tx() as c:
             cur = c.execute(
-                "INSERT INTO decisions (requester, decision, request_json, response_json, at) VALUES (?, ?, ?, ?, ?)",
-                (requester, response["decision"], json.dumps(request), json.dumps(response), stamp(now)),
+                """INSERT INTO decisions (requester, decision, request_json, response_json, at, request_id)
+                   VALUES (?, ?, ?, ?, ?, ?)""",
+                (requester, response["decision"], json.dumps(request), json.dumps(response), stamp(now),
+                 request.get("request_id") or None),
             )
             return cur.lastrowid
+
+    def decision_for(self, requester: str, request_id: str) -> dict[str, Any] | None:
+        """The decision already logged for this requester's request_id, if any."""
+        rows = self._read(
+            "SELECT decision_id FROM decisions WHERE requester = ? AND request_id = ?", (requester, request_id)
+        )
+        if not rows:
+            return None
+        return next(d for d in self.decisions() if d["decision_id"] == rows[0]["decision_id"])
 
     def decisions(self) -> list[dict[str, Any]]:
         rows = self._read("SELECT * FROM decisions ORDER BY decision_id")
@@ -319,6 +355,7 @@ class Ledger:
             {
                 "decision_id": r["decision_id"],
                 "requester": r["requester"],
+                "request_id": r["request_id"],
                 "decision": r["decision"],
                 "request": json.loads(r["request_json"]),
                 "response": json.loads(r["response_json"]),

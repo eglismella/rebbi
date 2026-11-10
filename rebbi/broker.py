@@ -35,6 +35,16 @@ class HandoffRequest:
     requires_scopes: list[str] = field(default_factory=list)
     context_ref: str = ""
     deadline_s: int = 0
+    # The requester's own id for this request. Resending the same id with the same request returns
+    # the first decision instead of booking again; "" means every call is a new request.
+    request_id: str = ""
+
+
+MAX_REQUEST_ID = 128
+
+
+class RequestConflict(LedgerError):
+    """A request_id the requester already used for a different request."""
 
 
 class Broker:
@@ -60,9 +70,22 @@ class Broker:
         return {**state.to_dict(), "lendable": lending.lendable(state)}
 
     def post_handoff(self, requester: str, request: HandoffRequest) -> dict[str, Any]:
+        if len(request.request_id) > MAX_REQUEST_ID:
+            raise LedgerError(f"request_id is longer than {MAX_REQUEST_ID} characters")
+        # One write transaction from the replay check to the logged decision: two copies of one
+        # request (a retry racing the original, or two server processes) cannot both book a loan.
+        with self.ledger.atomic():
+            return self._post_handoff(requester, request)
+
+    def _post_handoff(self, requester: str, request: HandoffRequest) -> dict[str, Any]:
         now = self.now()
         self.ledger.expire_loans(now)
         self.ledger.agent(requester)  # unknown agents are refused before anything is logged
+
+        if request.request_id:
+            prior = self.ledger.decision_for(requester, request.request_id)
+            if prior is not None:
+                return self._replay(request, prior)
 
         if request.budget_tokens <= 0:
             response = _cannot_move(request, "budget_tokens must be a positive number of tokens", [])
@@ -104,13 +127,27 @@ class Broker:
         """The borrower closes its loan; whatever it did not spend goes back to the lender."""
         if outcome not in ("done", "abandoned"):
             raise LedgerError("outcome must be 'done' or 'abandoned'")
-        loan = self.ledger.loan(loan_id)
-        if loan["borrower"] != agent_id:
-            raise LedgerError(f"loan {loan_id} belongs to {loan['borrower']}, not {agent_id}")
-        closed = self.ledger.close_loan(loan_id, "settled", self.now())
+        with self.ledger.atomic():
+            loan = self.ledger.loan(loan_id)
+            if loan["borrower"] != agent_id:
+                raise LedgerError(f"loan {loan_id} belongs to {loan['borrower']}, not {agent_id}")
+            if loan["status"] != "active":
+                # Settled or expired already: a settle resent after a lost reply gets the closed loan back.
+                return {**_loan_view(loan), "outcome": outcome, "already_closed": True}
+            closed = self.ledger.close_loan(loan_id, "settled", self.now())
         log.info("%s settled loan %d (%s): returned %d to %s", agent_id, loan_id, outcome,
                  closed["returned_tokens"], closed["lender"])
         return {**_loan_view(closed), "outcome": outcome}
+
+    def _replay(self, request: HandoffRequest, prior: dict[str, Any]) -> dict[str, Any]:
+        if prior["request"] != asdict(request):
+            raise RequestConflict(f"request_id {request.request_id!r} was already used for a different request")
+        response = {**prior["response"], "decision_id": prior["decision_id"], "replayed": True}
+        if "loan_id" in response:
+            response["loan_status"] = self.ledger.loan(response["loan_id"])["status"]
+        log.info("post_handoff from %s: request %s already answered -> %s (replayed)",
+                 prior["requester"], request.request_id, response["decision"])
+        return response
 
     def _decided(self, requester: str, request: HandoffRequest, response: dict[str, Any], now: datetime):
         response["decision_id"] = self.ledger.log_decision(requester, asdict(request), response, now)

@@ -36,6 +36,21 @@ def test_mcp_tools_lend_and_settle_in_process(broker):
     asyncio.run(run())
 
 
+def test_a_resent_post_handoff_over_mcp_gets_the_first_loan(broker):
+    async def run():
+        async with Client(build_server(broker, "auditor-01")) as client:
+            tools = {t.name: t for t in (await client.list_tools()).tools}
+            assert "request_id" in tools["post_handoff"].input_schema["properties"]
+            ask = {"goal": "finish audit", "budget_tokens": 30_000, "request_id": "job-1/borrow-1"}
+            first = (await client.call_tool("post_handoff", ask)).structured_content
+            again = (await client.call_tool("post_handoff", ask)).structured_content
+            return first, again
+
+    first, again = asyncio.run(run())
+    assert again["loan_id"] == first["loan_id"] and again["replayed"] is True
+    assert len(broker.ledger.loans()) == 1
+
+
 def test_an_agent_cannot_settle_someone_elses_loan(broker):
     loan_id = broker.post_handoff("auditor-01", HandoffRequest(goal="x", budget_tokens=10_000))["loan_id"]
 

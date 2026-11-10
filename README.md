@@ -11,6 +11,12 @@ Auto-borrow (added in HW7, `docs/bench/PLAN.md`): with Rebbi on, a model call th
 cannot cover no longer simply fails. The harness, or the gateway, first asks Rebbi for a loan on the
 auditor's behalf, so borrowing no longer depends on the agent remembering to ask before it starts.
 
+Retries (added in HW8): `post_handoff` takes an optional `request_id`. Resending the same request
+with the same id returns the first decision, marked `replayed`, instead of booking a second loan; the
+same id with a different request is refused. `settle` is safe to resend too. Testing Rebbi inside
+Nanda Town found the gap: when Town dropped Rebbi's reply or delivered a request twice, Rebbi booked
+two loans for one job and left one open, while `rebbi check` still passed.
+
 ## Run the demo
 
 Put one credential in `.env` (git-ignored). The harness picks the mode from it, or force one with `--auth`:
