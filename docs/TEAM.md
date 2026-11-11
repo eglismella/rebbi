@@ -1,5 +1,9 @@
 # Hand-offs for Pietro and Nitya
 
+**HW8 and Demo Day (HW8 due Nov 11, 11:59pm; Demo Day Nov 12).**
+Pietro: [presentation, live demo and the HW8 slide](hw8/pietro.md).
+Nitya: [install Rebbi and rerun the HW8 checks on your own computer](hw8/nitya.md).
+
 **HW7 (due Nov 4, 11:59pm): one check each, results to Eglis by 9pm.**
 Pietro: [check our results, from raw logs to report](bench/tasks/pietro.md).
 Nitya: [check the answer key for the hardest repository](bench/tasks/nitya.md).
