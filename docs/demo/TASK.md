@@ -1,219 +1,251 @@
-# TASK: run the Rebbi Demo Day experiment, autonomously, on Pietro's Claude Pro plan
+# TASK: build and run the Rebbi Demo Day experiment, fully unattended
 
-You are Claude Code in Pietro Bertone's terminal (Windows, PowerShell), at the root of a clone
-of `github.com/eglismella/rebbi`. Pietro owns the demo and presentation of team Rebbi (MIT AI
-Studio MAS.665, Fall 2026; teammates Eglis Mella, repo owner, and Nitya Maddineni). **Demo Day is
-Thu Dec 3, 2026. Target: one complete repeat of every scenario and the results page by Wed Nov 25.**
+You are Claude Code running **headless** on Pietro Bertone's Windows PC, at the root of a clone of
+`github.com/eglismella/rebbi`, started by `scripts/autopilot.ps1`. Pietro owns the demo of team
+Rebbi (MIT AI Studio MAS.665, Fall 2026). **Nobody will answer questions.** Never ask; decide,
+record the decision in `docs/demo/DECISIONS.md`, and continue.
 
-Your job: build the experiment, run it within Pietro's Pro usage limits, and deliver
-`docs/demo/results.html`, `runs/demo/results.csv` and a PR. Work autonomously. Pietro wrote this
-file so that he does not have to relay context: everything you need is here or in the repo. When
-something is ambiguous, pick the simplest option that keeps the comparison fair, record it in
-`docs/demo/DECISIONS.md`, and continue. Stop and ask Pietro only at the points marked **ASK**.
+Each of your sessions starts with no memory. `docs/demo/PROGRESS.md` is your memory: read it
+first, update it after every step (what is done, what is next, any problem), and commit locally
+after every step. Never push except in the FINAL phase.
+
+The autopilot runs these phases, each ended by a marker file in `docs/demo/state/`:
+
+| Phase | Who | Ends with |
+| --- | --- | --- |
+| BUILD | you (one or more sessions) | `BUILD_DONE`: everything in sections 3 to 7 built, tests pass, rehearsal passes |
+| RUNS | `python -m rebbi.demo run-all` (no Claude session) | `RUNS_DONE`: calibration plus as many scenario runs as fit before the stop time |
+| FIX | you, only if run-all crashed | the cause fixed and committed; then run-all resumes |
+| FINAL | you | `FINAL_DONE`: report checked, hand-back written, committed (section 8) |
+
+**Clock.** The runs must leave usable results by **Wed Nov 18, 21:00 ET**. The autopilot passes
+`--stop-new-runs-at`; no new run starts after it, and the report always reflects every completed
+run. Keep the BUILD phase lean: working and tested beats elaborate.
 
 ## 0. Rules
 
-- **Pietro's hands are needed only for:** the one-time setup in section 1 (token, `.env`),
-  answering the ASK points, resuming you after a plan-limit reset (`claude --continue`), and
-  approving the final push. Everything else is yours.
-- **Never** ask Pietro to paste a token into chat, and never print, log or commit one. The token
-  lives only in `.env` (git-ignored; check before the first commit). Before every commit, check
-  the diff for `sk-ant`, `CLAUDE_CODE_OAUTH_TOKEN=` followed by a value, and `Bearer `.
-- **No API key, no paid spend.** Subscription mode only (`.env` holds `CLAUDE_CODE_OAUTH_TOKEN`).
-- **Never invent, estimate or round up a result.** Every number on the results page comes from a
-  file a completed run wrote. Missing cells say "not run".
-- **Save your own usage:** your session and the experiment agents draw on the same Pro limits.
-  Read files in parts, do not re-read, do not paste long logs, and never run the long experiment
-  inside your own tool calls (section 3 says how runs execute).
-- **Writing style** for anything Pietro or the class reads (page copy, PR text, docs): no em
-  dashes; plain verbs; numbers over adjectives; no "not X but Y" constructions; say
-  "Shareable (% of budget)", never "share line".
-- Work on branch `demo-scenarios`, created from the current `main`. Commit in small steps.
+- **Subscription mode only.** `.env` at the repo root holds `CLAUDE_CODE_OAUTH_TOKEN` (Pietro put
+  it there). No API key, no paid spend. Never print, log or commit the token; before every commit
+  check the staged diff for `sk-ant`, `CLAUDE_CODE_OAUTH_TOKEN=` followed by a value, and `Bearer `.
+- **Never invent, estimate or round up a result.** Every number in the report comes from a file a
+  completed run wrote. Missing cells say "not run".
+- **Do not run experiment runs inside your own session** (they belong to run-all, outside you).
+  You may run the zero-usage rehearsal and the test suite.
+- Writing style for anything people read (report, docs): no em dashes; plain verbs; numbers over
+  adjectives; no "not X but Y" constructions; "Shareable (% of budget)", never "share line".
+- Branch `demo-scenarios` (create it from the current `main` if absent). Small local commits.
 
-## 1. One-time setup (Pietro, about 15 minutes; guide him through it, one step at a time)
+## 1. Set-up (first BUILD session)
 
-1. Python 3.11+ and Git for Windows installed (`python --version`, `git --version`).
-2. Claude Code installed and logged in with his Pro account (he is talking to you, so this is
-   done). Recommended start command, from the repo root:
-   `claude --permission-mode auto`. If auto mode is not available on his plan, use
-   `claude --permission-mode acceptEdits` and create `.claude/settings.local.json` (git-ignored by
-   Claude Code) with allow rules so routine commands do not prompt:
-   ```json
-   {"permissions": {"allow": [
-     "PowerShell(.venv\\Scripts\\python *)", "PowerShell(python *)", "PowerShell(git status*)",
-     "PowerShell(git diff*)", "PowerShell(git add *)", "PowerShell(git commit *)",
-     "PowerShell(git checkout *)", "PowerShell(Start-Process *)",
-     "Bash(.venv/Scripts/python *)", "Bash(python *)", "Bash(git status*)", "Bash(git diff*)",
-     "Bash(git add *)", "Bash(git commit *)", "Bash(git checkout *)"],
-     "ask": ["PowerShell(git push*)", "Bash(git push*)"]}}
-   ```
-3. In a separate PowerShell window: `claude setup-token`. It prints a long-lived token for his
-   Pro subscription. He opens `.env` at the repo root in Notepad (`notepad .env`) and adds one line
-   `CLAUDE_CODE_OAUTH_TOKEN=<the token>`. He tells you "done", never the token.
-4. You run, and fix anything that fails:
-   ```powershell
-   git checkout -b demo-scenarios
-   python -m venv .venv
-   .venv\Scripts\python -m pip install -e ".[test]"
-   .venv\Scripts\python -m pytest -q            # expect 97 passed
-   .venv\Scripts\python scripts\check_api.py    # must report subscription mode
-   .venv\Scripts\python -m rebbi fetch-target
-   ```
+```powershell
+git checkout -B demo-scenarios
+python -m venv .venv
+.venv\Scripts\python -m pip install -e ".[test]"
+.venv\Scripts\python -m pytest -q            # expect 97 passed
+.venv\Scripts\python scripts\check_api.py    # must report subscription mode
+```
 
-## 2. What Rebbi is (read README.md in parts for detail)
+If `check_api.py` fails, write the reason in PROGRESS.md and DECISIONS.md, stop the session, and
+do not create BUILD_DONE (the autopilot will retry later). Also read `scripts/autopilot.ps1`:
+`run-all` must use the flags and exit codes it expects (section 4).
+
+## 2. What Rebbi is
 
 - Rebbi lends spare token budget between AI agents in one fleet. An agent short of budget calls
-  `post_handoff`; the broker finds an agent with room above its reserve, books the loan atomically
-  in a SQLite ledger, and replies `LEND` (with `partial`, `shortfall_tokens`, `limit_reason` when
-  it covers less than asked) or `CANNOT_MOVE`. `settle` returns unspent tokens.
-- Files you will reuse: `rebbi/ledger.py` (append-only ledger; balances are sums),
-  `rebbi/rules.py` (`lendable = balance - reserve - declared demand`, capped per loan),
-  `rebbi/broker.py`, `rebbi/mcp_server.py` (MCP over stdio or HTTP; `REBBI_TRACE` logs every call),
-  `rebbi/fleet.py` (Claude Agent SDK harness; in subscription mode it meters every call from the
-  stream and stops an agent at the first call its balance cannot cover), `rebbi/bench.py`
-  (benchmark pattern: cases x arms x repeats, `--resume`), `rebbi/calibrate.py`,
-  `rebbi/scripted_model.py` (zero-usage stand-in model), `config/scenario.toml` (numbers).
-- `python -m rebbi --db <ledger> check` verifies the ledger: totals conserved, each loan's
-  entries cancel, no lender below its reserve, no loan active past expiry.
-- `docs/AGENT_INTERFACE.md` is the full tool reference. `docs/hw9/RESULTS.md` is the latest
-  evidence (HW9). HW7: on a dependency audit, upfront allocation was cheaper with a right estimate
-  but failed 8 of 12 with a wrong or missing one; Rebbi passed 12 of 12.
-- Product thesis (Pietro): organizations give each agent a fixed budget; some agents hit the cap
-  with work unfinished while others let tokens expire. Each agent marks a Shareable (% of budget);
-  Rebbi lends shareable tokens to agents that run short; over time Rebbi helps set budgets and
+  `post_handoff`; the broker finds an agent with room above its reserve, books the loan
+  atomically in a SQLite ledger, and replies `LEND` (with `partial`, `shortfall_tokens`,
+  `limit_reason` when it covers less than asked) or `CANNOT_MOVE`. `settle` returns what is unspent.
+- Reuse: `rebbi/ledger.py` (append-only; balances are sums), `rebbi/rules.py`
+  (`lendable = balance - borrowed - reserve - declared demand`, capped per loan), `rebbi/broker.py`,
+  `rebbi/mcp_server.py`, `rebbi/fleet.py` (Claude Agent SDK harness: in subscription mode it meters
+  every call from the stream and stops an agent at the first call its balance cannot cover; read
+  how it builds `ClaudeAgentOptions` and isolates agents), `rebbi/scripted_model.py` (zero-usage
+  stand-in model), `rebbi/bench.py` (resume pattern). `docs/AGENT_INTERFACE.md` is the tool reference.
+- `python -m rebbi --db <ledger> check` verifies the ledger invariants. Every counted run must pass.
+- Product thesis: organizations give each agent a fixed budget; some agents hit the cap with work
+  unfinished while others let tokens expire. Each agent marks a Shareable (% of budget); Rebbi
+  lends shareable tokens to agents that run short; over time Rebbi helps set budgets and
   shareable % from usage data.
 
 ## 3. The experiment
 
-### 3.1 The hill (fixed across scenarios)
-- One hill-climbing exercise with a numeric score per step. First choice: an AlgoTune task
-  (arXiv 2507.15887; find its code repository from the paper page). Each task has a reference
-  solver, a correctness check and a timed speedup score. Score = speedup of the team's best
-  correct solution over the reference.
-- Pick two sibling tasks that install and score in seconds on Windows with pure
-  Python/NumPy/SciPy: **Exercise A** and **Exercise B**.
-- If AlgoTune does not install or score reliably on Windows within about an hour of effort, write
-  a self-contained hill instead: a reference numeric routine, a timing harness and correctness
-  tests, in two variants for A and B. Record the switch in DECISIONS.md.
-- **Summit** = a target speedup set in the pilot so a well-run team reaches it in about 8 to 15
-  windows. Cap every run (for example 20 windows); a run that hits the cap records "not reached"
-  and its best speedup.
+### 3.1 The hill: circle packing in a unit square (chosen Nov 17 after research)
+
+**Task.** Place n disjoint circles inside the unit square to maximize the sum of their radii.
+**Exercise A: n = 26. Exercise B: n = 32** (a sibling: same rules, different size).
+Reference values for the chart, labeled as published best-known, never as our results: n = 26
+about 2.635 (AlphaEvolve 2.635; later 2.63598, ThetaEvolve paper); n = 32 about 2.937 (AlphaEvolve;
+later 2.93957, arXiv 2605.04850).
+
+**Why this hill** (record in DECISIONS.md):
+- The score is deterministic and computed in milliseconds with NumPy, so it runs on Windows with no
+  Docker and no timing noise. AlgoTune's score is a measured speedup, and timing on a laptop is
+  noisy; ALE-Bench needs Docker images and a Rust scorer.
+- It climbs in steps that suit windows: OpenEvolve's run went from 0.96 (a simple ring
+  construction) to 1.80 at generation 10, 2.20 at generation 100, and 2.634 at generation 460,
+  with an optimizer as the late breakthrough.
+- It has known traps, which the evaluator below closes: lenient overlap tolerances (pipelines
+  differ: 1e-6, 1e-7, or zero) and reward hacking of weak verifiers.
+
+**Evaluator** (`rebbi/demo/hill.py`, fixed, never edited by agents):
+- The team's candidate is one file, `solve.py`, defining `pack() -> (centers, radii)`. The
+  evaluator runs it in a subprocess with a 60-second wall limit and a fixed seed
+  (`numpy.random.seed(0)`, `random.seed(0)`), reads the arrays, and validates them itself:
+  shapes exactly (n, 2) and (n,), finite values, radii > 0, every circle inside the square
+  (`x - r >= -1e-9`, `x + r <= 1 + 1e-9`, same for y), every pair `dist >= ri + rj - 1e-9`.
+- Score = sum of radii if valid, else 0 with the first violated check as the reason. The
+  evaluator scores the returned coordinates, never a number the candidate prints.
+- Allowed imports in `solve.py`: Python standard library, `numpy`, `scipy`. The starting
+  `solve.py` (write your own; do not copy OpenEvolve's) places one circle in the centre and two
+  rings, then shrinks radii until valid: it must score between 0.8 and 1.2.
+
+**Flat-hill guard (automatic, in the calibration run).** If the calibration team's score at the
+end of window 2 is already at least 98% of its score at the end of window 8, the hill is too short
+for budgets to matter (the model likely recalls a one-shot optimizer). Then forbid `scipy` in
+`solve.py` (the evaluator rejects the import), record it in DECISIONS.md, and calibrate again once.
 
 ### 3.2 The team (fixed across scenarios)
-Five agents with their own role prompts, all on the cheapest model available in subscription
-mode (Claude Haiku 5.5), unless the pilot shows it cannot make progress; then Claude Sonnet 5.5
-for the Coder only, recorded in DECISIONS.md. Planner (picks the next idea), Researcher (reads the
-task, docs and prior attempts), Coder (writes each candidate), Evaluator (runs the scorer, reports
-speedup and correctness), Reviewer (checks correctness before a candidate becomes the new best).
-Every run starts with empty memory. Shared state is only what the orchestrator passes: task text,
-current best code and score, a short attempt log.
 
-### 3.3 Time and budgets
-- A **window** = one orchestrator round: every agent gets one turn, bounded to a few model calls.
-  Budgets refill at the end of each window; unused tokens **expire** at the refill.
-- The org issues the same total per window, **T**, in every scenario. Set T in the pilot near the
-  team's average unconstrained demand per window, so the total is roughly enough and the split is
-  what matters. Freeze T.
+Five agents, each a Claude Agent SDK session with its own role prompt, all on Claude Haiku 5.5 in
+subscription mode. If the calibration run shows the Coder cannot produce a valid candidate in
+three windows, use Claude Sonnet 5.5 for the Coder only, in every scenario, and record it.
+Turn order each window: **Planner** (picks the next idea from the attempt log), **Researcher**
+(reads the current best code and past attempts, writes notes on what to try), **Coder** (writes a
+new `solve.py`), **Evaluator** (runs the evaluator, reports score and reason), **Reviewer** (accepts
+the candidate as the new best only if valid and better; otherwise keeps the old best). Each agent
+turn is capped at 6 model calls. Every run starts with empty agent memory. Shared state is only
+what the orchestrator passes: task text, current best `solve.py` and score, the attempt log.
+
+### 3.3 Windows and budgets
+
+- A **window** = one round of the five turns. Budgets refill at the end of each window; unused
+  tokens **expire** at the refill. Cap: 20 windows per run.
+- The org issues the same total per window, **T**, in every scenario.
 - An **interruption** = an agent's call refused because its balance (plus loans) cannot cover it;
-  that turn's work is lost and the agent waits for the next window.
-- Shareable % maps onto Rebbi as the reserve: `reserve = (1 - shareable %) x budget`, so
-  `lendable = min(unused this window, shareable % x budget)` falls out of the existing rules.
-  `rebbi check` must pass after every run.
+  that agent's turn ends; later agents in the window work with what exists.
+- Shareable % maps onto Rebbi as the reserve: `reserve = (1 - shareable %) x budget`.
+
+**Calibration (automatic, first thing run-all does).** One run on Exercise A with budgets too large
+to bind (5 x T0, T0 = 2,000,000 tokens per window), 10 windows, no Rebbi. From it:
+- **T** = the median over windows of total team tokens used per window, rounded to the nearest
+  1,000. This makes the total roughly enough, so the split is what matters.
+- **Summit_A** = the calibration team's best score at the end of window 8. **Summit_B** = Summit_A
+  x (2.937 / 2.635), the same relative height on Exercise B.
+- Write T, the summits, per-role demand per window and the guard outcome to `config/demo.toml`
+  and `runs/demo/calibration/`. Calibration is shown in the report but is not a scenario.
 
 ### 3.4 Scenarios
+
 1. **Equal fixed budgets.** T/5 each, no Rebbi. How most organizations set agent limits today.
 2. **Manager sets budgets.** A manager agent (one model call before the climb) gets T, the five
-   role descriptions and the task, and returns a JSON split of T. No Rebbi. Freeze its output and
-   reuse the same budgets in scenarios 3 and 4.
+   role descriptions and the task, and returns a JSON split of T. No Rebbi. Freeze its output
+   (`config/demo.toml`) and reuse those budgets in scenarios 3 and 4.
 3. **Manager + Rebbi.** Same budgets. The manager also returns each agent's Shareable (% of
-   budget) by role importance (one more call, frozen). Rebbi routes loans from other agents'
-   unused shareable tokens; it can move at most T minus the unused non-shareable tokens.
-3b. **Rebbi learns, on Exercise B.** Rebbi gives the manager per-role usage from scenario 3 (mean
-   and spread of demand per window; tokens lent, borrowed, expired). The manager returns new
-   budgets and shareable % (one call, frozen). Fair comparison: **3-on-B**, scenario 3's settings
-   run unchanged on Exercise B. Never compare 3b with scenario 1: different exercises.
+   budget) by role importance (one more call, frozen). An agent that runs short asks Rebbi; Rebbi
+   lends other agents' unused shareable tokens.
+3b. **Rebbi learns, on Exercise B.** The manager gets per-role usage from scenario 3 of the same
+   repeat (mean and spread of demand per window; tokens lent, borrowed, expired) and returns new
+   budgets and shareable % (one call, frozen). Fair comparison: **3-on-B** (scenario 3's settings,
+   unchanged, on Exercise B). Never compare 3b with scenario 1.
 4. **Open market.** Manager's starting budgets. Each window each agent sets its own shareable %
-   (a field in its normal turn output, no extra call). Tokens lent earn a claim on the pool of
-   lent x (1 + r), r = 5%. An agent at 0% shareable cannot borrow. Borrowing draws down the claim,
-   down to a debt limit of one window of the agent's own budget. Log every choice and claim.
+   (a field in its turn output, no extra call). Tokens lent earn a claim of lent x 1.05 on the
+   pool. An agent at 0% cannot borrow. Borrowing draws the claim down to a debt limit of one
+   window of the agent's own budget.
 
-### 3.5 Metrics (one row per run in results.csv)
-run_id, scenario, exercise, repeat, model(s), T, budgets, shareable %, windows_to_summit (or not
-reached), best_speedup, speedup per window, tokens_issued, tokens_used, tokens_expired,
-interruptions, loans_count, tokens_moved, per-agent per-window used/lent/borrowed/expired/unmet,
-ledger_check, status, wall time, start and end timestamps. A run counts only if
-status = complete and ledger_check = PASS.
+Order within a repeat: 1, 2, 3, 3-on-B, 3b, 4. Repeat-major: every scenario of repeat 1 before
+any of repeat 2. After repeat 1, continue with repeats 2 and 3 until the stop time.
 
-## 4. Running safely within Pro limits (required design)
+### 3.5 Metrics
 
-- **One run at a time.** Unit = one run (scenario x exercise x repeat). Commands:
-  `python -m rebbi.demo next` (runs the next pending run from `runs/demo/manifest.csv`, then
-  exits), `python -m rebbi.demo status`, `python -m rebbi.demo retry <run_id>`, and
-  `python -m rebbi.demo run-all` (loops `next` until nothing is pending or an external abort).
-- **Atomic results.** A run writes into `runs/demo/<run_id>.partial/`; only after it finishes and
-  `rebbi check` passes is the folder renamed and a row appended to results.csv.
-- **Plan limit: stop at once.** Any usage-limit, rate-limit, 429, overloaded or auth error from an
-  agent is an external abort: stop all agents, mark the run `aborted_external` with the error text,
-  keep the partial folder, exit with a clear message. An aborted run is rerun from scratch, never
-  stitched. Keep this distinct from a Rebbi budget interruption, which is part of the experiment.
-- **Repeat-major order:** repeat 1 of every scenario (1, 2, 3, 3-on-B, 3b, 4) before any repeat 2.
-- **Runs execute outside your session.** Start `run-all` in its own window so it survives your
-  session: `Start-Process powershell -ArgumentList '-NoExit','-Command','.venv\Scripts\python -m rebbi.demo run-all *>> runs\demo\run-all.log'`.
-  Check progress with `status` and the log tail, sparingly. If the plan limit stops both the
-  runner and you, Pietro waits for the reset, runs `claude --continue`, and types "resume": you
-  then `retry` the aborted run and start `run-all` again.
+One row per run in `runs/demo/results.csv`: run_id, scenario, exercise, repeat, models, T,
+budgets, shareable %, windows_to_summit (or "not reached"), best_score, tokens_issued,
+tokens_used, tokens_expired, interruptions, loans_count, tokens_moved, ledger_check, status,
+wall_seconds, started_at, ended_at. A run counts only if status = complete and ledger_check = PASS.
 
-## 5. Order of work
+## 4. run-all: unattended, resumable, limit-safe
 
-1. **Setup** (section 1).
-2. **Plan.** Read only what you need. Write `docs/demo/PLAN.md` (one page: design, files you add
-   or change, how each scenario maps onto Rebbi, the abort design, what the pilot measures). Commit.
-3. **Build** under `rebbi/demo/` (orchestrator, roles, scenarios, manager, market, runner,
-   manifest) with config in `config/demo.toml`. Reuse ledger, broker, rules and metering; do not
-   break the HW7 bench or any test. Tests: manifest state machine, atomic finish, abort
-   classification, market claim math, shareable % to reserve mapping, ledger invariants after a
-   scripted multi-agent run. A `--rehearsal` mode with a scripted model runs everything at zero
-   plan usage, labels its output as scripted, and never writes to results.csv.
-4. **Rehearsal** of the full scenario set. Fix bugs.
-5. **Pilot (real, small).** One unconstrained calibration run on Exercise A (budgets too large to
-   bind) to measure demand per role per window and steps to a good speedup; set T, the summit and
-   the window cap; then one real run each of scenarios 1 and 3. Report per run: tokens, wall time,
-   windows, speedup, and a projection of runs per 5-hour block and per week. **ASK** Pietro to
-   glance at `/usage` once after the pilot, then **ASK** how many repeats to run (target 3,
-   minimum 1 full repeat).
-6. **Full runs** with `run-all`, repeat-major. Commit results after each completed repeat.
-7. **Results page** `docs/demo/results.html` (section 6), built from results.csv and run folders
-   only.
-8. **PR.** **ASK** Pietro to approve the push, then push and open a PR to main titled
-   "Demo Day: five budget scenarios, measured": what was built, how to reproduce (rehearsal and
-   real), results table, limitations (model, repeats, task, Windows timing noise, aborted runs),
-   links to the page and DECISIONS.md. Use `gh pr create` if available, else give him the GitHub
-   compare link.
-9. **Hand-back.** `docs/demo/README.md` (reproduce in 10 lines), and a short message to Pietro:
-   what ran, the headline numbers with run counts, and the next step in section 6.
+Commands (all in `rebbi/demo/`):
+- `python -m rebbi.demo run-all --stop-new-runs-at <ISO local time>`: calibration if not done,
+  then the next pending runs, one at a time, until none is pending or the stop time passes.
+- `python -m rebbi.demo status`, `python -m rebbi.demo report`, `python -m rebbi.demo rehearsal`.
 
-## 6. The results page
+Required behavior:
+- **Manifest** `runs/demo/manifest.csv`: one row per planned run with status pending, running,
+  complete, aborted_external or failed. A run left `running` by a killed process is reset to
+  pending at start-up.
+- **Atomic finish.** A run writes into `runs/demo/<run_id>.partial/`. Only after it ends and the
+  ledger check passes is the folder renamed to `runs/demo/<run_id>/`, its row appended to
+  results.csv, and the report regenerated. A crash leaves only a `.partial` folder (deleted when
+  that run is retried).
+- **Plan limit.** Any usage-limit, rate-limit, 429, overloaded or authentication error from an
+  agent stops all agents at once, marks the run aborted_external with the error text, and makes
+  run-all **exit with code 3**. The autopilot waits and restarts run-all, which retries that run
+  from scratch (never stitched). This is distinct from a Rebbi budget interruption, which is part
+  of the experiment.
+- **Exit codes:** 0 when nothing is pending or the stop time has passed (then write
+  `docs/demo/state/RUNS_DONE`); 3 on a plan limit; 1 on any other error, with a traceback in the log.
+- **Rehearsal** runs the whole pipeline (calibration, all six scenarios, report) against the
+  scripted model in a separate folder `runs/demo-rehearsal/`, at zero plan usage, labels
+  everything "scripted", and never touches `runs/demo/`.
 
-- `docs/demo/preview_toy.html` is the toy preview Pietro showed in class ("Rebbi Demo of Demo",
-  synthetic data). Reuse its layout, style tokens, light and dark themes and components: setup
+## 5. Data to collect (everything the final artifact needs)
+
+Per run folder `runs/demo/<run_id>/`:
+- `config.json`: scenario, exercise, repeat, models, T, budgets, shareable %, summit, settings
+  frozen from the manager, commit of the code.
+- `windows.jsonl`: one line per window with, for each agent, budget, shareable %, reserve, used,
+  lent, borrowed, expired, unmet (tokens refused), interrupted (bool), claim balance (scenario 4);
+  for the team, candidate score and reason, accepted (bool), best score so far, and the best
+  packing (`centers`, `radii`) so the artifact can draw the circles.
+- `events.jsonl`: every loan (from, to, tokens, window, decision, partial, limit_reason), settle,
+  interruption and acceptance, with a timestamp.
+- `rebbi.db`, `ledger_check.txt`, `solve_best.py`, and agent transcripts with any secret removed.
+
+Consolidated after every completed run: `runs/demo/results.csv`, `runs/demo/table.md`, and
+**`runs/demo/artifact_data.json`**: one JSON object with setup (models, T, summits, exercises,
+reference values and their sources), calibration, and every completed run's config, windows and
+events. This file is what Pietro will attach in the chat that builds the final artifact, so keep it
+self-describing (field names in plain words, units in the names, `null` for missing).
+
+## 6. The report: `docs/demo/results.html`
+
+`python -m rebbi.demo report` builds it from `runs/demo/artifact_data.json` only, and run-all calls
+it after every completed run, so a usable page always exists.
+- One self-contained HTML file (data embedded as JSON, no external fetch) that opens by
+  double-click. Reuse the layout, style tokens, light and dark themes and components of
+  `docs/demo/preview_toy.html` (the toy preview shown in class; do not change that file): setup
   strip, scenario tabs with rules and a budget table (Agent, Budget / window, Shareable (% of
-  budget) shown as "35% · 6k", Avg new work / window), replay controls, the hill with milestone
-  flags, the token-flow diagram (Rebbi hub, loans as moving dots, expired tokens to a bin),
-  per-agent budget bars, event log, race chart, results table. Do not change preview_toy.html.
-- Replace the simulation with the real per-window data embedded as JSON (no external fetch; one
-  self-contained file that opens by double-click). Where real data lacks a field the toy showed,
-  drop that element rather than fake it.
-- Title "Rebbi Demo". A measured-results banner states complete runs per scenario, model(s), task
-  names, dates and "Measured on Claude Pro in subscription mode". Keep a limitations section.
-  Missing cells say "not run". With more than one repeat, show the median and the range.
-- **Next step for Pietro** (put it in your hand-back message): open claude.ai, start a new chat in
-  the AI Studio project, attach `docs/demo/results.html` and `runs/demo/results.csv`, and ask
-  Claude to publish the results as an artifact. The HTML file also opens locally as a backup.
+  budget) as "35% · 6k", Avg new work / window), replay of recorded windows, the hill with
+  milestone flags and the summit line, the token-flow diagram, per-agent budget bars, event log,
+  race chart, results table. Add the best packing drawn as circles in the unit square per window.
+- Title "Rebbi Demo". A banner states complete runs per scenario, model(s), exercises, dates and
+  "Measured on Claude Pro in subscription mode". A limitations section. "not run" for missing
+  cells; with more than one repeat, the median and the range.
+- Where real data lacks a field the toy page showed, drop that element rather than fake it.
 
-## 7. Done means
+## 7. Tests (BUILD phase)
 
-- Branch `demo-scenarios` pushed, PR open, all tests passing, `rebbi check` PASS on every counted
-  run.
-- `runs/demo/manifest.csv`, `results.csv` and `table.md` committed; no transcripts with secrets;
-  no token anywhere in the diff.
-- `docs/demo/results.html`, `PLAN.md`, `DECISIONS.md`, `README.md` committed.
+Manifest state machine (including a run left `running`), atomic finish, plan-limit
+classification and exit code 3, the evaluator (valid packing, overlap, outside the square, wrong
+shape, forbidden import, timeout), calibration arithmetic, shareable % to reserve, the market claim
+math, ledger invariants after a scripted multi-agent run, and the report building from a tiny
+`artifact_data.json`. The full suite (97 existing tests plus yours) must pass before BUILD_DONE.
+
+## 8. FINAL phase
+
+1. `python -m rebbi.demo report`; check the numbers in results.html against results.csv.
+2. Write `docs/demo/DECISIONS.md` (every choice made without asking), `docs/demo/README.md`
+   (reproduce in 10 lines) and `docs/demo/HANDBACK.md` for Pietro: what ran (runs per scenario,
+   models, dates), the headline numbers with run counts, what failed or was not run, and the next
+   step: "In a new chat in the AI Studio project, attach docs/demo/results.html and
+   runs/demo/artifact_data.json and ask Claude to build the Rebbi Demo artifact from them."
+3. Check the diff for secrets, commit, then try `git push -u origin demo-scenarios` once; if it
+   fails, note it in HANDBACK.md and move on. Create `docs/demo/state/FINAL_DONE`.
+
+## Sources for section 3.1
+
+- OpenEvolve circle packing example (score trajectory, two-phase set-up): github.com/algorithmicsuperintelligence/openevolve, examples/circle_packing
+- ThetaEvolve, arXiv 2511.23473 (best-known n = 26, tolerance differences between pipelines)
+- Out-of-the-Box Global Optimization for Packing Problems, arXiv 2605.04850 (n = 32, 2.93957)
+- Hill Sampling for Test-Time Scaling, arXiv 2609.25510 (evaluator hardening against reward hacking)
+- AlgoTune, arXiv 2507.15887; ALE-Bench, arXiv 2506.09050 and its Docker images (the alternatives considered)

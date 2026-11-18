@@ -9,3 +9,4 @@ targets/
 /runs/
 .pytest_cache/
 build/
+logs/
