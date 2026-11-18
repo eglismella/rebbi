@@ -1,5 +1,8 @@
 # Hand-offs for Pietro and Nitya
 
+**HW9 (due Nov 18, 11:59pm): agent usability.** Done on branch `hw9/agent-usability`:
+[results](hw9/RESULTS.md), [protocol](hw9/PROTOCOL.md), [interface doc](AGENT_INTERFACE.md).
+
 **HW8 and Demo Day (HW8 due Nov 11, 11:59pm; Demo Day Nov 12).**
 Pietro: [presentation, live demo and the HW8 slide](hw8/pietro.md).
 Nitya: [install Rebbi and rerun the HW8 checks on your own computer](hw8/nitya.md).
