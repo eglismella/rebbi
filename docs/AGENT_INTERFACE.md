@@ -32,7 +32,7 @@ agent id, so an agent can only ever act as itself.
 | --- | --- | --- |
 | `REBBI_AGENT_ID` | yes | The agent this process speaks for. It must exist in the ledger, or the server exits at start-up. |
 | `REBBI_DB` | set it | Path of the fleet's ledger (SQLite). Every agent of a fleet points at the same file. Default `./rebbi.db`; the server exits if the file does not exist. |
-| `REBBI_SCENARIO` | set it | Path of the fleet file that holds the lending rules (section 5). If unset, the server uses the starter fleet's rules, **not** your edited file, without warning. `rebbi client-config` always sets it. |
+| `REBBI_SCENARIO` | no | Path of the fleet file that holds the lending rules (section 5). Default: the `scenario.toml` next to the ledger, as `rebbi init` writes it; failing that, the starter fleet's rules, with a warning on stderr. `rebbi client-config` always sets it. |
 | `REBBI_TRACE` | no | Append one JSON line per tool call (arguments, reply or error) to this file. |
 | `REBBI_LOG_LEVEL` | no | Server log level on stderr (default `INFO`). |
 
@@ -97,7 +97,8 @@ Your own state. No inputs.
 | `reserve_tokens` | What you will never lend |
 | `expected_demand_tokens` | What your owner declared you need this window; also never lent |
 | `will_lend` | Whether you lend at all |
-| `lendable` | What others could borrow from you now: `max(0, balance - reserve - declared demand)`, or 0 if you do not lend |
+| `borrowed_tokens` | Tokens of the loans you hold now |
+| `lendable` | What others could borrow from you now: `max(0, balance - borrowed_tokens - reserve - declared demand)`, or 0 if you do not lend. Borrowed tokens are never lent on |
 | `borrowed`, `lent` | Your active loans: `loan_id`, `lender`, `borrower`, `tokens`, `status`, `expires_at`, `returned_tokens` |
 | `limits` | The fleet's rules: `max_loan_tokens`, `min_loan_tokens`, `loan_ttl_s` (section 5) |
 
@@ -157,8 +158,7 @@ a resend is safe.
 
 For lenders: publish the reserve you will never lend, and whether you lend at all. `will_lend`
 defaults to `true`, so calling it with only a reserve makes you a lender. Reply: your
-`get_budget` fields without the loan lists (with `limits`). Note: `lendable` counts borrowed tokens too, so an
-agent that holds a loan should keep `will_lend` false.
+`get_budget` fields without the loan lists (with `limits`).
 
 ### Errors
 
@@ -183,7 +183,7 @@ Values are those of the starter fleet (`[rules]` in the fleet file).
 - **Loan expiry: 900 seconds** (`loan_ttl_s`). After that the loan closes as `expired` and any
   unspent part goes back, at the next `get_budget`, `post_handoff` or `settle` by any agent. Settle
   before then; a loan cannot be extended (ask again with a new `request_id`).
-- **Lender protection.** Only `balance - reserve - declared demand` can be lent. The lender
+- **Lender protection.** Only `balance - borrowed tokens - reserve - declared demand` can be lent. The lender
   with the most room is asked first.
 - **Metering.** Rebbi's ledger balance is what Rebbi enforces when your model calls go
   through Rebbi's gateway or harness (`rebbi.gateway`, `rebbi.fleet`). An outside client that
@@ -264,8 +264,9 @@ from `mcp.client.streamable_http` (and `import httpx2`).
 
 ## 8. Operator HTTP API (localhost only)
 
-`REBBI_DB=fleet/rebbi.db REBBI_SCENARIO=fleet/scenario.toml uvicorn rebbi.api:app_from_env --factory --port 8700`
+`REBBI_DB=fleet/rebbi.db REBBI_API_TOKEN=<secret> uvicorn rebbi.api:app_from_env --factory --port 8700`
 serves read-only JSON views (`GET /agents`, `/loans`, `/decisions`, `/invariants`) and the
 gateway's metering calls (`GET /gateway/check/{agent_id}`, and `POST /gateway/usage`, which
-debits any agent's balance). It has **no authentication**: bind it to localhost and never expose
-it. Agents use the MCP server, never this API.
+debits any agent's balance). Every request needs `Authorization: Bearer <REBBI_API_TOKEN>`; it
+refuses to start without a token unless `REBBI_API_NO_AUTH=1` is set (then keep it on
+localhost). Agents use the MCP server, never this API.

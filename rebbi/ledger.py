@@ -94,6 +94,7 @@ class AgentState:
     reserve_tokens: int
     expected_demand_tokens: int
     will_lend: bool
+    borrowed_tokens: int = 0  # tokens of the loans this agent holds now; never lent on to others
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -204,6 +205,9 @@ class Ledger:
         balance = c.execute(
             "SELECT COALESCE(SUM(tokens), 0) FROM entries WHERE agent_id = ?", (agent_id,)
         ).fetchone()[0]
+        borrowed = c.execute(
+            "SELECT COALESCE(SUM(tokens), 0) FROM loans WHERE borrower = ? AND status = 'active'", (agent_id,)
+        ).fetchone()[0]
         return AgentState(
             agent_id=row["agent_id"],
             owner=row["owner"],
@@ -211,6 +215,7 @@ class Ledger:
             reserve_tokens=row["reserve_tokens"],
             expected_demand_tokens=row["expected_demand_tokens"],
             will_lend=bool(row["will_lend"]),
+            borrowed_tokens=borrowed,
         )
 
     # -- usage (written by the gateway) ---------------------------------------

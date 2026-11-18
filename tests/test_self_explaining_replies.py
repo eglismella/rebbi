@@ -135,3 +135,39 @@ def test_rebbi_call_reports_an_unreachable_server_as_json(tmp_path, capsys, monk
     monkeypatch.chdir(tmp_path)
     assert cli(["call", "get_budget"]) == 2
     assert "could not reach Rebbi" in json.loads(capsys.readouterr().out)["error"]
+
+
+def test_borrowed_tokens_are_never_lent_on(broker):
+    ask(broker, 30_000)  # auditor-01: 40,000 own + 30,000 borrowed
+    broker.report_headroom("auditor-01", reserve_tokens=0, will_lend=True)
+    me = broker.budget("auditor-01")
+    assert (me["borrowed_tokens"], me["lendable"]) == (30_000, 40_000)
+    broker.report_headroom("analyst-07", 200_000)  # only auditor-01 is left as a lender
+    r = broker.post_handoff("writer-03", HandoffRequest(goal="x", budget_tokens=60_000))
+    assert (r["from"], r["tokens"]) == ("auditor-01", 40_000)
+
+
+def test_the_fleet_file_next_to_the_ledger_is_used(tmp_path):
+    from rebbi import scenario as sc
+
+    cli(["init", str(tmp_path / "fleet")])
+    path, why = sc.for_ledger(tmp_path / "fleet" / "rebbi.db")
+    assert (path, why) == ((tmp_path / "fleet" / "scenario.toml").resolve(), "next to the ledger")
+    assert sc.for_ledger(tmp_path / "fleet" / "rebbi.db", "/x/given.toml")[1] == "given"
+
+
+def test_the_operator_api_needs_its_token(broker, monkeypatch, tmp_path):
+    from fastapi.testclient import TestClient
+
+    from rebbi.api import app_from_env, create_app
+
+    http = TestClient(create_app(broker, token="s3cret-operator-token"))
+    assert http.post("/gateway/usage", json={"agent_id": "auditor-01", "tokens": 5}).status_code == 401
+    ok = http.get("/agents", headers={"Authorization": "Bearer s3cret-operator-token"})
+    assert ok.status_code == 200
+    monkeypatch.delenv("REBBI_API_TOKEN", raising=False)
+    monkeypatch.delenv("REBBI_API_NO_AUTH", raising=False)
+    monkeypatch.setenv("REBBI_DB", str(tmp_path / "x.db"))
+    import pytest
+    with pytest.raises(RuntimeError):
+        app_from_env()

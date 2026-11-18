@@ -221,8 +221,9 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--port", type=int, default=8765, help="HTTP: port (default 8765)")
     p.add_argument("--tokens", default=os.environ.get("REBBI_TOKENS"), help="HTTP: token file (or REBBI_TOKENS)")
     p.add_argument("--db", default=os.environ.get("REBBI_DB", "rebbi.db"), help="ledger file (or REBBI_DB)")
-    p.add_argument("--scenario", default=os.environ.get("REBBI_SCENARIO", str(scenario.DEFAULT_SCENARIO)),
-                   help="fleet file with the lending rules (or REBBI_SCENARIO)")
+    p.add_argument("--scenario", default=os.environ.get("REBBI_SCENARIO"),
+                   help="fleet file with the lending rules (or REBBI_SCENARIO; default: scenario.toml next to the "
+                        "ledger, as `rebbi init` writes it)")
     p.add_argument("--trace", default=os.environ.get("REBBI_TRACE"), help="append a JSON line per tool call")
     args = p.parse_args(argv)
 
@@ -231,7 +232,11 @@ def main(argv: list[str] | None = None) -> None:
                         format="%(asctime)s %(name)s %(message)s")
     if not Path(args.db).exists():
         sys.exit(f"no ledger at {args.db}: create one with `rebbi init <folder>` or `rebbi --db {args.db} seed`")
-    sc = scenario.load(args.scenario)
+    fleet_file, why = scenario.for_ledger(args.db, args.scenario)
+    if why == "packaged starter fleet":
+        log.warning("no fleet file given and none next to %s: using the starter fleet's rules (%s)",
+                    args.db, fleet_file)
+    sc = scenario.load(fleet_file)
     broker = Broker(Ledger(args.db), sc.rules)
     tracer = Tracer(args.trace)
 

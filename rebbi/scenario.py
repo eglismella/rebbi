@@ -63,6 +63,21 @@ class Scenario:
         return next(a for a in self.agents if a.id == agent_id)
 
 
+def for_ledger(db: str | Path, explicit: str | Path | None = None) -> tuple[Path, str]:
+    """Which fleet file a server for this ledger should use, and why.
+
+    An explicit path (REBBI_SCENARIO, --scenario) wins; then the scenario.toml that `rebbi init`
+    writes next to the ledger; then the default. Before this, a server started without
+    REBBI_SCENARIO silently used the starter rules even when the operator had edited the fleet file.
+    """
+    if explicit:
+        return Path(explicit), "given"
+    beside = Path(db).resolve().parent / "scenario.toml"
+    if beside.exists():
+        return beside, "next to the ledger"
+    return DEFAULT_SCENARIO, "default" if DEFAULT_SCENARIO == _REPO_SCENARIO else "packaged starter fleet"
+
+
 def load(path: str | Path = DEFAULT_SCENARIO) -> Scenario:
     data = tomllib.loads(Path(path).read_text(encoding="utf-8"))
     return Scenario(

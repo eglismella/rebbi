@@ -55,7 +55,7 @@ something is ambiguous, pick the simplest option that keeps the comparison fair,
    git checkout -b demo-scenarios
    python -m venv .venv
    .venv\Scripts\python -m pip install -e ".[test]"
-   .venv\Scripts\python -m pytest -q            # expect 94 passed
+   .venv\Scripts\python -m pytest -q            # expect 97 passed
    .venv\Scripts\python scripts\check_api.py    # must report subscription mode
    .venv\Scripts\python -m rebbi fetch-target
    ```

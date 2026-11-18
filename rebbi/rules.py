@@ -25,10 +25,12 @@ class Offer:
 
 
 def lendable(agent: AgentState) -> int:
-    """Tokens an agent can lend without touching its reserve or the demand its owner declared."""
+    """Tokens an agent can lend without touching its reserve, the demand its owner declared, or tokens it borrowed."""
     if not agent.will_lend:
         return 0
-    return max(0, agent.balance - agent.reserve_tokens - agent.expected_demand_tokens)
+    # Borrowed tokens are never lent on: a borrower that also lends could otherwise pass a loan
+    # along (found by the HW9 review). The agent's own tokens stay lendable above its reserve.
+    return max(0, agent.balance - agent.borrowed_tokens - agent.reserve_tokens - agent.expected_demand_tokens)
 
 
 def rank_lenders(
