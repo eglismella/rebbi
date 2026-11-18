@@ -8,6 +8,7 @@
     python -m rebbi fetch-target --target llm-0.12
     rebbi init fleet                 # a fleet folder anywhere: fleet file, seeded ledger, HTTP tokens
     rebbi client-config --dir fleet --agent auditor-01   # the .mcp.json entry for one agent
+    rebbi call post_handoff '{"goal": "audit", "budget_tokens": 30000}'   # one call, from a shell
 """
 
 from __future__ import annotations
@@ -112,8 +113,16 @@ def main(argv: list[str] | None = None) -> int:
     cc.add_argument("--agent", required=True)
     cc.add_argument("--trace", help="stdio: log every tool call to this JSONL file")
     cc.add_argument("--http", metavar="URL", help="connect to `rebbi-mcp --http` at this URL instead of stdio")
+    call_p = sub.add_parser("call", help="call one Rebbi tool through an .mcp.json connection; prints JSON")
+    call_p.add_argument("tool", choices=["get_budget", "post_handoff", "settle", "report_headroom"])
+    call_p.add_argument("arguments", nargs="?", help="the tool's arguments as a JSON object")
+    call_p.add_argument("--config", type=Path, default=Path(".mcp.json"), help="default: ./.mcp.json")
     args = p.parse_args(argv)
 
+    if args.cmd == "call":
+        from rebbi.call import main as call_main
+
+        return call_main(args.tool, args.arguments, args.config)
     if args.cmd == "init":
         return init(args.folder, args.force)
     if args.cmd == "client-config":

@@ -1,0 +1,98 @@
+
+>>> get_budget {}
+{
+  "agent_id": "auditor-01",
+  "owner": "platform-team",
+  "balance": 7000,
+  "reserve_tokens": 0,
+  "expected_demand_tokens": 0,
+  "will_lend": false,
+  "lendable": 0,
+  "borrowed": [],
+  "lent": [],
+  "limits": {
+    "max_loan_tokens": 60000,
+    "min_loan_tokens": 5000,
+    "loan_ttl_s": 900
+  }
+}
+
+>>> post_handoff {"goal": "audit", "budget_tokens": 100000, "request_id": "a"}
+{
+  "decision": "LEND",
+  "loan_id": 1,
+  "tokens": 60000,
+  "requested": 100000,
+  "from": "analyst-07",
+  "expires_at": "2026-11-18T04:15:33+00:00",
+  "lender_reserve_intact": true,
+  "partial": true,
+  "shortfall_tokens": 40000,
+  "limit_reason": "loan cap",
+  "next_step": "This loan covers 60000 of the 100000 tokens you asked for: one loan is capped at 60000 tokens. Ask again with a new request_id for the rest, or plan the job around the shortfall.",
+  "limits": {
+    "max_loan_tokens": 60000,
+    "min_loan_tokens": 5000,
+    "loan_ttl_s": 900
+  },
+  "decision_id": 1
+}
+
+>>> post_handoff {"goal": "audit", "budget_tokens": 100000, "request_id": "b"}
+{
+  "decision": "LEND",
+  "loan_id": 2,
+  "tokens": 20000,
+  "requested": 100000,
+  "from": "analyst-07",
+  "expires_at": "2026-11-18T04:15:33+00:00",
+  "lender_reserve_intact": true,
+  "partial": true,
+  "shortfall_tokens": 80000,
+  "limit_reason": "lender room",
+  "next_step": "This loan covers 20000 of the 100000 tokens you asked for: that is all the best lender has above its reserve. Ask again with a new request_id for the rest, or plan the job around the shortfall.",
+  "limits": {
+    "max_loan_tokens": 60000,
+    "min_loan_tokens": 5000,
+    "loan_ttl_s": 900
+  },
+  "decision_id": 2
+}
+
+>>> post_handoff {"goal": "audit", "budget_tokens": 10000, "request_id": "c"}
+{
+  "decision": "CANNOT_MOVE",
+  "requested": 10000,
+  "blocker": "no agent has spare capacity above its reserve",
+  "next_step": "wait and ask again, or finish on a cheaper model",
+  "limits": {
+    "max_loan_tokens": 60000,
+    "min_loan_tokens": 5000,
+    "loan_ttl_s": 900
+  },
+  "decision_id": 3
+}
+
+>>> settle {"loan_id": 999}
+ERROR: Error executing tool settle: settle refused: no loan 999
+
+>>> post_handoff {"goal": "something else", "budget_tokens": 5000, "request_id": "a"}
+ERROR: Error executing tool post_handoff: post_handoff refused: request_id 'a' was already used for a different request
+
+>>> post_handoff {"goal": "hand this job to an agent with sql.read", "budget_tokens": 5000, "requires_tools": ["sql.read"], "request_id": "d"}
+{
+  "decision": "CANNOT_MOVE",
+  "requested": 5000,
+  "blocker": "no agent has spare capacity above its reserve",
+  "next_step": "wait and ask again, or finish on a cheaper model",
+  "limits": {
+    "max_loan_tokens": 60000,
+    "min_loan_tokens": 5000,
+    "loan_ttl_s": 900
+  },
+  "ignored_fields": [
+    "requires_tools"
+  ],
+  "note": "Rebbi lends tokens only: requires_tools and requires_scopes are recorded with the decision but not checked, and no job is moved to another agent.",
+  "decision_id": 4
+}

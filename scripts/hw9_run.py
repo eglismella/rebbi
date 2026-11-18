@@ -17,6 +17,7 @@ import json
 import os
 import shutil
 import signal
+import sqlite3
 import subprocess
 import sys
 import time
@@ -55,7 +56,7 @@ def rebbi(python: str, *args: str) -> str:
                           cwd="/").stdout
 
 
-def setup(run: Path, prompt: str, python: str, http_port: int | None) -> None:
+def setup(run: Path, prompt: str, python: str, http_port: int | None, keep_git: bool = False) -> None:
     if run.exists():
         sys.exit(f"{run} exists; use a new run folder")
     fleet, client = run / "fleet", run / "client"
@@ -63,7 +64,10 @@ def setup(run: Path, prompt: str, python: str, http_port: int | None) -> None:
     rebbi(python, "init", str(fleet))
     shutil.copyfile(ROOT / "docs" / "AGENT_INTERFACE.md", client / "AGENT_INTERFACE.md")
     shutil.copyfile(ROOT / "specs" / "dep-audit-v1.md", client / "dep-audit-v1.md")
-    shutil.copytree(ROOT / "targets" / "sqlite-utils", client / "target", ignore=shutil.ignore_patterns(".git"))
+    # R1 copied the target without .git, so the client could not find the commit the template asks
+    # for (a test set-up mistake, not Rebbi's). --keep-git (R4) leaves the shallow clone's .git in.
+    shutil.copytree(ROOT / "targets" / "sqlite-utils", client / "target",
+                    ignore=None if keep_git else shutil.ignore_patterns(".git"))
     if http_port:
         url = f"http://127.0.0.1:{http_port}/mcp"
         config = rebbi(python, "client-config", "--dir", str(fleet), "--agent", "auditor-01", "--http", url)
@@ -93,7 +97,15 @@ def collect(run: Path) -> int:
             os.killpg(int(pid_file.read_text()), signal.SIGTERM)
         except ProcessLookupError:
             pass
-    for name in ("rebbi.db", "scenario.toml", "trace.jsonl"):
+    time.sleep(1)
+    # The ledger runs in WAL mode: copy it through SQLite's backup API, not as a file, or
+    # transactions still in rebbi.db-wal are lost (the first H1 collect read an empty ledger).
+    src = sqlite3.connect(run / "fleet" / "rebbi.db")
+    dst = sqlite3.connect(run / "rebbi.db")
+    src.backup(dst)
+    dst.close()
+    src.close()
+    for name in ("scenario.toml", "trace.jsonl"):
         if (run / "fleet" / name).exists():
             shutil.copyfile(run / "fleet" / name, run / name)
     for name in ("budget.json", "report.md", "worklog.md"):
@@ -119,11 +131,12 @@ def main() -> int:
     s.add_argument("--prompt", choices=sorted(PROMPTS), required=True)
     s.add_argument("--python", required=True, help="python of a venv with rebbi installed (not the checkout)")
     s.add_argument("--http-port", type=int)
+    s.add_argument("--keep-git", action="store_true", help="keep target/.git so the commit can be read")
     c = sub.add_parser("collect")
     c.add_argument("run", type=Path)
     args = p.parse_args()
     if args.cmd == "setup":
-        setup(args.run.resolve(), args.prompt, args.python, args.http_port)
+        setup(args.run.resolve(), args.prompt, args.python, args.http_port, args.keep_git)
         return 0
     return collect(args.run.resolve())
 

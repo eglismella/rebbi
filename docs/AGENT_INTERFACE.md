@@ -7,8 +7,8 @@ and replies at once. When the job ends, the borrower settles the loan and whatev
 not spend goes back to the lender.
 
 This page is everything an agent, or the person wiring one up, needs to use Rebbi. It
-covers what Rebbi offers, how to connect, each tool's inputs and outputs, the limits, and
-one worked example. It describes Rebbi as of the commit you are reading.
+covers what Rebbi offers, how to connect, each tool's inputs and outputs, the limits, a
+shell command for agents without MCP tools, and one worked example. It describes Rebbi as of the commit you are reading.
 
 ## 1. What Rebbi offers, and what it does not
 
@@ -94,6 +94,7 @@ Your own state. No inputs.
 | `will_lend` | Whether you lend at all |
 | `lendable` | What others could borrow from you now: `max(0, balance - reserve - declared demand)`, or 0 if you do not lend |
 | `borrowed`, `lent` | Your active loans: `loan_id`, `lender`, `borrower`, `tokens`, `status`, `expires_at`, `returned_tokens` |
+| `limits` | The fleet's rules: `max_loan_tokens`, `min_loan_tokens`, `loan_ttl_s` (section 5) |
 
 ### `post_handoff(goal, budget_tokens, ...)`
 
@@ -114,16 +115,22 @@ Reply when Rebbi lends:
 | --- | --- |
 | `decision` | `"LEND"`: the tokens are already in your balance |
 | `loan_id` | Pass it to `settle` |
-| `tokens` | What you got. **It can be less than you asked** (section 5) |
+| `tokens` | What you got. It can be less than you asked: see `partial` |
+| `partial` | `true` when `tokens` is less than `requested` |
+| `shortfall_tokens` | `requested - tokens` (0 for a full loan) |
+| `limit_reason` | Only when partial: `"loan cap"` (one loan cannot exceed `max_loan_tokens`) or `"lender room"` (the best lender had no more above its reserve) |
+| `next_step` | Only when partial: what to do about the shortfall |
 | `requested` | What you asked for |
 | `from` | The lender |
 | `expires_at` | UTC time when the loan's extra allowance stops |
 | `lender_reserve_intact` | Always true: a loan never takes a lender below its reserve |
 | `considered` | Every other agent, with `lendable` and the reason it was or was not used |
+| `limits` | The fleet's rules, as in `get_budget` |
+| `ignored_fields`, `note` | Only when you sent `requires_tools` or `requires_scopes`: Rebbi records them but does not check them |
 | `decision_id` | The decision's id in the ledger |
 
 Reply when it cannot: `decision: "CANNOT_MOVE"`, `requested`, `blocker` (why), `next_step`,
-`considered`, `decision_id`. Nothing is booked.
+`considered`, `limits`, `decision_id` (and `ignored_fields`, `note` as above). Nothing is booked.
 
 **Idempotency.** Resend a request with the same `request_id` and the same arguments, and you
 get the first reply again with `replayed: true` (and the loan's current `loan_status`): never
@@ -148,9 +155,9 @@ For lenders: publish the reserve you will never lend, and whether you lend at al
 
 A refused call comes back as an MCP tool error (`isError: true`). Causes: an unknown agent; a
 `request_id` over 128 characters or reused for a different request; `settle` on a loan that
-does not exist or is not yours; an `outcome` other than `done` or `abandoned`. **Today the error
-text is only `Error executing tool <name>`, without the reason.** Arguments of the wrong type
-are rejected with a validation message that names the field.
+does not exist or is not yours; an `outcome` other than `done` or `abandoned`. The error text
+gives the reason, for example `Error executing tool settle: settle refused: no loan 999`.
+Arguments of the wrong type are rejected with a validation message that names the field.
 
 ## 5. Permissions and limits
 
@@ -159,8 +166,8 @@ Values are those of the starter fleet (`[rules]` in the fleet file).
 - **Identity.** stdio: fixed by `REBBI_AGENT_ID`. HTTP: fixed by the bearer token. An agent
   can read only its own budget and settle only its own loans.
 - **Loan cap: 60,000 tokens per loan** (`max_loan_tokens`). Asking for more returns a `LEND`
-  for at most the cap, or for what the best lender has room for. The reply does not flag
-  this: compare `tokens` with `requested`. You may ask again with a new `request_id`.
+  for at most the cap, or for what the best lender has room for, marked `partial: true` with
+  the shortfall and the reason. Ask again with a new `request_id` for the rest.
 - **Minimum loan: 5,000** (`min_loan_tokens`). A lender with less room than that is skipped.
 - **Loan expiry: 900 seconds** (`loan_ttl_s`). After that the loan closes itself and any
   unspent part goes back; settle before then.
@@ -173,7 +180,22 @@ Values are those of the starter fleet (`[rules]` in the fleet file).
 - **Scale.** One ledger file, one machine, SQLite with writes serialised. Fine for a fleet of
   tens of agents; not built for many fleets or high request rates.
 
-## 6. Example
+## 6. Calling Rebbi from a shell
+
+An agent without built-in MCP tools does not need to write a client. `rebbi call` makes one
+call through the connection in `./.mcp.json` (stdio or HTTP) and prints the reply as JSON; a
+refused call prints `{"error": "..."}` and exits 1.
+
+```bash
+rebbi call get_budget
+rebbi call post_handoff '{"goal": "finish dependency audit", "budget_tokens": 30000, "request_id": "audit-42"}'
+rebbi call settle '{"loan_id": 1}'
+rebbi call get_budget --config /path/to/.mcp.json
+```
+
+If `rebbi` is not on your PATH, use `<python> -m rebbi call ...` with the Python that has Rebbi installed.
+
+## 7. Example
 
 A fresh starter fleet, as auditor-01 (replies trimmed only where marked).
 
@@ -187,7 +209,16 @@ post_handoff {"goal": "finish dependency audit", "budget_tokens": 30000, "reques
     "expires_at": "2026-11-18T04:08:28+00:00", "lender_reserve_intact": true,
     "considered": [{"agent": "analyst-07", "lendable": 80000, "reason": "can lend 30000"},
                    {"agent": "writer-03", "lendable": 0, "reason": "no room above its reserve"}],
+    "partial": false, "shortfall_tokens": 0,
+    "limits": {"max_loan_tokens": 60000, "min_loan_tokens": 5000, "loan_ttl_s": 900},
     "decision_id": 1}
+
+post_handoff {"goal": "finish dependency audit", "budget_tokens": 100000, "request_id": "audit-43"}
+-> {"decision": "LEND", "loan_id": 2, "tokens": 50000, "requested": 100000, "from": "analyst-07",
+    "partial": true, "shortfall_tokens": 50000, "limit_reason": "lender room",
+    "next_step": "This loan covers 50000 of the 100000 tokens you asked for: that is all the best
+    lender has above its reserve. Ask again with a new request_id for the rest, or plan the job
+    around the shortfall.", ...}
 
 settle {"loan_id": 1, "outcome": "done"}
 -> {"loan_id": 1, "lender": "analyst-07", "borrower": "auditor-01", "tokens": 30000,
@@ -218,7 +249,7 @@ Over HTTP, replace `params` with
 `streamable_http_client("http://127.0.0.1:8765/mcp", http_client=httpx2.AsyncClient(headers={"Authorization": "Bearer <token>"}))`
 from `mcp.client.streamable_http` (and `import httpx2`).
 
-## 7. Read-only HTTP views (operators)
+## 8. Read-only HTTP views (operators)
 
 `REBBI_DB=fleet/rebbi.db REBBI_SCENARIO=fleet/scenario.toml uvicorn rebbi.api:app_from_env --factory --port 8700`
 serves `/agents`, `/loans`, `/decisions` and `/invariants` as JSON. It has no authentication:

@@ -31,10 +31,11 @@ from pathlib import Path
 from typing import Any, Literal
 
 from mcp.server.mcpserver import MCPServer
+from mcp.server.mcpserver.exceptions import ToolError
 
 from rebbi import scenario
 from rebbi.broker import Broker, HandoffRequest
-from rebbi.ledger import Ledger, UnknownAgent
+from rebbi.ledger import Ledger, LedgerError, UnknownAgent
 
 log = logging.getLogger("rebbi.mcp")
 
@@ -55,16 +56,24 @@ class Tracer:
         self.path = Path(path) if path else None
 
     def __call__(self, agent_id: str, tool: str, arguments: dict[str, Any], fn: Callable[[], Any]) -> Any:
-        if self.path is None:
-            return fn()
         entry: dict[str, Any] = {"at": datetime.now(UTC).isoformat(timespec="milliseconds"),
                                  "agent_id": agent_id, "tool": tool, "arguments": arguments}
         try:
             result = fn()
+        except LedgerError as exc:
+            # A refusal the agent can act on: send the reason, not the SDK's bare "Error executing tool".
+            # (Before HW9's fix the reason never reached the agent.)
+            entry["error"] = {"type": type(exc).__name__, "message": str(exc)}
+            if self.path is not None:
+                self._write(entry)
+            raise ToolError(f"{tool} refused: {exc}") from exc
         except Exception as exc:
             entry["error"] = {"type": type(exc).__name__, "message": str(exc)}
-            self._write(entry)
+            if self.path is not None:
+                self._write(entry)
             raise
+        if self.path is None:
+            return result
         entry["result"] = result
         self._write(entry)
         return result

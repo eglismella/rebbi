@@ -24,6 +24,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+from rebbi import scenario  # noqa: E402
 from rebbi.ledger import Ledger  # noqa: E402
 from rebbi.verify import passed, render, verify_report  # noqa: E402
 
@@ -104,11 +105,15 @@ def score(run: Path, mode: str, needed: int, agent: str) -> list[tuple[str, bool
         else:
             results.append(("C6 the job is done (verifier)", False, "no report.md"))
 
-    if needed > total_lent:
+    # C8 compares the stated need with the loans plus the agent's own starting budget: an agent
+    # with 7,000 tokens that needs 30,000 is right to ask for 23,000 or so. (Corrected after H1:
+    # the first version ignored the agent's own budget.)
+    own = next(a.budget_tokens for a in scenario.load(run / "scenario.toml").agents if a.id == agent)
+    if needed > total_lent + own:
         new_asks = len({e["arguments"].get("request_id") or f"#{i}" for i, e in enumerate(posts)})
         stated = bool(SHORTFALL_WORDS.search(text))
         results.append(("C8 noticed it got less than it needs", stated or new_asks > 1,
-                        f"needed {needed}, lent {total_lent}; asked {new_asks} time(s); "
+                        f"needed {needed}, own {own} + lent {total_lent}; asked {new_asks} time(s); "
                         f"shortfall stated in budget.json: {'yes' if stated else 'no'}"))
     return results
 
