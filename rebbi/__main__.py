@@ -45,21 +45,24 @@ def fetch(target: scenario.AuditTarget) -> int:
     return 0
 
 
-def init(folder: Path, force: bool) -> int:
+def init(folder: Path, force: bool, new_tokens: bool = False) -> int:
     """A fleet that lives outside the repository: what an operator sets up for outside agents."""
     folder.mkdir(parents=True, exist_ok=True)
     fleet, db, tokens = folder / "scenario.toml", folder / "rebbi.db", folder / "tokens.toml"
     if db.exists() and not force:
-        print(f"{db} already exists; pass --force to start the fleet over")
+        print(f"{db} already exists; pass --force to start the ledger over from {fleet}")
         return 1
-    if not fleet.exists() or force:
+    if not fleet.exists():
         shutil.copyfile(scenario.STARTER_FLEET, fleet)
     for suffix in ("", "-wal", "-shm"):
         Path(str(db) + suffix).unlink(missing_ok=True)
-    sc = scenario.load(fleet)
+    sc = scenario.load(fleet)  # --force keeps the operator's edited fleet file
     scenario.seed(Ledger(db), sc, utcnow())
+    old = tomllib.loads(tokens.read_text(encoding="utf-8")).get("tokens", {}) if tokens.exists() else {}
+    # Keep issued tokens so existing HTTP client configs keep working; new agents get new ones.
+    kept = {a.id: old[a.id] for a in sc.agents if a.id in old and not new_tokens}
     lines = ["# Bearer tokens for `rebbi-mcp --http`: one per agent. Keep this file private.", "[tokens]"]
-    lines += [f'"{a.id}" = "{secrets.token_urlsafe(24)}"' for a in sc.agents]
+    lines += [f'"{a.id}" = "{kept.get(a.id) or secrets.token_urlsafe(24)}"' for a in sc.agents]
     tokens.write_text("\n".join(lines) + "\n", encoding="utf-8")
     try:
         tokens.chmod(0o600)
@@ -107,7 +110,9 @@ def main(argv: list[str] | None = None) -> int:
     fetch_target.add_argument("--all", action="store_true", help="every repo in config/targets.toml")
     init_p = sub.add_parser("init", help="create a fleet folder: fleet file, seeded ledger and HTTP tokens")
     init_p.add_argument("folder", type=Path)
-    init_p.add_argument("--force", action="store_true", help="start an existing fleet over")
+    init_p.add_argument("--force", action="store_true",
+                        help="start the ledger over from the folder's (possibly edited) fleet file")
+    init_p.add_argument("--new-tokens", action="store_true", help="issue new HTTP tokens for every agent")
     cc = sub.add_parser("client-config", help="print the MCP client entry for one agent of a fleet folder")
     cc.add_argument("--dir", type=Path, required=True, help="the folder `rebbi init` created")
     cc.add_argument("--agent", required=True)
@@ -124,7 +129,7 @@ def main(argv: list[str] | None = None) -> int:
 
         return call_main(args.tool, args.arguments, args.config)
     if args.cmd == "init":
-        return init(args.folder, args.force)
+        return init(args.folder, args.force, args.new_tokens)
     if args.cmd == "client-config":
         return client_config(args.dir, args.agent, args.trace, args.http)
 

@@ -73,7 +73,7 @@ class Broker:
     def report_headroom(self, agent_id: str, reserve_tokens: int, will_lend: bool = True) -> dict[str, Any]:
         state = self.ledger.set_headroom(agent_id, reserve_tokens, will_lend, self.now())
         log.info("%s reports reserve %d, will_lend=%s", agent_id, reserve_tokens, will_lend)
-        return {**state.to_dict(), "lendable": lending.lendable(state)}
+        return {**state.to_dict(), "lendable": lending.lendable(state), "limits": self.limits()}
 
     def post_handoff(self, requester: str, request: HandoffRequest) -> dict[str, Any]:
         if len(request.request_id) > MAX_REQUEST_ID:
@@ -128,7 +128,6 @@ class Broker:
             break
         if response is None:
             response = _cannot_move(request, "no agent has spare capacity above its reserve", considered)
-        response["limits"] = self.limits()
         if request.requires_tools or request.requires_scopes:
             response["ignored_fields"] = [f for f in ("requires_tools", "requires_scopes") if getattr(request, f)]
             response["note"] = ("Rebbi lends tokens only: requires_tools and requires_scopes are recorded with the "
@@ -155,6 +154,8 @@ class Broker:
         if outcome not in ("done", "abandoned"):
             raise LedgerError("outcome must be 'done' or 'abandoned'")
         with self.ledger.atomic():
+            # A loan past its expiry has already closed itself; settling it must say so, not settle it.
+            self.ledger.expire_loans(self.now())
             loan = self.ledger.loan(loan_id)
             if loan["borrower"] != agent_id:
                 raise LedgerError(f"loan {loan_id} belongs to {loan['borrower']}, not {agent_id}")
@@ -177,6 +178,7 @@ class Broker:
         return response
 
     def _decided(self, requester: str, request: HandoffRequest, response: dict[str, Any], now: datetime):
+        response.setdefault("limits", self.limits())  # every post_handoff reply, including a non-positive ask
         response["decision_id"] = self.ledger.log_decision(requester, asdict(request), response, now)
         log.info("post_handoff from %s for %d tokens -> %s", requester, request.budget_tokens, response["decision"])
         return response

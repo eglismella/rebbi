@@ -30,10 +30,11 @@ agent id, so an agent can only ever act as itself.
 
 | Variable | Required | Meaning |
 | --- | --- | --- |
-| `REBBI_AGENT_ID` | yes | The agent this process speaks for. It must exist in the ledger. |
-| `REBBI_DB` | yes | Path of the fleet's ledger (SQLite). Every agent of a fleet points at the same file. |
-| `REBBI_SCENARIO` | yes, outside the repository | Path of the fleet file that holds the lending rules (section 5). |
+| `REBBI_AGENT_ID` | yes | The agent this process speaks for. It must exist in the ledger, or the server exits at start-up. |
+| `REBBI_DB` | set it | Path of the fleet's ledger (SQLite). Every agent of a fleet points at the same file. Default `./rebbi.db`; the server exits if the file does not exist. |
+| `REBBI_SCENARIO` | set it | Path of the fleet file that holds the lending rules (section 5). If unset, the server uses the starter fleet's rules, **not** your edited file, without warning. `rebbi client-config` always sets it. |
 | `REBBI_TRACE` | no | Append one JSON line per tool call (arguments, reply or error) to this file. |
+| `REBBI_LOG_LEVEL` | no | Server log level on stderr (default `INFO`). |
 
 **Streamable HTTP (one server for the whole fleet).** For agents on other machines, or
 clients that cannot launch a local process. Each agent sends its own bearer token, and the
@@ -45,7 +46,8 @@ rebbi-mcp --http --host 127.0.0.1 --port 8765 \
 # endpoint: http://127.0.0.1:8765/mcp   header: Authorization: Bearer <agent's token>
 ```
 
-A request without a valid token gets HTTP 401 and never reaches the ledger. Use
+The token file can also come from `REBBI_TOKENS`. A request without a valid token gets HTTP
+401 and never reaches the ledger. Use
 `--host 0.0.0.0` only behind TLS (a reverse proxy) on a network you trust: tokens travel in
 the header.
 
@@ -61,12 +63,15 @@ python -m venv .venv
 .venv/bin/rebbi client-config --dir fleet --agent auditor-01 --http http://127.0.0.1:8765/mcp
 ```
 
-`client-config` prints an `mcpServers` block with absolute paths. Claude Code reads it from
-`.mcp.json` in the project folder (or `claude --mcp-config <file>`); Claude Desktop and most
-other MCP clients read the same shape.
+`client-config` prints an `mcpServers` block with absolute paths. Claude Code reads it, stdio
+or HTTP, from `.mcp.json` in the project folder (or `claude --mcp-config <file>`), and so does
+`rebbi call` (section 6). Other MCP clients use the same `command`, `args` and `env` for stdio;
+check your client's documentation for how it takes an HTTP server and its headers.
 
 The starter fleet has three agents. Edit `fleet/scenario.toml` to change agents, budgets,
-reserves or rules, then `rebbi init fleet --force` (this starts the ledger over).
+reserves or rules, then `rebbi init fleet --force`: this starts the ledger over from your edited
+file and keeps the HTTP tokens already issued (`--new-tokens` replaces them, which breaks the
+HTTP client configs you handed out).
 
 | Agent | Budget | Reserve | Declared demand | Lends | Role in the starter fleet |
 | --- | ---: | ---: | ---: | --- | --- |
@@ -103,7 +108,7 @@ Ask for tokens. The name comes from the planned hand-off feature; today it only 
 | Input | Type | Default | Meaning |
 | --- | --- | --- | --- |
 | `goal` | string | required | What the tokens are for; logged with the decision |
-| `budget_tokens` | int | required | Tokens you ask for; must be positive |
+| `budget_tokens` | int | required | Tokens you ask for. Zero or less gets `CANNOT_MOVE`, not an error |
 | `request_id` | string, up to 128 chars | `""` | Your id for this request; see idempotency below |
 | `job_template`, `source_commit`, `context_ref` | string | `""` | Logged only |
 | `requires_tools`, `requires_scopes` | list of strings | `[]` | Logged only: Rebbi does not check them |
@@ -130,7 +135,8 @@ Reply when Rebbi lends:
 | `decision_id` | The decision's id in the ledger |
 
 Reply when it cannot: `decision: "CANNOT_MOVE"`, `requested`, `blocker` (why), `next_step`,
-`considered`, `limits`, `decision_id` (and `ignored_fields`, `note` as above). Nothing is booked.
+`considered` (empty for a non-positive ask), `limits`, `decision_id` (and `ignored_fields`,
+`note` as above). Nothing is booked.
 
 **Idempotency.** Resend a request with the same `request_id` and the same arguments, and you
 get the first reply again with `replayed: true` (and the loan's current `loan_status`): never
@@ -144,20 +150,24 @@ Close a loan you borrowed, once the job is done or abandoned (`outcome` is `"don
 `"abandoned"`). Unspent tokens go back to the lender, up to the loan amount: your own tokens
 count as spent first. Reply: the loan (`loan_id`, `lender`, `borrower`, `tokens`, `status:
 "settled"`, `expires_at`, `returned_tokens`) plus `outcome`. Settling a loan that is already
-closed returns it with `already_closed: true`, so a resend is safe.
+closed returns it as it is (`status` `"settled"` or `"expired"`) with `already_closed: true`, so
+a resend is safe.
 
 ### `report_headroom(reserve_tokens, will_lend=true)`
 
-For lenders: publish the reserve you will never lend, and whether you lend at all. Reply: your
-`get_budget` fields without the loan lists.
+For lenders: publish the reserve you will never lend, and whether you lend at all. `will_lend`
+defaults to `true`, so calling it with only a reserve makes you a lender. Reply: your
+`get_budget` fields without the loan lists (with `limits`). Note: `lendable` counts borrowed tokens too, so an
+agent that holds a loan should keep `will_lend` false.
 
 ### Errors
 
-A refused call comes back as an MCP tool error (`isError: true`). Causes: an unknown agent; a
-`request_id` over 128 characters or reused for a different request; `settle` on a loan that
-does not exist or is not yours; an `outcome` other than `done` or `abandoned`. The error text
-gives the reason, for example `Error executing tool settle: settle refused: no loan 999`.
-Arguments of the wrong type are rejected with a validation message that names the field.
+A refused call comes back as an MCP tool error (`isError: true`) whose text gives the reason, for
+example `Error executing tool settle: settle refused: no loan 999`. Causes: a `request_id` over 128
+characters or reused for a different request; `settle` on a loan that does not exist or is not
+yours. Arguments of the wrong type or value (including an `outcome` other than `done` or
+`abandoned`) are rejected with a validation message that names the field. An unknown agent never
+reaches a tool: the stdio server exits at start-up, and the HTTP server refuses its token.
 
 ## 5. Permissions and limits
 
@@ -168,9 +178,11 @@ Values are those of the starter fleet (`[rules]` in the fleet file).
 - **Loan cap: 60,000 tokens per loan** (`max_loan_tokens`). Asking for more returns a `LEND`
   for at most the cap, or for what the best lender has room for, marked `partial: true` with
   the shortfall and the reason. Ask again with a new `request_id` for the rest.
-- **Minimum loan: 5,000** (`min_loan_tokens`). A lender with less room than that is skipped.
-- **Loan expiry: 900 seconds** (`loan_ttl_s`). After that the loan closes itself and any
-  unspent part goes back; settle before then.
+- **Lender minimum: 5,000** (`min_loan_tokens`). A lender with less room than that is skipped.
+  A smaller ask is fine: asking for 1,000 gets 1,000.
+- **Loan expiry: 900 seconds** (`loan_ttl_s`). After that the loan closes as `expired` and any
+  unspent part goes back, at the next `get_budget`, `post_handoff` or `settle` by any agent. Settle
+  before then; a loan cannot be extended (ask again with a new `request_id`).
 - **Lender protection.** Only `balance - reserve - declared demand` can be lent. The lender
   with the most room is asked first.
 - **Metering.** Rebbi's ledger balance is what Rebbi enforces when your model calls go
@@ -183,8 +195,9 @@ Values are those of the starter fleet (`[rules]` in the fleet file).
 ## 6. Calling Rebbi from a shell
 
 An agent without built-in MCP tools does not need to write a client. `rebbi call` makes one
-call through the connection in `./.mcp.json` (stdio or HTTP) and prints the reply as JSON; a
-refused call prints `{"error": "..."}` and exits 1.
+call through the connection in `./.mcp.json` (stdio or HTTP) and prints the reply as JSON on
+stdout. A refused call prints `{"error": "..."}` and exits 1; a server it cannot reach prints
+`{"error": "could not reach Rebbi ..."}` and exits 2.
 
 ```bash
 rebbi call get_budget
@@ -249,8 +262,10 @@ Over HTTP, replace `params` with
 `streamable_http_client("http://127.0.0.1:8765/mcp", http_client=httpx2.AsyncClient(headers={"Authorization": "Bearer <token>"}))`
 from `mcp.client.streamable_http` (and `import httpx2`).
 
-## 8. Read-only HTTP views (operators)
+## 8. Operator HTTP API (localhost only)
 
 `REBBI_DB=fleet/rebbi.db REBBI_SCENARIO=fleet/scenario.toml uvicorn rebbi.api:app_from_env --factory --port 8700`
-serves `/agents`, `/loans`, `/decisions` and `/invariants` as JSON. It has no authentication:
-keep it on localhost.
+serves read-only JSON views (`GET /agents`, `/loans`, `/decisions`, `/invariants`) and the
+gateway's metering calls (`GET /gateway/check/{agent_id}`, and `POST /gateway/usage`, which
+debits any agent's balance). It has **no authentication**: bind it to localhost and never expose
+it. Agents use the MCP server, never this API.

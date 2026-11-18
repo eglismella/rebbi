@@ -227,7 +227,8 @@ def main(argv: list[str] | None = None) -> None:
     args = p.parse_args(argv)
 
     # stdout carries the MCP protocol in stdio mode, so logs go to stderr.
-    logging.basicConfig(stream=sys.stderr, level=logging.INFO, format="%(asctime)s %(name)s %(message)s")
+    logging.basicConfig(stream=sys.stderr, level=os.environ.get("REBBI_LOG_LEVEL", "INFO").upper(),
+                        format="%(asctime)s %(name)s %(message)s")
     if not Path(args.db).exists():
         sys.exit(f"no ledger at {args.db}: create one with `rebbi init <folder>` or `rebbi --db {args.db} seed`")
     sc = scenario.load(args.scenario)

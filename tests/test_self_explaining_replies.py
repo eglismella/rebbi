@@ -96,3 +96,42 @@ def test_rebbi_call_from_a_shell(tmp_path, capsys, monkeypatch):
     assert json.loads(capsys.readouterr().out)["decision"] == "LEND"
     assert cli(["call", "settle", '{"loan_id": 42}']) == 1
     assert "no loan 42" in json.loads(capsys.readouterr().out)["error"]
+
+
+# Found by the independent review of the HW9 write-up (docs/hw9/RESULTS.md, "Review"), fixed after the runs.
+
+def test_a_non_positive_ask_also_carries_limits(broker):
+    r = ask(broker, 0)
+    assert r["decision"] == "CANNOT_MOVE" and "limits" in r
+
+
+def test_report_headroom_carries_limits(broker):
+    assert "limits" in broker.report_headroom("analyst-07", 80_000)
+
+
+def test_settling_an_expired_loan_says_it_expired(broker, clock):
+    loan_id = ask(broker, 30_000)["loan_id"]
+    clock.advance(10_000)  # past loan_ttl_s
+    r = broker.settle("auditor-01", loan_id)
+    assert (r["status"], r["already_closed"]) == ("expired", True)
+
+
+def test_init_force_keeps_the_edited_fleet_file_and_tokens(tmp_path, capsys):
+    fleet = tmp_path / "fleet"
+    cli(["init", str(fleet)])
+    edited = (fleet / "scenario.toml").read_text().replace("max_loan_tokens = 60000", "max_loan_tokens = 40000")
+    (fleet / "scenario.toml").write_text(edited)
+    before = (fleet / "tokens.toml").read_text()
+    assert cli(["init", str(fleet), "--force"]) == 0
+    assert "max_loan_tokens = 40000" in (fleet / "scenario.toml").read_text()
+    assert (fleet / "tokens.toml").read_text() == before
+    assert cli(["init", str(fleet), "--force", "--new-tokens"]) == 0
+    assert (fleet / "tokens.toml").read_text() != before
+
+
+def test_rebbi_call_reports_an_unreachable_server_as_json(tmp_path, capsys, monkeypatch):
+    (tmp_path / ".mcp.json").write_text(json.dumps({"mcpServers": {"rebbi": {
+        "type": "http", "url": "http://127.0.0.1:9/mcp", "headers": {}}}}))
+    monkeypatch.chdir(tmp_path)
+    assert cli(["call", "get_budget"]) == 2
+    assert "could not reach Rebbi" in json.loads(capsys.readouterr().out)["error"]

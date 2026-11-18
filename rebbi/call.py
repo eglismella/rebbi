@@ -28,7 +28,7 @@ def _transport(entry: dict[str, Any]):
         http = httpx2.AsyncClient(headers=entry.get("headers", {}))
         return streamable_http_client(entry["url"], http_client=http), http
     return StdioServerParameters(command=entry["command"], args=entry.get("args", []),
-                                 env={**os.environ, **entry.get("env", {})}), None
+                                 env={**os.environ, "REBBI_LOG_LEVEL": "WARNING", **entry.get("env", {})}), None
 
 
 def call(tool: str, arguments: dict[str, Any], config: Path, server: str = "rebbi") -> tuple[bool, Any]:
@@ -58,7 +58,11 @@ def main(tool: str, raw_args: str | None, config: Path) -> int:
     if not config.exists():
         print(json.dumps({"error": f"no {config}: pass --config <path to .mcp.json>"}))
         return 2
-    ok, reply = call(tool, arguments, config)
+    try:
+        ok, reply = call(tool, arguments, config)
+    except Exception as exc:  # server not reachable, bad config: one JSON line, not a traceback
+        print(json.dumps({"error": f"could not reach Rebbi through {config}: {type(exc).__name__}: {exc}"}))
+        return 2
     print(json.dumps(reply if ok else {"error": reply}, indent=2))
     return 0 if ok else 1
 
