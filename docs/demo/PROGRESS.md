@@ -6,6 +6,7 @@
   the audit target repo `targets/sqlite-utils` is not cloned (gitignored); not related to the demo. Not fixed.
 - rebbi/demo.py moved to rebbi/video_demo.py so rebbi/demo can be a package (README refs updated).
 - rebbi/demo/hill.py: evaluator + starting solve.py (scores 1.02 for n=26, 1.18 for n=32). Ledger.grant added.
+- backend.py (SDK + scripted), market.py, team.py (window loop, gate, Rebbi top-up, calibration math) written; smoke OK.
 
 ## Next
-backend (real SDK + scripted), team/window loop, scenarios, run-all, report, tests, rehearsal, BUILD_DONE.
+runner (manifest, calibration, manager, run-all, results), report, tests, rehearsal, BUILD_DONE.
