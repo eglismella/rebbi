@@ -1,0 +1,2073 @@
+{
+ "config": {
+  "run_id": "s1-r2",
+  "scenario": "1",
+  "exercise": "A",
+  "repeat": 2,
+  "budgets": {
+   "planner": 15000,
+   "researcher": 15000,
+   "coder": 15000,
+   "evaluator": 15000,
+   "reviewer": 15000
+  },
+  "T": 75000,
+  "shareable_pct": {},
+  "rebbi": false,
+  "market": false,
+  "max_windows": 60,
+  "summit": 92.0,
+  "model": "claude-haiku-5-5",
+  "cost_prior": {
+   "planner_plan": 2176,
+   "researcher_spec": 3468,
+   "coder_code": 1738,
+   "evaluator_report": 767,
+   "reviewer_approve": 1190,
+   "reviewer_fix": 3533
+  },
+  "settings": {},
+  "replay": false,
+  "design": "v2.0",
+  "commit": "8081540e81695397286170e7cafa9e6dc17b80ec",
+  "scripted": false,
+  "machine": "pietro"
+ },
+ "summary": {
+  "run_id": "s1-r2",
+  "scenario": "1",
+  "exercise": "A",
+  "repeat": 2,
+  "model": "claude-haiku-5-5",
+  "T": 75000,
+  "budgets": "{\"planner\": 15000, \"researcher\": 15000, \"coder\": 15000, \"evaluator\": 15000, \"reviewer\": 15000}",
+  "shareable_pct": "",
+  "summit": 92.0,
+  "windows": 17,
+  "windows_to_summit": 17,
+  "final_score": 94.881,
+  "tokens_issued": 1275000,
+  "tokens_used": 477733,
+  "tokens_expired": 797391,
+  "interruptions": 14,
+  "cut_offs": 4,
+  "loans_count": 0,
+  "tokens_moved": 0,
+  "ledger_check": "PASS",
+  "status": "complete",
+  "started_at": "2026-11-18T10:30:23",
+  "ended_at": "2026-11-18T10:46:02",
+  "wall_seconds": 939,
+  "machine": "pietro"
+ },
+ "frames": [
+  {
+   "t": 1,
+   "phase": 0,
+   "score": 0.0,
+   "stages": {
+    "new": 50,
+    "spec": 5,
+    "coded": 0,
+    "reported": 0,
+    "shipped": 0
+   },
+   "B": [
+    15000,
+    15000,
+    15000,
+    15000,
+    15000
+   ],
+   "afs": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "used": [
+    1930,
+    15000,
+    0,
+    0,
+    0
+   ],
+   "lent": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "borrowed": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expired": [
+    13070,
+    0,
+    15000,
+    15000,
+    15000
+   ],
+   "unmet": [
+    0,
+    114644,
+    0,
+    0,
+    0
+   ],
+   "D": [
+    1930,
+    129644,
+    0,
+    0,
+    0
+   ],
+   "blocked": [
+    false,
+    true,
+    false,
+    false,
+    false
+   ],
+   "cut": [
+    false,
+    true,
+    false,
+    false,
+    false
+   ],
+   "denied": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "why": [
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "q": [
+    1,
+    55,
+    0,
+    0,
+    0
+   ],
+   "done": [
+    1,
+    5,
+    0,
+    0,
+    0
+   ],
+   "credit": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "loans": []
+  },
+  {
+   "t": 2,
+   "phase": 0,
+   "score": 0.0,
+   "stages": {
+    "new": 46,
+    "spec": 4,
+    "coded": 5,
+    "reported": 0,
+    "shipped": 0
+   },
+   "B": [
+    15000,
+    15000,
+    15000,
+    15000,
+    15000
+   ],
+   "afs": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "used": [
+    1874,
+    14060,
+    5976,
+    0,
+    0
+   ],
+   "lent": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "borrowed": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expired": [
+    13126,
+    940,
+    9024,
+    15000,
+    15000
+   ],
+   "unmet": [
+    0,
+    131560,
+    0,
+    0,
+    0
+   ],
+   "D": [
+    1874,
+    145620,
+    5976,
+    0,
+    0
+   ],
+   "blocked": [
+    false,
+    true,
+    false,
+    false,
+    false
+   ],
+   "cut": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "denied": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "why": [
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "q": [
+    1,
+    50,
+    5,
+    0,
+    0
+   ],
+   "done": [
+    1,
+    4,
+    5,
+    0,
+    0
+   ],
+   "credit": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "loans": []
+  },
+  {
+   "t": 3,
+   "phase": 0,
+   "score": 0.0,
+   "stages": {
+    "new": 42,
+    "spec": 4,
+    "coded": 4,
+    "reported": 5,
+    "shipped": 0
+   },
+   "B": [
+    15000,
+    15000,
+    15000,
+    15000,
+    15000
+   ],
+   "afs": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "used": [
+    2020,
+    13403,
+    9103,
+    3926,
+    0
+   ],
+   "lent": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "borrowed": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expired": [
+    12980,
+    1597,
+    5897,
+    11074,
+    15000
+   ],
+   "unmet": [
+    0,
+    126462,
+    0,
+    0,
+    0
+   ],
+   "D": [
+    2020,
+    139865,
+    9103,
+    3926,
+    0
+   ],
+   "blocked": [
+    false,
+    true,
+    false,
+    false,
+    false
+   ],
+   "cut": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "denied": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "why": [
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "q": [
+    1,
+    46,
+    4,
+    5,
+    0
+   ],
+   "done": [
+    1,
+    4,
+    4,
+    5,
+    0
+   ],
+   "credit": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "loans": []
+  },
+  {
+   "t": 4,
+   "phase": 0,
+   "score": 8.614,
+   "stages": {
+    "new": 37,
+    "spec": 5,
+    "coded": 4,
+    "reported": 4,
+    "shipped": 5
+   },
+   "B": [
+    15000,
+    15000,
+    15000,
+    15000,
+    15000
+   ],
+   "afs": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "used": [
+    1809,
+    14543,
+    6120,
+    3073,
+    4664
+   ],
+   "lent": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "borrowed": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expired": [
+    13191,
+    457,
+    8880,
+    11927,
+    10336
+   ],
+   "unmet": [
+    0,
+    110334,
+    0,
+    0,
+    0
+   ],
+   "D": [
+    1809,
+    124877,
+    6120,
+    3073,
+    4664
+   ],
+   "blocked": [
+    false,
+    true,
+    false,
+    false,
+    false
+   ],
+   "cut": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "denied": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "why": [
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "q": [
+    1,
+    42,
+    4,
+    4,
+    5
+   ],
+   "done": [
+    1,
+    5,
+    4,
+    4,
+    5
+   ],
+   "credit": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "loans": []
+  },
+  {
+   "t": 5,
+   "phase": 0,
+   "score": 16.604,
+   "stages": {
+    "new": 32,
+    "spec": 5,
+    "coded": 5,
+    "reported": 4,
+    "shipped": 9
+   },
+   "B": [
+    15000,
+    15000,
+    15000,
+    15000,
+    15000
+   ],
+   "afs": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "used": [
+    1832,
+    13933,
+    13911,
+    3084,
+    4983
+   ],
+   "lent": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "borrowed": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expired": [
+    13168,
+    1067,
+    1089,
+    11916,
+    10017
+   ],
+   "unmet": [
+    0,
+    94080,
+    0,
+    0,
+    0
+   ],
+   "D": [
+    1832,
+    108013,
+    13911,
+    3084,
+    4983
+   ],
+   "blocked": [
+    false,
+    true,
+    false,
+    false,
+    false
+   ],
+   "cut": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "denied": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "why": [
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "q": [
+    1,
+    37,
+    5,
+    4,
+    4
+   ],
+   "done": [
+    1,
+    5,
+    5,
+    4,
+    4
+   ],
+   "credit": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "loans": []
+  },
+  {
+   "t": 6,
+   "phase": 0,
+   "score": 24.719,
+   "stages": {
+    "new": 27,
+    "spec": 5,
+    "coded": 5,
+    "reported": 5,
+    "shipped": 13
+   },
+   "B": [
+    15000,
+    15000,
+    15000,
+    15000,
+    15000
+   ],
+   "afs": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "used": [
+    1909,
+    13042,
+    8635,
+    3714,
+    4024
+   ],
+   "lent": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "borrowed": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expired": [
+    13091,
+    1958,
+    6365,
+    11286,
+    10976
+   ],
+   "unmet": [
+    0,
+    77760,
+    0,
+    0,
+    0
+   ],
+   "D": [
+    1909,
+    90802,
+    8635,
+    3714,
+    4024
+   ],
+   "blocked": [
+    false,
+    true,
+    false,
+    false,
+    false
+   ],
+   "cut": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "denied": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "why": [
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "q": [
+    1,
+    32,
+    5,
+    5,
+    4
+   ],
+   "done": [
+    1,
+    5,
+    5,
+    5,
+    4
+   ],
+   "credit": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "loans": []
+  },
+  {
+   "t": 7,
+   "phase": 0,
+   "score": 31.96,
+   "stages": {
+    "new": 24,
+    "spec": 3,
+    "coded": 5,
+    "reported": 5,
+    "shipped": 18
+   },
+   "B": [
+    15000,
+    15000,
+    15000,
+    15000,
+    15000
+   ],
+   "afs": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "used": [
+    2215,
+    15124,
+    9541,
+    4023,
+    6508
+   ],
+   "lent": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "borrowed": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expired": [
+    12785,
+    0,
+    5459,
+    10977,
+    8492
+   ],
+   "unmet": [
+    0,
+    68756,
+    0,
+    0,
+    0
+   ],
+   "D": [
+    2215,
+    83880,
+    9541,
+    4023,
+    6508
+   ],
+   "blocked": [
+    false,
+    true,
+    false,
+    false,
+    false
+   ],
+   "cut": [
+    false,
+    true,
+    false,
+    false,
+    false
+   ],
+   "denied": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "why": [
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "q": [
+    1,
+    27,
+    5,
+    5,
+    5
+   ],
+   "done": [
+    1,
+    3,
+    5,
+    5,
+    5
+   ],
+   "credit": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "loans": []
+  },
+  {
+   "t": 8,
+   "phase": 0,
+   "score": 41.074,
+   "stages": {
+    "new": 21,
+    "spec": 3,
+    "coded": 3,
+    "reported": 5,
+    "shipped": 23
+   },
+   "B": [
+    15000,
+    15000,
+    15000,
+    15000,
+    15000
+   ],
+   "afs": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "used": [
+    2059,
+    15000,
+    7116,
+    4098,
+    6016
+   ],
+   "lent": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "borrowed": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expired": [
+    12941,
+    0,
+    7884,
+    10902,
+    8984
+   ],
+   "unmet": [
+    0,
+    61248,
+    0,
+    0,
+    0
+   ],
+   "D": [
+    2059,
+    76248,
+    7116,
+    4098,
+    6016
+   ],
+   "blocked": [
+    false,
+    true,
+    false,
+    false,
+    false
+   ],
+   "cut": [
+    false,
+    true,
+    false,
+    false,
+    false
+   ],
+   "denied": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "why": [
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "q": [
+    1,
+    24,
+    3,
+    5,
+    5
+   ],
+   "done": [
+    1,
+    3,
+    3,
+    5,
+    5
+   ],
+   "credit": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "loans": []
+  },
+  {
+   "t": 9,
+   "phase": 0,
+   "score": 48.315,
+   "stages": {
+    "new": 19,
+    "spec": 2,
+    "coded": 3,
+    "reported": 3,
+    "shipped": 28
+   },
+   "B": [
+    15000,
+    15000,
+    15000,
+    15000,
+    15000
+   ],
+   "afs": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "used": [
+    2013,
+    15000,
+    5014,
+    5046,
+    6566
+   ],
+   "lent": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "borrowed": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expired": [
+    12987,
+    0,
+    9986,
+    9954,
+    8434
+   ],
+   "unmet": [
+    0,
+    57391,
+    0,
+    0,
+    0
+   ],
+   "D": [
+    2013,
+    72391,
+    5014,
+    5046,
+    6566
+   ],
+   "blocked": [
+    false,
+    true,
+    false,
+    false,
+    false
+   ],
+   "cut": [
+    false,
+    true,
+    false,
+    false,
+    false
+   ],
+   "denied": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "why": [
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "q": [
+    1,
+    21,
+    3,
+    3,
+    5
+   ],
+   "done": [
+    1,
+    2,
+    3,
+    3,
+    5
+   ],
+   "credit": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "loans": []
+  },
+  {
+   "t": 10,
+   "phase": 0,
+   "score": 54.682,
+   "stages": {
+    "new": 16,
+    "spec": 3,
+    "coded": 2,
+    "reported": 3,
+    "shipped": 31
+   },
+   "B": [
+    15000,
+    15000,
+    15000,
+    15000,
+    15000
+   ],
+   "afs": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "used": [
+    2311,
+    13577,
+    6027,
+    2492,
+    4965
+   ],
+   "lent": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "borrowed": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expired": [
+    12689,
+    1423,
+    8973,
+    12508,
+    10035
+   ],
+   "unmet": [
+    0,
+    52320,
+    0,
+    0,
+    0
+   ],
+   "D": [
+    2311,
+    65897,
+    6027,
+    2492,
+    4965
+   ],
+   "blocked": [
+    false,
+    true,
+    false,
+    false,
+    false
+   ],
+   "cut": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "denied": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "why": [
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "q": [
+    1,
+    19,
+    2,
+    3,
+    3
+   ],
+   "done": [
+    1,
+    3,
+    2,
+    3,
+    3
+   ],
+   "credit": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "loans": []
+  },
+  {
+   "t": 11,
+   "phase": 1,
+   "score": 58.926,
+   "stages": {
+    "new": 13,
+    "spec": 3,
+    "coded": 3,
+    "reported": 2,
+    "shipped": 34
+   },
+   "B": [
+    15000,
+    15000,
+    15000,
+    15000,
+    15000
+   ],
+   "afs": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "used": [
+    1891,
+    11997,
+    5894,
+    1503,
+    4315
+   ],
+   "lent": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "borrowed": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expired": [
+    13109,
+    3003,
+    9106,
+    13497,
+    10685
+   ],
+   "unmet": [
+    0,
+    43186,
+    0,
+    0,
+    0
+   ],
+   "D": [
+    1891,
+    55183,
+    5894,
+    1503,
+    4315
+   ],
+   "blocked": [
+    false,
+    true,
+    false,
+    false,
+    false
+   ],
+   "cut": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "denied": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "why": [
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "q": [
+    1,
+    16,
+    3,
+    2,
+    3
+   ],
+   "done": [
+    1,
+    3,
+    3,
+    2,
+    3
+   ],
+   "credit": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "loans": []
+  },
+  {
+   "t": 12,
+   "phase": 1,
+   "score": 69.663,
+   "stages": {
+    "new": 9,
+    "spec": 4,
+    "coded": 3,
+    "reported": 3,
+    "shipped": 36
+   },
+   "B": [
+    15000,
+    15000,
+    15000,
+    15000,
+    15000
+   ],
+   "afs": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "used": [
+    1512,
+    14738,
+    8417,
+    2195,
+    2725
+   ],
+   "lent": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "borrowed": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expired": [
+    13488,
+    262,
+    6583,
+    12805,
+    12275
+   ],
+   "unmet": [
+    0,
+    30177,
+    0,
+    0,
+    0
+   ],
+   "D": [
+    1512,
+    44915,
+    8417,
+    2195,
+    2725
+   ],
+   "blocked": [
+    false,
+    true,
+    false,
+    false,
+    false
+   ],
+   "cut": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "denied": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "why": [
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "q": [
+    1,
+    13,
+    3,
+    3,
+    2
+   ],
+   "done": [
+    1,
+    4,
+    3,
+    3,
+    2
+   ],
+   "credit": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "loans": []
+  },
+  {
+   "t": 13,
+   "phase": 1,
+   "score": 74.407,
+   "stages": {
+    "new": 5,
+    "spec": 4,
+    "coded": 4,
+    "reported": 3,
+    "shipped": 39
+   },
+   "B": [
+    15000,
+    15000,
+    15000,
+    15000,
+    15000
+   ],
+   "afs": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "used": [
+    1378,
+    13746,
+    8988,
+    2363,
+    4424
+   ],
+   "lent": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "borrowed": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expired": [
+    13622,
+    1254,
+    6012,
+    12637,
+    10576
+   ],
+   "unmet": [
+    0,
+    16800,
+    0,
+    0,
+    0
+   ],
+   "D": [
+    1378,
+    30546,
+    8988,
+    2363,
+    4424
+   ],
+   "blocked": [
+    false,
+    true,
+    false,
+    false,
+    false
+   ],
+   "cut": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "denied": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "why": [
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "q": [
+    1,
+    9,
+    4,
+    3,
+    3
+   ],
+   "done": [
+    1,
+    4,
+    4,
+    3,
+    3
+   ],
+   "credit": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "loans": []
+  },
+  {
+   "t": 14,
+   "phase": 1,
+   "score": 80.649,
+   "stages": {
+    "new": 3,
+    "spec": 2,
+    "coded": 4,
+    "reported": 4,
+    "shipped": 42
+   },
+   "B": [
+    15000,
+    15000,
+    15000,
+    15000,
+    15000
+   ],
+   "afs": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "used": [
+    1355,
+    12011,
+    10684,
+    3060,
+    4903
+   ],
+   "lent": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "borrowed": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expired": [
+    13645,
+    2989,
+    4316,
+    11940,
+    10097
+   ],
+   "unmet": [
+    0,
+    10386,
+    0,
+    0,
+    0
+   ],
+   "D": [
+    1355,
+    22397,
+    10684,
+    3060,
+    4903
+   ],
+   "blocked": [
+    false,
+    true,
+    false,
+    false,
+    false
+   ],
+   "cut": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "denied": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "why": [
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "q": [
+    1,
+    5,
+    4,
+    4,
+    3
+   ],
+   "done": [
+    1,
+    2,
+    4,
+    4,
+    3
+   ],
+   "credit": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "loans": []
+  },
+  {
+   "t": 15,
+   "phase": 1,
+   "score": 87.516,
+   "stages": {
+    "new": 0,
+    "spec": 3,
+    "coded": 2,
+    "reported": 4,
+    "shipped": 46
+   },
+   "B": [
+    15000,
+    15000,
+    15000,
+    15000,
+    15000
+   ],
+   "afs": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "used": [
+    1291,
+    12833,
+    4879,
+    4553,
+    6103
+   ],
+   "lent": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "borrowed": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expired": [
+    13709,
+    2167,
+    10121,
+    10447,
+    8897
+   ],
+   "unmet": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "D": [
+    1291,
+    12833,
+    4879,
+    4553,
+    6103
+   ],
+   "blocked": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "cut": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "denied": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "why": [
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "q": [
+    1,
+    3,
+    2,
+    4,
+    4
+   ],
+   "done": [
+    1,
+    3,
+    2,
+    4,
+    4
+   ],
+   "credit": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "loans": []
+  },
+  {
+   "t": 16,
+   "phase": 1,
+   "score": 91.76,
+   "stages": {
+    "new": 0,
+    "spec": 0,
+    "coded": 4,
+    "reported": 2,
+    "shipped": 49
+   },
+   "B": [
+    15000,
+    15000,
+    15000,
+    15000,
+    15000
+   ],
+   "afs": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "used": [
+    1121,
+    0,
+    9206,
+    1538,
+    8135
+   ],
+   "lent": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "borrowed": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expired": [
+    13879,
+    15000,
+    5794,
+    13462,
+    6865
+   ],
+   "unmet": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "D": [
+    1121,
+    0,
+    9206,
+    1538,
+    8135
+   ],
+   "blocked": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "cut": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "denied": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "why": [
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "q": [
+    1,
+    0,
+    3,
+    2,
+    4
+   ],
+   "done": [
+    1,
+    0,
+    3,
+    2,
+    4
+   ],
+   "credit": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "loans": []
+  },
+  {
+   "t": 17,
+   "phase": 2,
+   "score": 94.881,
+   "stages": {
+    "new": 0,
+    "spec": 0,
+    "coded": 0,
+    "reported": 4,
+    "shipped": 51
+   },
+   "B": [
+    15000,
+    15000,
+    15000,
+    15000,
+    15000
+   ],
+   "afs": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "used": [
+    1182,
+    0,
+    0,
+    4772,
+    2742
+   ],
+   "lent": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "borrowed": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expired": [
+    13818,
+    15000,
+    15000,
+    10228,
+    12258
+   ],
+   "unmet": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "D": [
+    1182,
+    0,
+    0,
+    4772,
+    2742
+   ],
+   "blocked": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "cut": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "denied": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "why": [
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "q": [
+    1,
+    0,
+    0,
+    4,
+    2
+   ],
+   "done": [
+    1,
+    0,
+    0,
+    4,
+    2
+   ],
+   "credit": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "loans": []
+  }
+ ],
+ "calls": [],
+ "tests": []
+}
