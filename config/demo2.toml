@@ -1,0 +1,61 @@
+# Written by python -m rebbi.demo2 prepare. Frozen: every machine runs with these numbers.
+design = "v2.0"
+model = "claude-haiku-5-5"
+frozen = true
+frozen_at = "2026-11-18T10:00:15"
+
+[calibration]
+T = 75000
+summit_A = 92.0
+summit_B = 92.0
+cal_score_A = 100.0
+cal_score_B = 100.0
+cal_tokens_A = 444912
+cal_tokens_B = 438839
+
+[floors]
+planner = 3500
+researcher = 15000
+coder = 11500
+evaluator = 3500
+reviewer = 4500
+
+[cost_prior]
+planner_plan = 2176
+researcher_spec = 3468
+coder_code = 1738
+evaluator_report = 767
+reviewer_approve = 1190
+reviewer_fix = 3533
+
+[manager]
+fallback = false
+manager_tokens = 2090
+
+[manager.budget_pct]
+planner = 5.0
+researcher = 25.0
+coder = 40.0
+evaluator = 15.0
+reviewer = 15.0
+
+[manager.shareable_pct]
+planner = 60.0
+researcher = 40.0
+coder = 25.0
+evaluator = 50.0
+reviewer = 35.0
+
+[gate]
+ok_max = true
+ok_min = false
+notes = ["gate try 1: T=75000 medians={'s1': 18, 's2': 14, 's3': 9, 's3onB': 9, 's3b': 10, 's4': 12}", "hill shorter than the gate minimum at the smallest T the floors allow; kept"]
+
+[gate.median_windows]
+s1 = 18
+s2 = 14
+s3 = 9
+s3onB = 9
+s3b = 10
+s4 = 12
+
