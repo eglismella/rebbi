@@ -15,8 +15,12 @@ from pathlib import Path
 from rebbi.ledger import Ledger
 from rebbi.rules import LendingRules
 
-DEFAULT_SCENARIO = Path(__file__).resolve().parent.parent / "config" / "scenario.toml"
-DEFAULT_TARGETS = DEFAULT_SCENARIO.with_name("targets.toml")
+# A copy of config/scenario.toml ships inside the package (a test keeps the two identical), so
+# `pip install` from git, without the repository checkout, still has a fleet to start from.
+STARTER_FLEET = Path(__file__).resolve().parent / "starter_fleet.toml"
+_REPO_SCENARIO = Path(__file__).resolve().parent.parent / "config" / "scenario.toml"
+DEFAULT_SCENARIO = _REPO_SCENARIO if _REPO_SCENARIO.exists() else STARTER_FLEET
+DEFAULT_TARGETS = _REPO_SCENARIO.with_name("targets.toml")
 
 
 @dataclass(frozen=True)
