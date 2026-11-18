@@ -85,7 +85,8 @@ def setup(run: Path, prompt: str, python: str, http_port: int | None, keep_git: 
     text, mode, needed = PROMPTS[prompt]
     (run / "prompt.txt").write_text(text.format(folder=client, python=python) + "\n", encoding="utf-8")
     (run / "run.json").write_text(json.dumps({"prompt": prompt, "mode": mode, "needed": needed,
-                                              "python": python, "http_port": http_port}, indent=2))
+                                              "python": python, "http_port": http_port,
+                                              "keep_git": keep_git}, indent=2))
     print(f"set up {run}; give the client {run / 'prompt.txt'}")
 
 
