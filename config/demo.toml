@@ -1,0 +1,18 @@
+# Written by python -m rebbi.demo: calibration and frozen manager outputs.
+forbid_scipy = true
+coder_model = "claude-haiku-5-5"
+
+[calibration]
+T = 23000
+target_A = 2.6228
+score_w2 = 2.6199462570342145
+target_B = 2.9234
+notes = ["attempt 1: flat-hill guard fired (window 2 score >= 98% of window 8); scipy forbidden", "protocol 2 (operator, Nov 18 01:00): window-8 best was 2.635983 (the published record); targets set to 99.5% of it; old summit keys removed"]
+
+[demand_per_window]
+planner = 1350
+researcher = 6688
+coder = 14084
+evaluator = 776
+reviewer = 834
+

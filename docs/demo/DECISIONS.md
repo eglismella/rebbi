@@ -23,3 +23,9 @@
 - Run ids: cal, s1-r1, s2-r1, s3-r1, s3onB-r1, s3b-r1, s4-r1 (then r2, r3). The manager's scenario-2 budgets and
   scenario-3 shareable % are frozen in config/demo.toml and reused across repeats; 3b's answer is frozen per repeat.
 - Cloned targets/sqlite-utils (gitignored) so the older fleet tests run here; fixed `rebbi init` leaving its ledger open.
+- Protocol 2 (operator, Nov 18 01:10 ET). Budgets bind on a call's whole cost: if a finished call cost more than
+  the agent's balance (after a Rebbi loan where the scenario allows one), it counts as cut off when the balance ran
+  out; the balance is spent, the excess is recorded as unmet, and the call's output is lost (a cut-off reply would be
+  incomplete). Protocol 1 checked only the input, so budgets never bound. The summit is 99.5% of the calibration
+  best at window 8 (2.6228 for A, 2.9234 for B): that best equalled the published record, 2.635983, so a summit at
+  the record would measure luck. Runs finished under protocol 1 are kept in runs/demo-stale/ and not counted.

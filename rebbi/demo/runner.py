@@ -16,8 +16,8 @@ from typing import Any
 
 from rebbi.demo import hill
 from rebbi.demo.backend import Backend, PlanLimit, ScriptedBackend, parse_json
-from rebbi.demo.team import (HAIKU, ROLE_TEXT, ROLES, SONNET, RunConfig, Team, calibration_numbers, flat_hill,
-                             summarize)
+from rebbi.demo.team import (HAIKU, PROTOCOL, ROLE_TEXT, ROLES, SONNET, RunConfig, Team, calibration_numbers,
+                             flat_hill, summarize)
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 T0 = 2_000_000  # calibration: each agent gets 5 x T0 tokens per window, too large to bind
@@ -135,8 +135,44 @@ def ensure_manifest(ctx: Ctx) -> list[dict[str, str]]:
         if r["status"] == "running":
             r["status"] = "pending"
             r["error"] = "reset: the process that was running it ended"
+    retire_stale_runs(ctx, rows)
     write_manifest(ctx, rows)
     return rows
+
+
+def retire_stale_runs(ctx: Ctx, rows: list[dict[str, Any]]) -> None:
+    """Runs finished under an earlier protocol do not count: move them out and run them again."""
+    stale = []
+    for r in rows:
+        if r["run_id"] == "cal" or r["status"] != "complete":
+            continue
+        cfg_path = ctx.base / r["run_id"] / "config.json"
+        if not cfg_path.exists():
+            continue
+        proto = json.loads(cfg_path.read_text(encoding="utf-8")).get("protocol")
+        if proto != PROTOCOL:
+            stale.append(r["run_id"])
+            r.update(status="pending", error=f"reset: finished under protocol {proto or 1}, rerun under {PROTOCOL}",
+                     updated_at=now_text())
+    if not stale:
+        return
+    graveyard = ctx.base.parent / f"{ctx.base.name}-stale"
+    graveyard.mkdir(parents=True, exist_ok=True)
+    for run_id in stale:
+        src = ctx.base / run_id
+        if src.exists():
+            dest = graveyard / run_id
+            if dest.exists():
+                shutil.rmtree(dest)
+            src.rename(dest)
+    results = ctx.base / "results.csv"
+    if results.exists():
+        with open(results, newline="", encoding="utf-8") as f:
+            kept = [row for row in csv.DictReader(f) if row["run_id"] not in stale]
+        with open(results, "w", newline="", encoding="utf-8") as f:
+            w = csv.DictWriter(f, RESULT_COLUMNS, extrasaction="ignore")
+            w.writeheader()
+            w.writerows(kept)
 
 
 def set_status(ctx: Ctx, run_id: str, status: str, error: str = "") -> None:
@@ -234,7 +270,9 @@ async def build_config(ctx: Ctx, row: dict[str, str], conf: dict) -> RunConfig:
     sc, ex, rep = row["scenario"], row["exercise"], int(row["repeat"])
     cal = conf.get("calibration", {})
     T = int(cal.get("T", 0))
-    summit = cal["summit_A"] if ex == "A" else cal["summit_B"]
+    # Protocol 2 targets (set by the operator at 01:00 on Nov 18; see DECISIONS.md). Protocol-1 keys were removed
+    # on purpose, so a process still running protocol-1 code stops at its next run instead of wasting runs.
+    summit = cal["target_A"] if ex == "A" else cal["target_B"]
     base = dict(run_id=row["run_id"], scenario=sc, exercise=ex, repeat=rep, models=models_for(conf), T=T,
                 summit=summit, forbid_scipy=bool(conf.get("forbid_scipy", False)))
     task = f"Task: pack circles in the unit square to maximize the sum of radii (n = {hill.EXERCISES[ex]})."
@@ -291,7 +329,8 @@ async def execute(ctx: Ctx, cfg: RunConfig, folder: str) -> tuple[Path, dict[str
     if partial.exists():
         shutil.rmtree(partial)
     partial.mkdir(parents=True)
-    write_json(partial / "config.json", {**asdict(cfg), "commit": git_commit(), "scripted": ctx.backend.scripted})
+    write_json(partial / "config.json", {**asdict(cfg), "protocol": PROTOCOL, "commit": git_commit(),
+                                         "scripted": ctx.backend.scripted})
     started = datetime.now()
     team = Team(cfg, ctx.backend, partial)
     try:
@@ -344,7 +383,8 @@ async def run_calibration(ctx: Ctx) -> None:
         partial.rename(ctx.base / f"cal-attempt{attempt}")  # kept as evidence, not counted
     nums = calibration_numbers(res.windows)
     conf.update(forbid_scipy=forbid, coder_model=coder)
-    conf["calibration"] = {**{k: v for k, v in nums.items() if k != "per_role_demand"}, "notes": notes}
+    conf["calibration"] = {**{k: v for k, v in nums.items() if k not in ("per_role_demand", "summit_A", "summit_B")},
+                           "notes": notes}
     conf["demand_per_window"] = nums["per_role_demand"]
     conf.pop("manager", None)  # budgets depend on T, so any earlier manager answer is stale
     save_config(ctx, conf)

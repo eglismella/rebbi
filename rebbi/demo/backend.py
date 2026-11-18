@@ -35,7 +35,7 @@ def classify_external(text: str | None, status: int | None = None) -> bool:
 class Gate(Protocol):
     def before(self, input_tokens: int) -> bool: ...  # False: the balance cannot cover this call
 
-    def after(self, total_tokens: int, note: str) -> None: ...
+    def after(self, total_tokens: int, note: str) -> bool | None: ...  # False: cut off, the output is lost
 
 
 @dataclass
@@ -93,8 +93,10 @@ class SdkBackend:
                             interrupting = asyncio.create_task(client.interrupt())
                         if kind == "message_stop" and meter is not None:
                             calls += 1
-                            if gate:
-                                gate.after(meter.total, f"{meter.model} {meter.breakdown()}")
+                            if gate and gate.after(meter.total, f"{meter.model} {meter.breakdown()}") is False \
+                                    and not stopped:
+                                stopped = True  # the call cost more than the balance: cut off, output lost
+                                interrupting = asyncio.create_task(client.interrupt())
                             meter = None
                         continue
                     if stopped:
@@ -162,8 +164,9 @@ class ScriptedBackend:
                 stopped = True
                 gate.after(size // 2, "scripted (refused)")
                 break
-            if gate:
-                gate.after(size // 2, "scripted")
+            if gate and gate.after(size // 2, "scripted") is False:
+                stopped = True
+                break
             calls += 1
         return TurnOutput("" if stopped else text, stopped, calls, [{"agent": agent, "window": window, "text": text}])
 

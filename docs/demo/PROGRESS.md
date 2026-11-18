@@ -18,3 +18,21 @@ tests (section 7), final checks, BUILD_DONE.
 - Rehearsal passes (7 runs, scripted); `status` and `report` work on an empty runs/demo.
 - BUILD complete. Next phase: run-all (autopilot). The real SdkBackend has not run against Claude yet (by design:
   no experiment runs in the build session); if run-all fails on it, the FIX phase handles it.
+
+## OPERATOR CHANGE, Nov 18 01:10 ET (Claude, from Pietro's chat): protocol 2. READ THIS FIRST.
+- Found at the 01:00 check: budgets never bound (the gate checked only a call's input; the Coder spent ~10k on a
+  4.6k budget with no interruption), and the summit equalled the published record (2.635983), so every scenario
+  would look alike.
+- Fixed in rebbi/demo/team.py, backend.py, runner.py, report.py (+5 tests in tests/test_demo.py; 29 demo tests and
+  126 in total pass; rehearsal OK): Gate.after cuts a call off when its whole cost exceeds the balance after any
+  Rebbi loan (output lost, balance spent); targets are 99.5% of the calibration best at window 8 (config/demo.toml
+  target_A = 2.6228, target_B = 2.9234); runs finished under protocol 1 are moved to runs/demo-stale/ and rerun.
+- EXPECTED: the run-all process started at 00:25 still runs protocol-1 code. It stops at its next run with
+  KeyError 'summit_A' (the old keys were removed on purpose). That is the intended way to restart it on the new code.
+- FIX session, if that KeyError is why you were started: do NOT re-add summit_A/summit_B and do not change the
+  protocol-2 code. Run `.venv\Scripts\python -m pytest -q tests\test_demo.py`, commit the operator's changes
+  ("protocol 2: budgets bind on a call's whole cost; targets at 99.5% of the record"), and stop. The autopilot then
+  restarts run-all on protocol 2.
+
+## FIX session (Nov 18)
+- run-all failure confirmed: KeyError 'summit_A' in build_config (old protocol-1 process, expected). No code change needed; 29 demo tests pass. Committed the operator's protocol-2 changes (+ config/demo.toml). runs/ and docs/demo/state untouched. Autopilot can restart run-all.

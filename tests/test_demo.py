@@ -225,3 +225,79 @@ def test_report_builds_from_a_tiny_artifact(tmp_path):
     out = tmp_path / "r.html"
     report.build_html(data, out)
     assert "not run" in out.read_text(encoding="utf-8")
+
+
+# -- protocol 2 (Nov 18): budgets bind on the whole cost of a call -------------------------------------------
+
+def _team(tmp_path, rebbi_on, budgets, shareable=None):
+    from rebbi.demo.backend import ScriptedBackend
+    from rebbi.demo.team import ROLES, RunConfig, Team
+    cfg = RunConfig("t", "3" if rebbi_on else "1", "A", 1, {r: "m" for r in ROLES}, budgets, sum(budgets.values()),
+                    shareable_pct=shareable or {}, rebbi=rebbi_on, max_windows=1)
+    return Team(cfg, ScriptedBackend(), tmp_path / "run")
+
+
+def test_a_call_that_costs_more_than_the_balance_is_cut_off_without_rebbi(tmp_path):
+    import asyncio
+    budgets = {"planner": 100000, "researcher": 100000, "coder": 3000, "evaluator": 100000, "reviewer": 100000}
+    team = _team(tmp_path, False, budgets)
+    row = asyncio.run(team.run_window())
+    coder = row["agents"]["coder"]
+    assert coder["interrupted"] and coder["unmet"] > 0
+    assert row["team"]["candidate_reason"].startswith("no candidate")
+    assert team.ledger.check_invariants(team.now()) == []
+
+
+def test_the_gate_cuts_off_a_call_whose_output_overruns_the_balance(tmp_path):
+    from rebbi.demo.team import ROLES, Gate
+    budgets = {"planner": 100000, "researcher": 100000, "coder": 3000, "evaluator": 100000, "reviewer": 100000}
+    team = _team(tmp_path, False, budgets)
+    team.stats = {r: {"used": 0, "unmet": 0, "interrupted": False, "borrowed": 0, "lent": 0} for r in ROLES}
+    gate = Gate(team, "coder")
+    assert gate.before(1000) is True          # the input fits
+    assert gate.after(5000, "m in=1000 out=4000") is False   # the output does not: cut off
+    st = team.stats["coder"]
+    assert (st["used"], st["unmet"], st["interrupted"]) == (3000, 2000, True)
+    assert team.ledger.balance("coder") == 0
+
+
+def test_rebbi_lends_the_shortfall_so_the_call_goes_through(tmp_path):
+    import asyncio
+    budgets = {"planner": 100000, "researcher": 100000, "coder": 3000, "evaluator": 100000, "reviewer": 100000}
+    pct = {"planner": 80, "researcher": 80, "coder": 0, "evaluator": 80, "reviewer": 80}
+    team = _team(tmp_path, True, budgets, pct)
+    row = asyncio.run(team.run_window())
+    coder = row["agents"]["coder"]
+    assert not coder["interrupted"] and coder["borrowed"] > 0 and coder["used"] > 3000
+    assert row["team"]["candidate_reason"] != "no candidate: the coder was out of budget"
+    assert team.ledger.check_invariants(team.now()) == []
+
+
+def test_runs_finished_under_protocol_1_are_retired_and_rerun(tmp_path):
+    import csv
+    import json
+    from rebbi.demo import runner
+    ctx = runner.make_ctx(rehearsal=True, root=tmp_path, repeats=1)
+    runner.ensure_manifest(ctx)
+    old = ctx.base / "s1-r1"
+    old.mkdir(parents=True)
+    (old / "config.json").write_text(json.dumps({"run_id": "s1-r1"}))
+    with open(ctx.base / "results.csv", "w", newline="") as f:
+        w = csv.DictWriter(f, runner.RESULT_COLUMNS, extrasaction="ignore")
+        w.writeheader()
+        w.writerow({"run_id": "cal", "status": "complete"})
+        w.writerow({"run_id": "s1-r1", "status": "complete"})
+    runner.set_status(ctx, "s1-r1", "complete")
+    rows = runner.ensure_manifest(ctx)
+    s1 = next(r for r in rows if r["run_id"] == "s1-r1")
+    assert s1["status"] == "pending" and "protocol 1" in s1["error"]
+    assert not old.exists() and (ctx.base.parent / f"{ctx.base.name}-stale" / "s1-r1").exists()
+    assert [r["run_id"] for r in csv.DictReader(open(ctx.base / "results.csv"))] == ["cal"]
+
+
+def test_calibration_sets_protocol_2_targets():
+    from rebbi.demo.team import ROLES, calibration_numbers
+    ws = [{"team": {"best_score": 2.0 + 0.1 * i, "tokens_used": 1000}, "agents": {r: {"used": 200} for r in ROLES}}
+          for i in range(10)]
+    n = calibration_numbers(ws)
+    assert n["target_A"] == round(0.995 * 2.7, 4)

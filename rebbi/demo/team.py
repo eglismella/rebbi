@@ -33,6 +33,10 @@ ROLE_TEXT = {
 HAIKU, SONNET = "claude-haiku-5-5", "claude-sonnet-5-5"
 SHAREABLE_LINE = "\nEnd your reply with one line: SHAREABLE: <0-100>% (the share of your budget other agents may borrow)."
 MAX_WINDOWS = 20
+# Protocol 2 (Nov 18, 01:00): a call's whole cost (output included) must fit the agent's balance, after a Rebbi
+# loan where allowed; otherwise the call is cut off when the balance runs out and its output is lost. Protocol 1
+# checked only a call's input, so an agent could spend twice its budget and the budgets never bound.
+PROTOCOL = 2
 
 TASK = """Task: place n = {n} disjoint circles inside the unit square [0,1]x[0,1] to maximize the sum of their radii.
 The team's candidate is one file, solve.py, with a constant `N = {n}` and a function `pack()` returning
@@ -97,9 +101,30 @@ class Gate:
         t.event("interruption", agent=a, needed=input_tokens, balance=balance)
         return False
 
-    def after(self, total_tokens: int, note: str) -> None:
-        self.team.ledger.record_usage(self.agent, total_tokens, self.team.now(), note)
-        self.team.stats[self.agent]["used"] += total_tokens
+    def after(self, total_tokens: int, note: str) -> bool:
+        """Debit a finished call. False: the call cost more than the balance (after any Rebbi loan), so it is
+        treated as cut off when the balance ran out: the balance is spent and the call's output is lost."""
+        t, a = self.team, self.agent
+        st = t.stats[a]
+        if note.endswith("(refused)"):  # refused at the start (before() already counted it); input debited
+            t.ledger.record_usage(a, total_tokens, t.now(), note)
+            st["used"] += total_tokens
+            return False
+        balance = t.ledger.balance(a)
+        if total_tokens > balance and t.cfg.rebbi:
+            balance = t.top_up(a, total_tokens, balance, ask=total_tokens - max(balance, 0))
+        if total_tokens <= balance:
+            t.ledger.record_usage(a, total_tokens, t.now(), note)
+            st["used"] += total_tokens
+            return True
+        spent = max(balance, 0)
+        if spent:
+            t.ledger.record_usage(a, spent, t.now(), note + " (cut off: budget ran out)")
+        st["used"] += spent
+        st["unmet"] += total_tokens - spent
+        st["interrupted"] = True
+        t.event("interruption", agent=a, needed=total_tokens, balance=balance, cut_off=True)
+        return False
 
 
 class Team:
@@ -130,9 +155,9 @@ class Team:
         with open(self.dir / "events.jsonl", "a", encoding="utf-8") as f:
             f.write(json.dumps(e) + "\n")
 
-    def top_up(self, agent: str, needed: int, balance: int) -> int:
-        """Ask Rebbi, for an agent whose next call its balance cannot cover. Returns the balance afterwards."""
-        ask = min(2 * needed - balance, self.broker.rules.max_loan_tokens)
+    def top_up(self, agent: str, needed: int, balance: int, ask: int | None = None) -> int:
+        """Ask Rebbi, for an agent whose call its balance cannot cover. Returns the balance afterwards."""
+        ask = min(2 * needed - balance if ask is None else ask, self.broker.rules.max_loan_tokens)
         if self.market:
             limit = self.market.borrow_limit(agent, self.declared[agent], self.ledger.agent(agent).borrowed_tokens)
             ask = min(ask, limit)
@@ -140,7 +165,7 @@ class Team:
                 self.event("loan", borrower=agent, tokens=0, asked=ask, decision="CANNOT_MOVE",
                            blocker="market: no claim left" if limit else "market: shareable is 0%")
                 return balance
-        answer = self.broker.post_handoff(agent, HandoffRequest(goal=f"{agent} needs {needed} input tokens",
+        answer = self.broker.post_handoff(agent, HandoffRequest(goal=f"{agent} needs {needed} tokens for a call",
                                                                 budget_tokens=ask))
         lend = answer["decision"] == "LEND"
         self.event("loan", borrower=agent, lender=answer.get("from"), tokens=answer.get("tokens", 0), asked=ask,
@@ -300,7 +325,10 @@ def calibration_numbers(windows: list[dict[str, Any]]) -> dict[str, Any]:
     at = lambda k: windows[min(k, len(windows)) - 1]["team"]["best_score"]  # noqa: E731
     demand = {r: round(statistics.median(w["agents"][r]["used"] for w in windows)) for r in ROLES}
     return {"T": T, "summit_A": at(8), "score_w2": at(2), "per_role_demand": demand,
-            "summit_B": at(8) * (2.937 / 2.635)}
+            "summit_B": at(8) * (2.937 / 2.635),
+            # Protocol 2 summit: 99.5% of the calibration best at window 8 (that best equalled the published record,
+            # 2.635983, so a summit at the record itself would measure luck, not budgets).
+            "target_A": round(0.995 * at(8), 4), "target_B": round(0.995 * at(8) * (2.937 / 2.635), 4)}
 
 
 def flat_hill(windows: list[dict[str, Any]]) -> bool:
