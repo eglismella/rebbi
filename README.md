@@ -1,5 +1,10 @@
 # Rebbi
 
+**Agents and builders: start with [docs/AGENT_INTERFACE.md](docs/AGENT_INTERFACE.md).** It covers
+connecting over MCP (stdio or HTTP with per-agent tokens), each tool's inputs and outputs, the
+limits, and a worked example. Install: `pip install "git+https://github.com/eglismella/rebbi"`,
+then `rebbi init fleet`.
+
 Lends spare token budget between AI agents in one fleet. An agent about to run
 out mid-job calls `post_handoff` over MCP; the broker finds an agent with
 capacity above its reserve, books the loan atomically in the ledger, and
