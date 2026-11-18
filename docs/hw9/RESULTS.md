@@ -130,14 +130,14 @@ printing JSON, so an agent without MCP tools writes no client code.
 - R4 asked for 55,000, under the cap, so it never received a partial reply. It completed the job:
   verifier PASS on 11 of 11 checks.
 
-**Regression tests** (`tests/test_self_explaining_replies.py`, 14 tests): partial by cap, partial
+**Regression tests** (`tests/test_self_explaining_replies.py`, 17 tests): partial by cap, partial
 by lender room, full loan not partial, limits in every reply, ignored fields named, replay still
 returns the first decision, refusal reasons over MCP, the partial flag over MCP, `rebbi call` from
-a shell, and five tests for the fixes the review found (below). Full suite: 94 passed, three times
-in a row (72 before HW9).
+a shell, and eight tests for the fixes the review found (below). Full suite: 97 passed (72 before
+HW9).
 
 **Existing integration still works.** Nanda Town's four live Rebbi cases (HW8; fork
-`eglismella/nandatown` at `4803f9d`), run against Rebbi `dc06b28`: all four PASSED, every stage
+`eglismella/nandatown` at `4803f9d`), run against Rebbi `7be9a6b` (after PR #2): all four PASSED, every stage
 (`evidence/town-regression.txt`). Town reads only `decision`, `loan_id`, `tokens`, `replayed`,
 `blocker` and `considered` from Rebbi's replies; HW9 added fields and changed none.
 
@@ -158,8 +158,18 @@ after the runs (none of them was exercised by a client):
   applies to lenders, not asks; expired loans close at the next call; the HTTP client entry
   format is Claude Code's.
 
-It also corrected this write-up's framing: the headline, the C8 change, R4's set-up and what H1
-observed.
+Three more review findings had first been handled by documenting them; they are fixed in code
+in PR #2:
+- An agent holding a loan could lend the borrowed tokens on. Borrowed tokens are now never
+  lendable (`borrowed_tokens` in `get_budget`).
+- A server started without `REBBI_SCENARIO` silently used the starter rules. It now uses the
+  fleet file next to the ledger, and warns when it falls back to the starter rules.
+- The operator HTTP API had no authentication. It now needs a bearer token
+  (`REBBI_API_TOKEN`), or an explicit `REBBI_API_NO_AUTH=1` for localhost.
+
+The review also corrected this write-up's framing: the headline, the C8 change, R4's set-up and
+what H1 observed. Every one of its 29 findings is now fixed in code, corrected in the docs, or
+corrected here.
 
 ## What improved, what did not, what is unproven
 

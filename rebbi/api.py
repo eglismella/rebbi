@@ -1,13 +1,18 @@
 """HTTP side of the broker: the gateway's check-and-debit calls, plus read-only views for the demo.
 
-    REBBI_DB=rebbi.db uvicorn rebbi.api:app_from_env --factory --port 8700
+    REBBI_DB=fleet/rebbi.db REBBI_API_TOKEN=<secret> uvicorn rebbi.api:app_from_env --factory --port 8700
+
+Every request needs `Authorization: Bearer <REBBI_API_TOKEN>`: /gateway/usage debits balances.
+REBBI_API_NO_AUTH=1 instead runs it without a token, for localhost only (before the HW9 review it
+always ran without one).
 """
 
 from __future__ import annotations
 
 import os
+import secrets
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, Header, HTTPException
 from pydantic import BaseModel, Field
 
 from rebbi import rules as lending
@@ -22,8 +27,14 @@ class Usage(BaseModel):
     note: str = ""
 
 
-def create_app(broker: Broker) -> FastAPI:
-    app = FastAPI(title="Rebbi broker")
+def create_app(broker: Broker, token: str | None = None) -> FastAPI:
+    def require_token(authorization: str | None = Header(default=None)) -> None:
+        if token is None:
+            return
+        if not authorization or not secrets.compare_digest(authorization, f"Bearer {token}"):
+            raise HTTPException(401, "missing or wrong bearer token")
+
+    app = FastAPI(title="Rebbi broker", dependencies=[Depends(require_token)])
     ledger = broker.ledger
 
     def agent_or_404(agent_id: str):
@@ -67,5 +78,10 @@ def create_app(broker: Broker) -> FastAPI:
 
 
 def app_from_env() -> FastAPI:
-    sc = scenario.load(os.environ.get("REBBI_SCENARIO", scenario.DEFAULT_SCENARIO))
-    return create_app(Broker(Ledger(os.environ.get("REBBI_DB", "rebbi.db")), sc.rules))
+    db = os.environ.get("REBBI_DB", "rebbi.db")
+    fleet_file, _ = scenario.for_ledger(db, os.environ.get("REBBI_SCENARIO"))
+    token = os.environ.get("REBBI_API_TOKEN")
+    if not token and os.environ.get("REBBI_API_NO_AUTH") != "1":
+        raise RuntimeError("set REBBI_API_TOKEN (requests then need `Authorization: Bearer <it>`), "
+                           "or REBBI_API_NO_AUTH=1 to run without one on localhost")
+    return create_app(Broker(Ledger(db), scenario.load(fleet_file).rules), token=token or None)

@@ -1,10 +1,10 @@
-# Nanda Town's four live Rebbi cases (HW8 integration), run against Rebbi dc06b28
+# Nanda Town's four live Rebbi cases (HW8 integration), run against Rebbi 7be9a6b (after PR #2)
 # Town: fork eglismella/nandatown, branch integration/rebbi-lending, commit 4803f9d
-# Command: .venv/bin/python examples/rebbi/run.py --project <rebbi checkout> --case all --out /tmp/town-runs2
+# Command: .venv/bin/python examples/rebbi/run.py --project <rebbi checkout> --case all --out /tmp/town-runs3
 
-lend: PASSED  (../../../../tmp/town-runs2/sim-e30e7651439c)
+lend: PASSED  (../../../../tmp/town-runs3/sim-e28be1d7fa7d)
   passed               rebbi_connected            3 live MCP sessions, one per fleet agent
-  passed               rebbi_version_pinned       Rebbi at dc06b2861c88431f0b4d041dee71e76bc7947053, clean tree
+  passed               rebbi_version_pinned       Rebbi at 7be9a6beb03b6c0978a959e56c6088190626b1d2, clean tree
   passed               headroom_published         every lender's reserve is published in Rebbi
   passed               loan_granted               Rebbi lent the full shortfall, lender reserve intact
   passed               one_loan_per_request       1 request(s), one loan each
@@ -19,10 +19,10 @@ lender-a        164000     80000     20000     64000  yes
 lender-b        100000     70000     30000         0  yes
 worker-01            0         0         0         0  no
 loan 1: lender-a -> worker-01 18000 tokens, settled, returned 2000
-decision 1 at 2026-11-18T04:26:46+00:00: worker-01 asked 18000 -> LEND 18000 lender-a
-lost-reply: PASSED  (../../../../tmp/town-runs2/sim-d1b281814a75)
+decision 1 at 2026-11-18T04:40:20+00:00: worker-01 asked 18000 -> LEND 18000 lender-a
+lost-reply: PASSED  (../../../../tmp/town-runs3/sim-ce9fb9585875)
   passed               rebbi_connected            3 live MCP sessions, one per fleet agent
-  passed               rebbi_version_pinned       Rebbi at dc06b2861c88431f0b4d041dee71e76bc7947053, clean tree
+  passed               rebbi_version_pinned       Rebbi at 7be9a6beb03b6c0978a959e56c6088190626b1d2, clean tree
   passed               headroom_published         every lender's reserve is published in Rebbi
   passed               fault_injected             Town injected a drop of borrow_decision
   passed               worker_retried             the worker resent the same request
@@ -40,10 +40,10 @@ lender-a        164000     80000     20000     64000  yes
 lender-b        100000     70000     30000         0  yes
 worker-01            0         0         0         0  no
 loan 1: lender-a -> worker-01 18000 tokens, settled, returned 2000
-decision 1 at 2026-11-18T04:26:49+00:00: worker-01 asked 18000 -> LEND 18000 lender-a
-duplicate: PASSED  (../../../../tmp/town-runs2/sim-7813c5759051)
+decision 1 at 2026-11-18T04:40:23+00:00: worker-01 asked 18000 -> LEND 18000 lender-a
+duplicate: PASSED  (../../../../tmp/town-runs3/sim-42f283f0c4b8)
   passed               rebbi_connected            3 live MCP sessions, one per fleet agent
-  passed               rebbi_version_pinned       Rebbi at dc06b2861c88431f0b4d041dee71e76bc7947053, clean tree
+  passed               rebbi_version_pinned       Rebbi at 7be9a6beb03b6c0978a959e56c6088190626b1d2, clean tree
   passed               headroom_published         every lender's reserve is published in Rebbi
   passed               fault_injected             Town injected a duplicate of borrow_request
   passed               loan_granted               Rebbi lent the full shortfall, lender reserve intact
@@ -60,10 +60,10 @@ lender-a        164000     80000     20000     64000  yes
 lender-b        100000     70000     30000         0  yes
 worker-01            0         0         0         0  no
 loan 1: lender-a -> worker-01 18000 tokens, settled, returned 2000
-decision 1 at 2026-11-18T04:26:50+00:00: worker-01 asked 18000 -> LEND 18000 lender-a
-no-room: PASSED  (../../../../tmp/town-runs2/sim-bd844f068cf5)
+decision 1 at 2026-11-18T04:40:25+00:00: worker-01 asked 18000 -> LEND 18000 lender-a
+no-room: PASSED  (../../../../tmp/town-runs3/sim-13e678c395de)
   passed               rebbi_connected            3 live MCP sessions, one per fleet agent
-  passed               rebbi_version_pinned       Rebbi at dc06b2861c88431f0b4d041dee71e76bc7947053, clean tree
+  passed               rebbi_version_pinned       Rebbi at 7be9a6beb03b6c0978a959e56c6088190626b1d2, clean tree
   passed               headroom_published         every lender's reserve is published in Rebbi
   passed               cannot_move_explained      CANNOT_MOVE, with each lender's reason
   passed               job_refunded               the worker declined and the client got its escrow back
@@ -77,4 +77,4 @@ agent          balance   reserve    demand  lendable  lends
 lender-a        180000    175000     20000         0  yes
 lender-b        100000     70000     30000         0  yes
 worker-01         7000         0         0         0  no
-decision 1 at 2026-11-18T04:26:52+00:00: worker-01 asked 18000 -> CANNOT_MOVE  no agent has spare capacity above its reserve
+decision 1 at 2026-11-18T04:40:28+00:00: worker-01 asked 18000 -> CANNOT_MOVE  no agent has spare capacity above its reserve
