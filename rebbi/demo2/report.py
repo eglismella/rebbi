@@ -20,6 +20,7 @@ from typing import Any
 from rebbi.demo2.runner import NAMES, ROOT, SCENARIOS, Ctx, load_config, read_jsonl, write_json
 from rebbi.demo2.team import PHASES, ROLES
 
+EXCLUDED_FILE = "_excluded.json"
 ROLE_IDS = ["PL", "RS", "CD", "EV", "RV"]
 ROLE_JOBS = ["Orders the open exercises", "Writes notes from instructions and tests", "Writes the solution; tests run",
              "Reports each test run", "Approves or rewrites"]
@@ -78,12 +79,32 @@ def export(ctx: Ctx, machine: str | None = None, out_root: Path = ROOT / "result
             p = out / f"{d.name}.json"
             write_json(p, bundle(d))
             written.append(p)
+    excl = []
+    sdir = ctx.base / "_status"
+    for st in sorted(sdir.glob("*.json")) if sdir.exists() else []:
+        d = json.loads(st.read_text(encoding="utf-8"))
+        if d.get("state") == "excluded":
+            excl.append({"run_id": st.stem, "error": d.get("error", ""), "attempts": d.get("attempts", 0)})
+    if excl:
+        p = out / EXCLUDED_FILE
+        write_json(p, excl)
+        written.append(p)
     return written
+
+
+def load_excluded(root: Path) -> list[dict[str, Any]]:
+    out = []
+    for p in sorted(root.glob(f"*/{EXCLUDED_FILE}")):
+        for e in json.loads(p.read_text(encoding="utf-8")):
+            out.append({**e, "machine": p.parent.name})
+    return out
 
 
 def load_bundles(root: Path) -> list[dict[str, Any]]:
     out = []
     for p in sorted(root.glob("*/*.json")):
+        if p.name.startswith("_"):
+            continue
         b = json.loads(p.read_text(encoding="utf-8"))
         b["machine"] = p.parent.name
         out.append(b)
@@ -111,15 +132,22 @@ def run_entry(b: dict[str, Any]) -> dict[str, Any]:
             "wall_seconds": s.get("wall_seconds"), "frames": out_frames}
 
 
-def aggregate(runs: list[dict[str, Any]], cap: int) -> dict[str, Any]:
+def aggregate(runs: list[dict[str, Any]], cap: int, excluded: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+    """Per scenario: n = completed repeats (the only ones in the medians); excluded = run ids left out."""
     agg = {}
+    ex_by: dict[str, list[str]] = {}
+    for e in excluded or []:
+        ex_by.setdefault(e["run_id"].rsplit("-r", 1)[0], []).append(e["run_id"])
     for sc, ex, key in SCENARIOS:
         rs = [r for r in runs if r["sc"] == key]
         if not rs:
+            if ex_by.get(key):
+                agg[key] = {"n": 0, "excluded": sorted(ex_by[key]), "windows": [], "median_windows": None, "reached": 0,
+                            "median_expired_share": None, "median_interruptions": None, "median_moved": None}
             continue
         w = [r["done"] if r["done"] else cap + 1 for r in rs]
         e = [r["tot"]["expired"] / r["tot"]["issued"] if r["tot"]["issued"] else 0 for r in rs]
-        agg[key] = {"n": len(rs), "windows": sorted(w), "median_windows": statistics.median(w),
+        agg[key] = {"n": len(rs), "excluded": sorted(ex_by.get(key, [])), "windows": sorted(w), "median_windows": statistics.median(w),
                     "reached": sum(1 for r in rs if r["done"]), "median_expired_share": statistics.median(e),
                     "median_interruptions": statistics.median(r["tot"]["blocks"] for r in rs),
                     "median_moved": statistics.median(r["tot"]["moved"] for r in rs)}
@@ -131,6 +159,7 @@ def build(root: Path = ROOT, ctx: Ctx | None = None, results_root: Path | None =
     results_root = results_root or root / "results" / "demo2"
     bundles = load_bundles(results_root)
     cal = {b["config"]["exercise"]: b for b in bundles if b["config"]["scenario"] == "cal" and b["machine"] != "rehearsal"}
+    excluded = load_excluded(results_root)
     runs = [run_entry(b) for b in bundles if b["config"]["scenario"] != "cal"]
     runs.sort(key=lambda r: (r["rep"], [k for _, _, k in SCENARIOS].index(r["sc"])))
     conf = load_config(ctx) if ctx else {}
@@ -166,7 +195,8 @@ def build(root: Path = ROOT, ctx: Ctx | None = None, results_root: Path | None =
                  "sets": sets, "machines": sorted({r["machine"] for r in runs}),
                  "repeats": sorted({r["rep"] for r in runs}), "frozen_at": conf.get("frozen_at")},
         "roles": [{"id": i, "name": r.capitalize(), "job": j} for r, i, j in zip(ROLES, ROLE_IDS, ROLE_JOBS)],
-        "phases": PHASES, "names": NAMES, "runs": runs, "aggregate": aggregate(runs, 60),
+        "phases": PHASES, "names": NAMES, "runs": runs, "aggregate": aggregate(runs, 60, excluded),
+        "excluded": excluded,
         "cal_demand": cal_demand,
     }
     write_json(results_root / "data.json", data)

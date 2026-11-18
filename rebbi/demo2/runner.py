@@ -41,6 +41,8 @@ GATE_MIN = 12  # replay: the fastest scenario's median must be >= 12 (the hill i
 GATE_SEEDS = (1, 2, 3)
 LIMIT_WAIT_S = 20 * 60
 MAX_ATTEMPTS = 3
+# A run whose three attempts all die on this error is left out (state "excluded"), not retried or treated as a cut-off.
+EXCLUDE_MARKERS = ("exceeded the 3000 output token maximum",)
 STALE_LOCK_S = 30 * 60
 SCENARIOS = [("1", "A", "s1"), ("2", "A", "s2"), ("3", "A", "s3"), ("3-on-B", "B", "s3onB"), ("3b", "B", "s3b"),
              ("4", "A", "s4")]
@@ -186,6 +188,15 @@ async def ask_manager(ctx: Ctx, kind: str, T: int, extra: str = "") -> tuple[dic
 
 def run_ids(repeats: list[int]) -> list[tuple[str, str, str, int]]:
     return [(f"{slug}-r{rep}", sc, ex, rep) for rep in repeats for sc, ex, slug in SCENARIOS]
+
+
+def excluded(ctx: Ctx, run_id: str) -> bool:
+    return status(ctx, run_id).get("state") == "excluded"
+
+
+def finished(ctx: Ctx, run_id: str) -> bool:
+    """Complete or excluded: nothing more to run."""
+    return complete(ctx, run_id) or excluded(ctx, run_id)
 
 
 def complete(ctx: Ctx, run_id: str) -> bool:
@@ -457,7 +468,10 @@ async def run_scenario(ctx: Ctx, run_id: str, sc: str, ex: str, rep: int) -> dic
 
 def next_run(ctx: Ctx, repeats: list[int]) -> tuple[str, str, str, int] | None:
     for run_id, sc, ex, rep in run_ids(repeats):
-        if complete(ctx, run_id) or status(ctx, run_id).get("state") == "failed":
+        if finished(ctx, run_id) or status(ctx, run_id).get("state") == "failed":
+            continue
+        if sc == "3b" and excluded(ctx, f"s3-r{rep}"):
+            set_status(ctx, run_id, state="excluded", error=f"scenario 3 repeat {rep} was excluded; 3b needs its usage summary")
             continue
         if sc == "3b" and not complete(ctx, f"s3-r{rep}"):
             continue
@@ -478,7 +492,7 @@ def lane(ctx: Ctx, repeats: list[int], stop_at: datetime | None = None, sleep=ti
             return 0
         pick = next_run(ctx, repeats)
         if pick is None:
-            waiting = [r for r, sc, ex, rep in run_ids(repeats) if not complete(ctx, r)
+            waiting = [r for r, sc, ex, rep in run_ids(repeats) if not finished(ctx, r)
                        and status(ctx, r).get("state") != "failed"]
             if waiting and any((ctx.base / "_locks" / f"{r}.lock").exists() for r in waiting):
                 sleep(60)  # another lane holds a run this lane may depend on (3b waits for 3)
@@ -502,8 +516,11 @@ def lane(ctx: Ctx, repeats: list[int], stop_at: datetime | None = None, sleep=ti
             continue
         except Exception as e:  # noqa: BLE001
             att = st.get("attempts", 0) + 1
-            set_status(ctx, run_id, state="failed" if att >= MAX_ATTEMPTS else "pending", error=repr(e)[:600])
+            last = "excluded" if any(m in str(e) for m in EXCLUDE_MARKERS) else "failed"
+            set_status(ctx, run_id, state=last if att >= MAX_ATTEMPTS else "pending", error=repr(e)[:600])
             print(f"lane: {run_id} failed (attempt {att}): {e!r}", flush=True)
+            if att >= MAX_ATTEMPTS and last == "excluded":
+                print(f"lane: {run_id} excluded after {att} attempts", flush=True)
         finally:
             unlock(ctx, run_id)
             p = ctx.base / f"{run_id}.partial"
@@ -522,6 +539,8 @@ def status_text(ctx: Ctx, repeats: list[int]) -> str:
             s = json.loads((ctx.base / run_id / "summary.json").read_text(encoding="utf-8"))
             lines.append(f"  {run_id:<10} complete   summit at {s['windows_to_summit']}, windows {s['windows']}, "
                          f"expired {s['tokens_expired']}, interruptions {s['interruptions']}")
+        elif excluded(ctx, run_id):
+            lines.append(f"  {run_id:<10} excluded   {status(ctx, run_id).get('error', '')[:90]}")
         else:
             st = status(ctx, run_id)
             locked = (ctx.base / "_locks" / f"{run_id}.lock").exists()

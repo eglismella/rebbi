@@ -262,6 +262,7 @@ footer{font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padd
     <div class="panel-h"><h3>All repeats: the answer</h3><span class="eyebrow" id="agg-n"></span></div>
     <p class="muted" style="font-size:13.5px;margin-bottom:8px">Each scenario ran several times with fresh agents. Windows to summit for every repeat in brackets; the median is the headline number.</p>
     <div class="scroll-x"><table class="rtab" id="atab"></table></div>
+    <div id="excluded"></div>
   </div>
 </section>
 
@@ -693,8 +694,10 @@ function renderAgg(){
   let h='<thead><tr><th>Scenario</th><th>Median windows<br>(all repeats)</th><th>Reached summit</th><th>Median expired</th><th>Median interruptions</th></tr></thead><tbody>';
   for(const [k_,tag] of rows){const a=A[k_];if(!a)continue;
     const w=a.windows.map(x=>x>MAXW?'>'+MAXW:x).join(', ');
-    h+=`<tr style="--c:var(${col[k_]})"><td><span class="sw"></span>${tag} · ${nm[k_]}</td><td class="n">${a.median_windows}<span class="muted"> (${w})</span></td><td class="n">${a.reached} of ${a.n}</td><td class="n">${pct(a.median_expired_share)}</td><td class="n">${a.median_interruptions}</td></tr>`;}
+    h+=`<tr style="--c:var(${col[k_]})"><td><span class="sw"></span>${tag} · ${nm[k_]}</td><td class="n">${a.median_windows==null?'n/a':a.median_windows}<span class="muted"> (${w})</span></td><td class="n">${a.reached} of ${a.n}${a.excluded&&a.excluded.length?' <span class="muted">+ '+a.excluded.length+' excluded</span>':''}</td><td class="n">${a.median_expired_share==null?'n/a':pct(a.median_expired_share)}</td><td class="n">${a.median_interruptions==null?'n/a':a.median_interruptions}</td></tr>`;}
   $('atab').innerHTML=h+'</tbody>';
+  const X=DATA.excluded||[];
+  $('excluded').innerHTML=X.length?'<p class="muted" style="font-size:13.5px;margin:10px 0 4px">Excluded runs (failed three times; left out of the medians, which use completed repeats only):</p><ul class="muted" style="font-size:13px">'+X.map(e=>`<li><b>${e.run_id}</b> (${e.machine}): ${String(e.error).replace(/</g,'&lt;')}</li>`).join('')+'</ul>':'';
   const n=Math.max(0,...Object.values(A).map(a=>a.n));$('agg-n').textContent=n?n+' repeats':'';
   const g=(k_)=>A[k_]?A[k_].median_windows:'?',e=(k_)=>A[k_]?pct(A[k_].median_expired_share):'?';
   $('takeaway').innerHTML=Object.keys(A).length?`Median over all repeats: equal budgets took <b>${g('s1')} windows</b> with ${e('s1')} of issued tokens expired; manager budgets ${g('s2')} (${e('s2')}); Manager + Rebbi <b>${g('s3')}</b> (${e('s3')}); the open market ${g('s4')} (${e('s4')}). On Exercise B, Rebbi learning took ${g('s3b')} against ${g('s3onB')} for the scenario 3 setup.`:'No runs yet.';

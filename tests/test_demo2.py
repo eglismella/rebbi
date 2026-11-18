@@ -241,3 +241,43 @@ if args[:3] == ['-m', 'rebbi.demo2', 'rehearsal'] and not pathlib.Path('fixed').
     assert log.count("pull --ff-only origin demo-v2") == 2 and 600 in slept  # waited once for the frozen config
     assert "rebbi.demo2 prepare" not in log and "push origin HEAD:demo-v2-eglis" in log
     assert "rebbi.demo2 run --repeats 4-6" in log and ap.fixes == 1  # the failed rehearsal got one fix session
+
+
+def test_run_failing_on_output_token_cap_is_excluded(tmp_path, monkeypatch):
+    err = "coder failed: None API Error: Claude's response exceeded the 3000 output token maximum."
+    ctx = runner.make_ctx(rehearsal=True, base=tmp_path / "b", backend=ScriptedBackend())
+    monkeypatch.setattr(runner, "load_config", lambda c: {"frozen": True, "calibration": {}})
+    done = {"s1-r1", "s2-r1", "s3-r1", "s3b-r1", "s4-r1"}
+    for rid in done:
+        (ctx.base / rid).mkdir(parents=True)
+        (ctx.base / rid / "summary.json").write_text("{}")
+
+    async def boom(c, run_id, sc, ex, rep):
+        raise RuntimeError(err)
+
+    monkeypatch.setattr(runner, "run_scenario", boom)
+    assert runner.lane(ctx, [1], sleep=lambda s: None) == 0  # not 4: excluded counts as finished
+    st = runner.status(ctx, "s3onB-r1")
+    assert st["state"] == "excluded" and st["attempts"] == 3 and "3000 output token" in st["error"]
+    for rid in done:
+        (ctx.base / rid / "summary.json").write_text(json.dumps({"windows_to_summit": 1, "windows": 1, "tokens_expired": 0, "interruptions": 0}))
+    assert "excluded" in runner.status_text(ctx, [1])
+
+    # other errors still end as failed (exit 4)
+    runner.set_status(ctx, "s3onB-r1", state="pending", attempts=0, error="")
+
+    async def other(c, run_id, sc, ex, rep):
+        raise RuntimeError("something else")
+
+    monkeypatch.setattr(runner, "run_scenario", other)
+    assert runner.lane(ctx, [1], sleep=lambda s: None) == 4
+
+
+def test_report_counts_completed_repeats_and_lists_excluded():
+    def run(i, w):
+        return {"sc": "s3onB", "done": w, "tot": {"expired": 10, "issued": 100, "blocks": i, "moved": 0}}
+
+    ex = [{"run_id": "s3onB-r2", "error": "boom", "machine": "pietro"}]
+    agg = report.aggregate([run(1, 10), run(3, 20)], 60, ex)["s3onB"]
+    assert agg["n"] == 2 and agg["windows"] == [10, 20] and agg["median_windows"] == 15
+    assert agg["excluded"] == ["s3onB-r2"]
