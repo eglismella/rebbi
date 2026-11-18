@@ -231,6 +231,16 @@ class Ledger:
             )
             return self._agent(c, agent_id)
 
+    def grant(self, agent_id: str, tokens: int, now: datetime, note: str = "refill") -> AgentState:
+        """Issue more budget to an agent (a window's refill)."""
+        if tokens < 0:
+            raise LedgerError("a grant cannot be negative")
+        with self._tx() as c:
+            self._agent(c, agent_id)
+            c.execute("INSERT INTO entries (agent_id, kind, tokens, note, at) VALUES (?, 'grant', ?, ?, ?)",
+                      (agent_id, tokens, note, stamp(now)))
+            return self._agent(c, agent_id)
+
     def last_usage(self, agent_id: str) -> int:
         """Tokens the agent's most recent model call used; 0 before its first call."""
         rows = self._read(

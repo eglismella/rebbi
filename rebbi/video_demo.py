@@ -1,8 +1,8 @@
 """The demo for the video: the same fleet and budgets, first without Rebbi, then with it.
 
-    python -m rebbi.demo                     # baseline, then Rebbi, then the side-by-side check
-    python -m rebbi.demo --auth subscription
-    python -m rebbi.demo --rehearsal         # no credentials: the scripted model, labelled on every line
+    python -m rebbi.video_demo                     # baseline, then Rebbi, then the side-by-side check
+    python -m rebbi.video_demo --auth subscription
+    python -m rebbi.video_demo --rehearsal         # no credentials: the scripted model, labelled on every line
 
 The closing table is the evidence shot: the baseline job stops and fails verification; with Rebbi
 the auditor borrows, finishes, passes verification, and no lender drops below its reserve.

@@ -43,15 +43,15 @@ Put one credential in `.env` (git-ignored). The harness picks the mode from it, 
 ```bash
 python -m venv .venv && .venv/Scripts/python -m pip install -e ".[test]"
 .venv/Scripts/python -m rebbi fetch-target          # the repo auditor-01 audits, at its pinned commit
-.venv/Scripts/python -m rebbi.demo                  # baseline, then Rebbi, then the side-by-side check
+.venv/Scripts/python -m rebbi.video_demo                  # baseline, then Rebbi, then the side-by-side check
 .venv/Scripts/python -m rebbi.fleet --mode baseline # one run: no Rebbi, auditor-01 is refused once its budget runs short
 .venv/Scripts/python -m rebbi.fleet --mode rebbi    # one run: auditor-01 borrows over MCP and finishes
 ```
 
-`docs/demo/real-run-1.txt` to `-3.txt` are three real runs of `python -m rebbi.demo` on Oct 27. In the
+`docs/demo/real-run-1.txt` to `-3.txt` are three real runs of `python -m rebbi.video_demo` on Oct 27. In the
 first two the auditor was told past audits took up to 50,000 tokens; the third uses the current 60,000.
 
-No credentials? `python -m rebbi.demo --rehearsal` runs the same harness, gateway, MCP server, ledger
+No credentials? `python -m rebbi.video_demo --rehearsal` runs the same harness, gateway, MCP server, ledger
 and verifier against `rebbi/scripted_model.py`, a stand-in whose replies and report are hard-coded.
 Every line and run folder says it is scripted, and it is never evidence.
 
@@ -110,7 +110,7 @@ Without the model, for the ledger and MCP alone:
 | `docs/hw9/` | HW9: pre-registered protocol, results, and evidence of the cold-start runs. |
 | `rebbi/gateway.py` | Pass-through for Claude API calls. Refuses a call unless the agent's ledger balance covers its input (counted with count_tokens), after auto-borrow if Rebbi is on; debits the tokens each call really used (input, cache writes, cache reads, output). Holds the only real API key. |
 | `rebbi/fleet.py` | The demo harness: three Claude Agent SDK agents, the gateway beside them (or harness metering in subscription mode), a low-budget warning hook, verification and the ledger check after each run. |
-| `rebbi/demo.py` | Baseline then Rebbi on the same budgets, then a side-by-side table: the evidence shot for the video. |
+| `rebbi/video_demo.py` | Baseline then Rebbi on the same budgets, then a side-by-side table: the evidence shot for the video. |
 | `rebbi/calibrate.py` | Proposes scenario numbers from a measurement run. |
 | `rebbi/bench.py` | The HW7 benchmark: cases × arms × repeats, one results row per run. |
 | `config/targets.toml` | The repositories the audit can run on, each pinned to a commit with its own answer key. |

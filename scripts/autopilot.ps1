@@ -41,6 +41,22 @@ function Log([string]$msg) {
 
 function Done([string]$name) { Test-Path (Join-Path $State $name) }
 
+# Headless Claude Code signs in with the long-lived token in .env (from `claude setup-token`),
+# so an expired browser login cannot stop the night's work. The value is never printed.
+$envFile = Join-Path $Root ".env"
+if (-not (Test-Path $envFile)) { Log "no .env at ${envFile}; run claude setup-token and add CLAUDE_CODE_OAUTH_TOKEN=<token>"; exit 1 }
+$tokenLine = Get-Content $envFile | Where-Object { $_ -match '^\s*CLAUDE_CODE_OAUTH_TOKEN\s*=' } | Select-Object -First 1
+if (-not $tokenLine) { Log ".env has no CLAUDE_CODE_OAUTH_TOKEN line"; exit 1 }
+$env:CLAUDE_CODE_OAUTH_TOKEN = ($tokenLine -replace '^\s*CLAUDE_CODE_OAUTH_TOKEN\s*=\s*', '').Trim().Trim('"').Trim("'")
+Remove-Item Env:ANTHROPIC_API_KEY -ErrorAction SilentlyContinue
+
+$auth = & claude -p "Reply with the word ready." --output-format text 2>&1 | Out-String
+if ($LASTEXITCODE -ne 0 -or $auth -notmatch "ready") {
+    Log "Claude Code cannot sign in with the token in .env ($($auth.Trim())). Run claude setup-token again, replace the line in .env, and restart this script."
+    exit 1
+}
+Log "Claude Code signs in with the token in .env"
+
 # Permission mode for headless Claude Code: auto if this account has it, else acceptEdits with
 # an allow list. Headless sessions never wait for input: anything not allowed is refused.
 $script:ClaudeArgs = @("--permission-mode", "auto")
@@ -57,7 +73,8 @@ function Invoke-Claude([string]$tag, [string]$prompt) {
     if ($script:Sessions -gt $MaxClaudeSessions) { Log "too many Claude sessions; stopping"; exit 2 }
     $out = Join-Path $Logs ("claude-{0:D3}-{1}.jsonl" -f $script:Sessions, $tag)
     Log "Claude session $($script:Sessions) ($tag) -> $out"
-    & claude -p $prompt @script:ClaudeArgs --output-format stream-json --verbose 2>&1 | Out-File -FilePath $out -Encoding utf8
+    $claudeArgs = $script:ClaudeArgs
+    & claude -p $prompt @claudeArgs --output-format stream-json --verbose 2>&1 | Out-File -FilePath $out -Encoding utf8
     $code = $LASTEXITCODE
     $tail = (Get-Content $out -Tail 5 -ErrorAction SilentlyContinue) -join " "
     if ($code -ne 0 -or $tail -match '"is_error":\s*true') {

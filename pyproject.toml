@@ -10,6 +10,8 @@ dependencies = [
     "httpx>=0.27",                # the gateway forwards model calls with it
     "claude-agent-sdk>=0.2.174",  # the fleet harness and the demo run their agents with it
     "python-dotenv>=1.0",         # the harness reads credentials from .env
+    "numpy>=1.26",                # the Demo Day hill evaluator and the candidates it scores
+    "scipy>=1.11",
 ]
 
 [project.optional-dependencies]

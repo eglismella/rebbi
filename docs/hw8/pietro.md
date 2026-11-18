@@ -62,7 +62,7 @@ Then open `runs/town.html` in your browser. Try it while you prepare, not for th
 From the `rebbi` folder:
 
 ```bash
-.venv/bin/python -m rebbi.demo --rehearsal
+.venv/bin/python -m rebbi.video_demo --rehearsal
 ```
 
 It runs the same job twice, first without Rebbi (stopped, verifier FAIL), then with Rebbi (one loan,
@@ -75,7 +75,7 @@ Only if Eglis gives you a key for `.env` (see the "Run the demo" section of Rebb
 
 ```bash
 .venv/bin/python -m rebbi fetch-target
-.venv/bin/python -m rebbi.demo
+.venv/bin/python -m rebbi.video_demo
 ```
 
 Models are random and the network can be slow, so **record it beforehand** and play the recording.

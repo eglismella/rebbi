@@ -87,7 +87,7 @@ for a second, and is told past audits took up to 50,000 so it asks for enough. A
 fires if a loan runs low. analyst-07 has 180,000 and writer-03 exactly its reserve plus declared
 demand. `python -m rebbi.calibrate runs/<run>` proposes numbers from any measurement run.
 
-**The video.** `python -m rebbi.demo` runs the baseline, then Rebbi, then prints a side-by-side
+**The video.** `python -m rebbi.video_demo` runs the baseline, then Rebbi, then prints a side-by-side
 table. Every line in the footage is also saved in each run's `console.log`. Shot by shot:
 
 | Seconds | Show | Lines to look for in `console.log` |
