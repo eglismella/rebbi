@@ -294,8 +294,10 @@ async def execute(ctx: Ctx, cfg: RunConfig, folder: str) -> tuple[Path, dict[str
     write_json(partial / "config.json", {**asdict(cfg), "commit": git_commit(), "scripted": ctx.backend.scripted})
     started = datetime.now()
     team = Team(cfg, ctx.backend, partial)
-    res = await team.run()
-    team.ledger.close()
+    try:
+        res = await team.run()
+    finally:
+        team.ledger.close()  # an open database would block deleting the partial folder on Windows
     ended = datetime.now()
     summary = summarize(cfg, res, started, ended)
     summary["wall_seconds"] = round((ended - started).total_seconds())

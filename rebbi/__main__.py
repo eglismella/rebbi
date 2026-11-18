@@ -57,7 +57,9 @@ def init(folder: Path, force: bool, new_tokens: bool = False) -> int:
     for suffix in ("", "-wal", "-shm"):
         Path(str(db) + suffix).unlink(missing_ok=True)
     sc = scenario.load(fleet)  # --force keeps the operator's edited fleet file
-    scenario.seed(Ledger(db), sc, utcnow())
+    ledger = Ledger(db)
+    scenario.seed(ledger, sc, utcnow())
+    ledger.close()  # an open database cannot be deleted by the next --force on Windows
     old = tomllib.loads(tokens.read_text(encoding="utf-8")).get("tokens", {}) if tokens.exists() else {}
     # Keep issued tokens so existing HTTP client configs keep working; new agents get new ones.
     kept = {a.id: old[a.id] for a in sc.agents if a.id in old and not new_tokens}

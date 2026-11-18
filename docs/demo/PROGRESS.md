@@ -13,3 +13,8 @@ tests (section 7), final checks, BUILD_DONE.
 - runner.py (manifest, calibration with guards, manager calls, run-all, results), report.py (artifact_data.json, table.md,
   results.html with embedded data), __main__.py (run-all, status, report, rehearsal). `python -m rebbi.demo rehearsal`
   passes end to end (7 runs, scripted, zero usage); the report JS runs without error under a DOM stub.
+- tests/test_demo.py added (24 tests). Cloned targets/sqlite-utils at the pinned commit (gitignored) so the 7 fleet
+  tests run; fixed a Windows file-lock bug in `rebbi init` (ledger left open). Full suite: 121 passed.
+- Rehearsal passes (7 runs, scripted); `status` and `report` work on an empty runs/demo.
+- BUILD complete. Next phase: run-all (autopilot). The real SdkBackend has not run against Claude yet (by design:
+  no experiment runs in the build session); if run-all fails on it, the FIX phase handles it.

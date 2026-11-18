@@ -97,6 +97,7 @@ def table_md(rows: list[dict[str, str]]) -> str:
 def build_all(ctx) -> None:
     from rebbi.demo.runner import load_config
     base = ctx.base
+    base.mkdir(parents=True, exist_ok=True)
     rows = read_results(base)
     (base / "table.md").write_text(table_md(rows), encoding="utf-8")
     data = artifact(base, load_config(ctx), ctx.rehearsal)

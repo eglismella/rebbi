@@ -11,3 +11,15 @@
 - The Evaluator agent receives the evaluator's result (run by the harness) and writes the report; the Reviewer
   agent writes a verdict line, while acceptance (valid and better) is decided by the harness rule.
 - The rehearsal uses an in-process scripted backend (no CLI, no network), at zero plan usage.
+- Scenario 4 claims accrue on the part of a loan the borrower actually spent (consumed x 1.05), not on tokens that
+  were returned unspent. The borrower's claim falls by the consumed tokens; the debt limit is one window of budget.
+- Unspent borrowed tokens go back to the lender when the borrower's turn ends (settle), so they can be lent again.
+- A refused call's input is debited (as in fleet.py: the request reached Anthropic), which can overdraw a balance;
+  the overdraft is forgiven at the refill and recorded as `overdraft` in windows.jsonl.
+- A candidate is accepted only if it is valid, better, and both the Evaluator and Reviewer ran that window.
+- Calibration reruns (up to two): Sonnet for the Coder if no valid candidate in three windows; scipy forbidden if
+  the flat-hill guard fires. Earlier attempts are kept as runs/demo/cal-attemptN, not counted.
+- Runs stop early when the best score reaches the summit (windows_to_summit). Other runs go to the 20-window cap.
+- Run ids: cal, s1-r1, s2-r1, s3-r1, s3onB-r1, s3b-r1, s4-r1 (then r2, r3). The manager's scenario-2 budgets and
+  scenario-3 shareable % are frozen in config/demo.toml and reused across repeats; 3b's answer is frozen per repeat.
+- Cloned targets/sqlite-utils (gitignored) so the older fleet tests run here; fixed `rebbi init` leaving its ledger open.
