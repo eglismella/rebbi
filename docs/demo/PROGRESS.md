@@ -9,4 +9,7 @@
 - backend.py (SDK + scripted), market.py, team.py (window loop, gate, Rebbi top-up, calibration math) written; smoke OK.
 
 ## Next
-runner (manifest, calibration, manager, run-all, results), report, tests, rehearsal, BUILD_DONE.
+tests (section 7), final checks, BUILD_DONE.
+- runner.py (manifest, calibration with guards, manager calls, run-all, results), report.py (artifact_data.json, table.md,
+  results.html with embedded data), __main__.py (run-all, status, report, rehearsal). `python -m rebbi.demo rehearsal`
+  passes end to end (7 runs, scripted, zero usage); the report JS runs without error under a DOM stub.

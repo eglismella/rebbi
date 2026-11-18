@@ -241,7 +241,10 @@ class Team:
             left = self.ledger.balance(r)
             if left > 0:
                 self.ledger.record_usage(r, left, self.now(), "expired at refill")
-            self.stats[r]["expired"] = left
+            elif left < 0:  # a refused call's input is debited and can overdraw; forgive it at the refill
+                self.ledger.grant(r, -left, self.now(), "overdraft forgiven at refill")
+            self.stats[r]["expired"] = max(left, 0)
+            self.stats[r]["overdraft"] = max(-left, 0)
             if self.market:
                 self.stats[r]["claim_balance"] = round(self.market.claims[r], 1)
         row = {"window": w, "agents": self.stats,
