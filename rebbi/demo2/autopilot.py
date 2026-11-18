@@ -26,7 +26,7 @@ CLAUDE_ALLOWED = ["Bash", "PowerShell", "Read", "Edit", "Write", "Glob", "Grep",
 
 class Autopilot:
     def __init__(self, machine: str, repeats: str, lanes: int = 3, stop_at: str = "2026-11-22T12:00:00",
-                 root: Path = ROOT, py: str = sys.executable, claude: str = "claude", git: str = "git",
+                 root: Path = ROOT, py: str = sys.executable, claude: str = shutil.which("claude") or "claude", git: str = "git",
                  sleep=time.sleep, poll_s: int = 60, limit_wait_s: int = 20 * 60, max_fixes: int = 8):
         self.machine, self.repeats, self.lanes, self.stop_at = machine, repeats, lanes, stop_at
         self.root, self.py, self.claude, self.git = root, py, claude, git

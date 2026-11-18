@@ -136,9 +136,41 @@ def test_lane_locks(exroot, tmp_path):
     assert runner.lock(ctx, "s1-r1")
 
 
-def test_autopilot_walks_every_phase(tmp_path):
+def _make_shim(tmp_path, fake):
+    """Executable wrapper around the fake script: a .cmd on Windows (a #!/bin/sh file cannot be spawned there)."""
+    import os
+    import stat
+    import sys as _sys
+    if os.name == "nt":
+        shim = tmp_path / "shim.cmd"
+        shim.write_text(f'@echo off\r\n"{_sys.executable}" "{fake}" %*\r\n')
+    else:
+        shim = tmp_path / "shim"
+        shim.write_text(f"#!/bin/sh\nexec {_sys.executable} {fake} \"$@\"\n")
+        shim.chmod(shim.stat().st_mode | stat.S_IEXEC)
+    return shim
+
+
+def test_autopilot_default_claude_resolves_on_path(tmp_path, monkeypatch):
+    """On Windows claude is claude.cmd; a bare 'claude' cannot be spawned, so the default must be the resolved path."""
+    import importlib
+
+    import rebbi.demo2.autopilot as ap_mod
+    fake = tmp_path / "claude.cmd"
+    fake.write_text("@echo off\r\n")
+    monkeypatch.setattr("shutil.which", lambda name: str(fake) if name == "claude" else None)
+    mod = importlib.reload(ap_mod)
+    try:
+        assert mod.Autopilot("pietro", "1-3", root=tmp_path).claude == str(fake)
+    finally:
+        monkeypatch.undo()
+        importlib.reload(ap_mod)
+
+
+def test_autopilot_walks_every_phase(tmp_path, monkeypatch):
     """Fake python, git and claude: the autopilot goes preflight -> prepare -> lanes -> final, and resumes."""
     import os
+    monkeypatch.delenv("REBBI_MACHINE", raising=False)  # set when pytest runs under the real autopilot
     import stat
     import sys as _sys
 
@@ -156,9 +188,7 @@ if args[:3] == ['-m', 'rebbi.demo2', 'prepare']:
 if args[:1] == ['-p']:
     print('ready')
 """)
-    shim = tmp_path / "shim"
-    shim.write_text(f"#!/bin/sh\nexec {_sys.executable} {fake} \"$@\"\n")
-    shim.chmod(shim.stat().st_mode | stat.S_IEXEC)
+    shim = _make_shim(tmp_path, fake)
     ap = Autopilot("pietro", "1-3", lanes=2, root=root, py=str(shim), claude=str(shim), git=str(shim),
                    sleep=lambda s: None, poll_s=0)
     assert ap.main() == 0
@@ -202,9 +232,7 @@ if args[:3] == ['-m', 'rebbi.demo2', 'rehearsal'] and not pathlib.Path('fixed').
     pathlib.Path('fixed').write_text('1')
     sys.exit(1)
 """)
-    shim = tmp_path / "shim"
-    shim.write_text(f"#!/bin/sh\nexec {_sys.executable} {fake} \"$@\"\n")
-    shim.chmod(shim.stat().st_mode | stat.S_IEXEC)
+    shim = _make_shim(tmp_path, fake)
     slept = []
     ap = Autopilot("eglis", "4-6", lanes=1, root=root, py=str(shim), claude=str(shim), git=str(shim),
                    sleep=slept.append, poll_s=0)
