@@ -1,0 +1,2821 @@
+{
+ "config": {
+  "run_id": "cal-B",
+  "scenario": "cal",
+  "exercise": "B",
+  "repeat": 0,
+  "budgets": {
+   "planner": 400000,
+   "researcher": 400000,
+   "coder": 400000,
+   "evaluator": 400000,
+   "reviewer": 400000
+  },
+  "T": 2000000,
+  "shareable_pct": {},
+  "rebbi": false,
+  "market": false,
+  "max_windows": 15,
+  "summit": null,
+  "model": "claude-haiku-5-5",
+  "cost_prior": {},
+  "settings": {},
+  "replay": false,
+  "design": "v2.0",
+  "commit": "72a9295a32cf3deb5b8829aeee2c17c6a126e5bf",
+  "scripted": false,
+  "machine": "pietro"
+ },
+ "summary": {
+  "run_id": "cal-B",
+  "scenario": "cal",
+  "exercise": "B",
+  "repeat": 0,
+  "model": "claude-haiku-5-5",
+  "T": 2000000,
+  "budgets": "{\"planner\": 400000, \"researcher\": 400000, \"coder\": 400000, \"evaluator\": 400000, \"reviewer\": 400000}",
+  "shareable_pct": "",
+  "summit": null,
+  "windows": 4,
+  "windows_to_summit": "not reached",
+  "final_score": 100.0,
+  "tokens_issued": 8000000,
+  "tokens_used": 438839,
+  "tokens_expired": 7561161,
+  "interruptions": 0,
+  "cut_offs": 0,
+  "loans_count": 0,
+  "tokens_moved": 0,
+  "ledger_check": "PASS",
+  "status": "complete",
+  "started_at": "2026-11-18T09:45:21",
+  "ended_at": "2026-11-18T09:59:43",
+  "wall_seconds": 862,
+  "machine": "pietro"
+ },
+ "frames": [
+  {
+   "t": 1,
+   "phase": 0,
+   "score": 0.0,
+   "stages": {
+    "new": 0,
+    "spec": 55,
+    "coded": 0,
+    "reported": 0,
+    "shipped": 0
+   },
+   "B": [
+    400000,
+    400000,
+    400000,
+    400000,
+    400000
+   ],
+   "afs": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "used": [
+    1808,
+    205442,
+    0,
+    0,
+    0
+   ],
+   "lent": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "borrowed": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expired": [
+    398192,
+    194558,
+    400000,
+    400000,
+    400000
+   ],
+   "unmet": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "D": [
+    1808,
+    205442,
+    0,
+    0,
+    0
+   ],
+   "blocked": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "cut": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "denied": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "why": [
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "q": [
+    1,
+    55,
+    0,
+    0,
+    0
+   ],
+   "done": [
+    1,
+    55,
+    0,
+    0,
+    0
+   ],
+   "credit": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "loans": []
+  },
+  {
+   "t": 2,
+   "phase": 1,
+   "score": 0.0,
+   "stages": {
+    "new": 0,
+    "spec": 0,
+    "coded": 55,
+    "reported": 0,
+    "shipped": 0
+   },
+   "B": [
+    400000,
+    400000,
+    400000,
+    400000,
+    400000
+   ],
+   "afs": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "used": [
+    1955,
+    0,
+    114331,
+    0,
+    0
+   ],
+   "lent": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "borrowed": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expired": [
+    398045,
+    400000,
+    285669,
+    400000,
+    400000
+   ],
+   "unmet": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "D": [
+    1955,
+    0,
+    114331,
+    0,
+    0
+   ],
+   "blocked": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "cut": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "denied": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "why": [
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "q": [
+    1,
+    0,
+    55,
+    0,
+    0
+   ],
+   "done": [
+    1,
+    0,
+    55,
+    0,
+    0
+   ],
+   "credit": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "loans": []
+  },
+  {
+   "t": 3,
+   "phase": 2,
+   "score": 0.0,
+   "stages": {
+    "new": 0,
+    "spec": 0,
+    "coded": 0,
+    "reported": 55,
+    "shipped": 0
+   },
+   "B": [
+    400000,
+    400000,
+    400000,
+    400000,
+    400000
+   ],
+   "afs": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "used": [
+    2389,
+    0,
+    0,
+    43068,
+    0
+   ],
+   "lent": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "borrowed": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expired": [
+    397611,
+    400000,
+    400000,
+    356932,
+    400000
+   ],
+   "unmet": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "D": [
+    2389,
+    0,
+    0,
+    43068,
+    0
+   ],
+   "blocked": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "cut": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "denied": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "why": [
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "q": [
+    1,
+    0,
+    0,
+    55,
+    0
+   ],
+   "done": [
+    1,
+    0,
+    0,
+    55,
+    0
+   ],
+   "credit": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "loans": []
+  },
+  {
+   "t": 4,
+   "phase": 2,
+   "score": 100.0,
+   "stages": {
+    "new": 0,
+    "spec": 0,
+    "coded": 0,
+    "reported": 0,
+    "shipped": 55
+   },
+   "B": [
+    400000,
+    400000,
+    400000,
+    400000,
+    400000
+   ],
+   "afs": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "used": [
+    2448,
+    0,
+    0,
+    0,
+    67398
+   ],
+   "lent": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "borrowed": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expired": [
+    397552,
+    400000,
+    400000,
+    400000,
+    332602
+   ],
+   "unmet": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "D": [
+    2448,
+    0,
+    0,
+    0,
+    67398
+   ],
+   "blocked": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "cut": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "denied": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "why": [
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "q": [
+    1,
+    0,
+    0,
+    0,
+    55
+   ],
+   "done": [
+    1,
+    0,
+    0,
+    0,
+    55
+   ],
+   "credit": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "loans": []
+  }
+ ],
+ "calls": [
+  {
+   "window": 1,
+   "role": "planner",
+   "kind": "plan",
+   "slug": "-",
+   "total": 1808,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "leap",
+   "total": 1816,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "two-fer",
+   "total": 1581,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "bob",
+   "total": 3552,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "darts",
+   "total": 2873,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "hamming",
+   "total": 2551,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "rna-transcription",
+   "total": 1882,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "grains",
+   "total": 2263,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "collatz-conjecture",
+   "total": 2381,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "pangram",
+   "total": 2292,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "perfect-numbers",
+   "total": 3225,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "difference-of-squares",
+   "total": 1773,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "flatten-array",
+   "total": 2358,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "rotational-cipher",
+   "total": 2263,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "resistor-color",
+   "total": 2014,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "resistor-color-duo",
+   "total": 1817,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "resistor-color-trio",
+   "total": 3708,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "resistor-color-expert",
+   "total": 4312,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "word-count",
+   "total": 3365,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "scrabble-score",
+   "total": 1904,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "proverb",
+   "total": 3209,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "eliuds-eggs",
+   "total": 2090,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "protein-translation",
+   "total": 3623,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "run-length-encoding",
+   "total": 2661,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "nth-prime",
+   "total": 2079,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "twelve-days",
+   "total": 6058,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "roman-numerals",
+   "total": 3381,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "luhn",
+   "total": 3617,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "dnd-character",
+   "total": 3515,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "phone-number",
+   "total": 5719,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "yacht",
+   "total": 4274,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "game-of-life",
+   "total": 2795,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "robot-simulator",
+   "total": 3750,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "grade-school",
+   "total": 4558,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "pythagorean-triplet",
+   "total": 2744,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "circular-buffer",
+   "total": 4586,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "matrix",
+   "total": 2690,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "allergies",
+   "total": 4265,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "poker",
+   "total": 5528,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "crypto-square",
+   "total": 3419,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "tree-building",
+   "total": 6435,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "change",
+   "total": 3710,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "killer-sudoku-helper",
+   "total": 3834,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "flower-field",
+   "total": 2998,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "food-chain",
+   "total": 5303,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "scale-generator",
+   "total": 5238,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "largest-series-product",
+   "total": 3966,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "pascals-triangle",
+   "total": 4105,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "ledger",
+   "total": 13480,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "go-counting",
+   "total": 5028,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "rational-numbers",
+   "total": 6269,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "dot-dsl",
+   "total": 5036,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "custom-set",
+   "total": 4951,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "bank-account",
+   "total": 4518,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "dominoes",
+   "total": 4123,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "book-store",
+   "total": 3957,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "planner",
+   "kind": "plan",
+   "slug": "-",
+   "total": 1955,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "leap",
+   "total": 990,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "grains",
+   "total": 1033,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "collatz-conjecture",
+   "total": 1100,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "bob",
+   "total": 1442,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "darts",
+   "total": 1314,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "perfect-numbers",
+   "total": 1548,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "pangram",
+   "total": 1238,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "rotational-cipher",
+   "total": 1217,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "rna-transcription",
+   "total": 992,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "resistor-color",
+   "total": 1052,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "resistor-color-duo",
+   "total": 1114,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "resistor-color-trio",
+   "total": 2587,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "resistor-color-expert",
+   "total": 3374,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "hamming",
+   "total": 1086,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "flatten-array",
+   "total": 1193,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "difference-of-squares",
+   "total": 1089,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "two-fer",
+   "total": 996,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "eliuds-eggs",
+   "total": 1081,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "protein-translation",
+   "total": 1352,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "run-length-encoding",
+   "total": 2158,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "nth-prime",
+   "total": 1643,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "twelve-days",
+   "total": 2284,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "roman-numerals",
+   "total": 1223,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "word-count",
+   "total": 1579,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "scrabble-score",
+   "total": 1688,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "proverb",
+   "total": 1446,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "luhn",
+   "total": 1724,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "dnd-character",
+   "total": 1687,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "phone-number",
+   "total": 2782,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "yacht",
+   "total": 2823,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "game-of-life",
+   "total": 1292,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "robot-simulator",
+   "total": 1907,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "grade-school",
+   "total": 1729,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "pythagorean-triplet",
+   "total": 2410,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "circular-buffer",
+   "total": 2630,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "matrix",
+   "total": 1236,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "allergies",
+   "total": 1320,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "poker",
+   "total": 2297,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "crypto-square",
+   "total": 1806,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "tree-building",
+   "total": 3424,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "change",
+   "total": 2213,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "killer-sudoku-helper",
+   "total": 1434,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "flower-field",
+   "total": 1738,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "food-chain",
+   "total": 3643,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "scale-generator",
+   "total": 8617,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "largest-series-product",
+   "total": 1738,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "pascals-triangle",
+   "total": 1897,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "ledger",
+   "total": 10066,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "go-counting",
+   "total": 2907,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "rational-numbers",
+   "total": 2975,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "dot-dsl",
+   "total": 2166,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "custom-set",
+   "total": 2102,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "bank-account",
+   "total": 1701,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "dominoes",
+   "total": 2068,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "book-store",
+   "total": 2180,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "planner",
+   "kind": "plan",
+   "slug": "-",
+   "total": 2389,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "game-of-life",
+   "total": 770,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "robot-simulator",
+   "total": 816,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "grade-school",
+   "total": 782,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "pythagorean-triplet",
+   "total": 767,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "circular-buffer",
+   "total": 754,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "matrix",
+   "total": 718,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "allergies",
+   "total": 762,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "poker",
+   "total": 776,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "crypto-square",
+   "total": 762,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "tree-building",
+   "total": 847,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "eliuds-eggs",
+   "total": 757,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "protein-translation",
+   "total": 842,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "run-length-encoding",
+   "total": 802,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "nth-prime",
+   "total": 778,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "twelve-days",
+   "total": 806,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "roman-numerals",
+   "total": 775,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "word-count",
+   "total": 745,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "scrabble-score",
+   "total": 734,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "proverb",
+   "total": 742,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "luhn",
+   "total": 745,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "dnd-character",
+   "total": 826,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "phone-number",
+   "total": 789,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "yacht",
+   "total": 810,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "bob",
+   "total": 821,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "perfect-numbers",
+   "total": 754,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "darts",
+   "total": 847,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "pangram",
+   "total": 767,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "grains",
+   "total": 746,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "flatten-array",
+   "total": 753,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "rotational-cipher",
+   "total": 711,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "leap",
+   "total": 797,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "collatz-conjecture",
+   "total": 768,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "rna-transcription",
+   "total": 872,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "resistor-color",
+   "total": 801,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "resistor-color-duo",
+   "total": 796,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "resistor-color-trio",
+   "total": 790,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "resistor-color-expert",
+   "total": 755,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "hamming",
+   "total": 757,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "difference-of-squares",
+   "total": 773,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "two-fer",
+   "total": 978,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "change",
+   "total": 776,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "killer-sudoku-helper",
+   "total": 838,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "flower-field",
+   "total": 715,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "food-chain",
+   "total": 754,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "scale-generator",
+   "total": 764,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "largest-series-product",
+   "total": 781,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "pascals-triangle",
+   "total": 764,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "ledger",
+   "total": 745,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "go-counting",
+   "total": 833,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "rational-numbers",
+   "total": 768,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "dot-dsl",
+   "total": 893,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "custom-set",
+   "total": 736,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "bank-account",
+   "total": 792,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "dominoes",
+   "total": 795,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "book-store",
+   "total": 723,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "planner",
+   "kind": "plan",
+   "slug": "-",
+   "total": 2448,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "two-fer",
+   "total": 675,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "resistor-color",
+   "total": 733,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "rna-transcription",
+   "total": 1309,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "collatz-conjecture",
+   "total": 763,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "leap",
+   "total": 828,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "hamming",
+   "total": 1051,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "resistor-color-duo",
+   "total": 858,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "resistor-color-trio",
+   "total": 1092,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "resistor-color-expert",
+   "total": 1942,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "difference-of-squares",
+   "total": 976,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "darts",
+   "total": 760,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "rotational-cipher",
+   "total": 832,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "pangram",
+   "total": 702,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "bob",
+   "total": 1149,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "grains",
+   "total": 1105,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "perfect-numbers",
+   "total": 1171,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "flatten-array",
+   "total": 957,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "eliuds-eggs",
+   "total": 766,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "nth-prime",
+   "total": 1059,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "proverb",
+   "total": 1002,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "scrabble-score",
+   "total": 860,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "run-length-encoding",
+   "total": 2075,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "protein-translation",
+   "total": 1000,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "twelve-days",
+   "total": 1659,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "roman-numerals",
+   "total": 1224,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "word-count",
+   "total": 1073,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "luhn",
+   "total": 1086,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "dnd-character",
+   "total": 1339,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "phone-number",
+   "total": 1617,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "yacht",
+   "total": 1336,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "game-of-life",
+   "total": 989,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "robot-simulator",
+   "total": 1449,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "grade-school",
+   "total": 1289,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "pythagorean-triplet",
+   "total": 1586,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "circular-buffer",
+   "total": 1476,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "matrix",
+   "total": 783,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "allergies",
+   "total": 1087,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "poker",
+   "total": 1869,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "crypto-square",
+   "total": 837,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "tree-building",
+   "total": 1303,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "change",
+   "total": 1482,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "killer-sudoku-helper",
+   "total": 1166,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "flower-field",
+   "total": 1342,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "food-chain",
+   "total": 1885,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "scale-generator",
+   "total": 1722,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "largest-series-product",
+   "total": 987,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "pascals-triangle",
+   "total": 1176,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "ledger",
+   "total": 1922,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "go-counting",
+   "total": 1872,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "rational-numbers",
+   "total": 1777,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "dot-dsl",
+   "total": 1403,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "custom-set",
+   "total": 976,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "bank-account",
+   "total": 1200,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "dominoes",
+   "total": 1254,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "book-store",
+   "total": 1567,
+   "stopped": false
+  }
+ ],
+ "tests": [
+  {
+   "at": "2026-11-18T14:50:10+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "leap",
+   "by": "coder",
+   "passed": 9,
+   "total": 9
+  },
+  {
+   "at": "2026-11-18T14:50:13+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "grains",
+   "by": "coder",
+   "passed": 11,
+   "total": 11
+  },
+  {
+   "at": "2026-11-18T14:50:16+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "collatz-conjecture",
+   "by": "coder",
+   "passed": 6,
+   "total": 6
+  },
+  {
+   "at": "2026-11-18T14:50:19+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "bob",
+   "by": "coder",
+   "passed": 26,
+   "total": 26
+  },
+  {
+   "at": "2026-11-18T14:50:22+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "darts",
+   "by": "coder",
+   "passed": 13,
+   "total": 13
+  },
+  {
+   "at": "2026-11-18T14:50:25+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "perfect-numbers",
+   "by": "coder",
+   "passed": 14,
+   "total": 14
+  },
+  {
+   "at": "2026-11-18T14:50:28+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "pangram",
+   "by": "coder",
+   "passed": 12,
+   "total": 12
+  },
+  {
+   "at": "2026-11-18T14:50:31+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "rotational-cipher",
+   "by": "coder",
+   "passed": 10,
+   "total": 10
+  },
+  {
+   "at": "2026-11-18T14:50:34+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "rna-transcription",
+   "by": "coder",
+   "passed": 6,
+   "total": 6
+  },
+  {
+   "at": "2026-11-18T14:50:36+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "resistor-color",
+   "by": "coder",
+   "passed": 4,
+   "total": 4
+  },
+  {
+   "at": "2026-11-18T14:50:39+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "resistor-color-duo",
+   "by": "coder",
+   "passed": 7,
+   "total": 7
+  },
+  {
+   "at": "2026-11-18T14:50:47+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "resistor-color-trio",
+   "by": "coder",
+   "passed": 10,
+   "total": 10
+  },
+  {
+   "at": "2026-11-18T14:50:57+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "resistor-color-expert",
+   "by": "coder",
+   "passed": 12,
+   "total": 12
+  },
+  {
+   "at": "2026-11-18T14:50:59+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "hamming",
+   "by": "coder",
+   "passed": 9,
+   "total": 9
+  },
+  {
+   "at": "2026-11-18T14:51:03+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "flatten-array",
+   "by": "coder",
+   "passed": 11,
+   "total": 11
+  },
+  {
+   "at": "2026-11-18T14:51:05+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "difference-of-squares",
+   "by": "coder",
+   "passed": 9,
+   "total": 9
+  },
+  {
+   "at": "2026-11-18T14:51:06+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "two-fer",
+   "by": "coder",
+   "passed": 3,
+   "total": 3
+  },
+  {
+   "at": "2026-11-18T14:51:09+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "eliuds-eggs",
+   "by": "coder",
+   "passed": 4,
+   "total": 4
+  },
+  {
+   "at": "2026-11-18T14:51:11+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "protein-translation",
+   "by": "coder",
+   "passed": 26,
+   "total": 26
+  },
+  {
+   "at": "2026-11-18T14:51:18+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "run-length-encoding",
+   "by": "coder",
+   "passed": 13,
+   "total": 13
+  },
+  {
+   "at": "2026-11-18T14:51:24+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "nth-prime",
+   "by": "coder",
+   "passed": 6,
+   "total": 6
+  },
+  {
+   "at": "2026-11-18T14:51:30+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "twelve-days",
+   "by": "coder",
+   "passed": 15,
+   "total": 15
+  },
+  {
+   "at": "2026-11-18T14:51:32+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "roman-numerals",
+   "by": "coder",
+   "passed": 27,
+   "total": 27
+  },
+  {
+   "at": "2026-11-18T14:51:36+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "word-count",
+   "by": "coder",
+   "passed": 17,
+   "total": 17
+  },
+  {
+   "at": "2026-11-18T14:51:42+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "scrabble-score",
+   "by": "coder",
+   "passed": 11,
+   "total": 11
+  },
+  {
+   "at": "2026-11-18T14:51:45+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "proverb",
+   "by": "coder",
+   "passed": 8,
+   "total": 8
+  },
+  {
+   "at": "2026-11-18T14:51:49+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "luhn",
+   "by": "coder",
+   "passed": 23,
+   "total": 23
+  },
+  {
+   "at": "2026-11-18T14:51:53+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "dnd-character",
+   "by": "coder",
+   "passed": 19,
+   "total": 19
+  },
+  {
+   "at": "2026-11-18T14:52:01+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "phone-number",
+   "by": "coder",
+   "passed": 21,
+   "total": 21
+  },
+  {
+   "at": "2026-11-18T14:52:08+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "yacht",
+   "by": "coder",
+   "passed": 29,
+   "total": 29
+  },
+  {
+   "at": "2026-11-18T14:52:10+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "game-of-life",
+   "by": "coder",
+   "passed": 8,
+   "total": 8
+  },
+  {
+   "at": "2026-11-18T14:52:14+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "robot-simulator",
+   "by": "coder",
+   "passed": 18,
+   "total": 18
+  },
+  {
+   "at": "2026-11-18T14:52:17+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "grade-school",
+   "by": "coder",
+   "passed": 20,
+   "total": 20
+  },
+  {
+   "at": "2026-11-18T14:52:24+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "pythagorean-triplet",
+   "by": "coder",
+   "passed": 7,
+   "total": 7
+  },
+  {
+   "at": "2026-11-18T14:52:31+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "circular-buffer",
+   "by": "coder",
+   "passed": 14,
+   "total": 14
+  },
+  {
+   "at": "2026-11-18T14:52:33+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "matrix",
+   "by": "coder",
+   "passed": 8,
+   "total": 8
+  },
+  {
+   "at": "2026-11-18T14:52:36+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "allergies",
+   "by": "coder",
+   "passed": 50,
+   "total": 50
+  },
+  {
+   "at": "2026-11-18T14:52:43+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "poker",
+   "by": "coder",
+   "passed": 37,
+   "total": 37
+  },
+  {
+   "at": "2026-11-18T14:52:49+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "crypto-square",
+   "by": "coder",
+   "passed": 8,
+   "total": 8
+  },
+  {
+   "at": "2026-11-18T14:52:57+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "tree-building",
+   "by": "coder",
+   "passed": 13,
+   "total": 13
+  },
+  {
+   "at": "2026-11-18T14:53:04+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "change",
+   "by": "coder",
+   "passed": 13,
+   "total": 13
+  },
+  {
+   "at": "2026-11-18T14:53:06+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "killer-sudoku-helper",
+   "by": "coder",
+   "passed": 13,
+   "total": 13
+  },
+  {
+   "at": "2026-11-18T14:53:11+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "flower-field",
+   "by": "coder",
+   "passed": 16,
+   "total": 16
+  },
+  {
+   "at": "2026-11-18T14:53:22+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "food-chain",
+   "by": "coder",
+   "passed": 10,
+   "total": 10
+  },
+  {
+   "at": "2026-11-18T14:53:50+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "scale-generator",
+   "by": "coder",
+   "passed": 17,
+   "total": 17
+  },
+  {
+   "at": "2026-11-18T14:53:54+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "largest-series-product",
+   "by": "coder",
+   "passed": 14,
+   "total": 14
+  },
+  {
+   "at": "2026-11-18T14:54:01+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "pascals-triangle",
+   "by": "coder",
+   "passed": 10,
+   "total": 10
+  },
+  {
+   "at": "2026-11-18T14:54:17+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "ledger",
+   "by": "coder",
+   "passed": 11,
+   "total": 11
+  },
+  {
+   "at": "2026-11-18T14:54:24+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "go-counting",
+   "by": "coder",
+   "passed": 11,
+   "total": 11
+  },
+  {
+   "at": "2026-11-18T14:54:32+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "rational-numbers",
+   "by": "coder",
+   "passed": 43,
+   "total": 43
+  },
+  {
+   "at": "2026-11-18T14:54:36+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "dot-dsl",
+   "by": "coder",
+   "passed": 12,
+   "total": 12
+  },
+  {
+   "at": "2026-11-18T14:54:40+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "custom-set",
+   "by": "coder",
+   "passed": 40,
+   "total": 40
+  },
+  {
+   "at": "2026-11-18T14:54:43+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "bank-account",
+   "by": "coder",
+   "passed": 16,
+   "total": 16
+  },
+  {
+   "at": "2026-11-18T14:54:49+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "dominoes",
+   "by": "coder",
+   "passed": 13,
+   "total": 13
+  },
+  {
+   "at": "2026-11-18T14:54:56+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "book-store",
+   "by": "coder",
+   "passed": 20,
+   "total": 20
+  }
+ ]
+}

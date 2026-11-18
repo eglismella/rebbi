@@ -1,0 +1,2839 @@
+{
+ "config": {
+  "run_id": "cal-A",
+  "scenario": "cal",
+  "exercise": "A",
+  "repeat": 0,
+  "budgets": {
+   "planner": 400000,
+   "researcher": 400000,
+   "coder": 400000,
+   "evaluator": 400000,
+   "reviewer": 400000
+  },
+  "T": 2000000,
+  "shareable_pct": {},
+  "rebbi": false,
+  "market": false,
+  "max_windows": 15,
+  "summit": null,
+  "model": "claude-haiku-5-5",
+  "cost_prior": {},
+  "settings": {},
+  "replay": false,
+  "design": "v2.0",
+  "commit": "72a9295a32cf3deb5b8829aeee2c17c6a126e5bf",
+  "scripted": false,
+  "machine": "pietro"
+ },
+ "summary": {
+  "run_id": "cal-A",
+  "scenario": "cal",
+  "exercise": "A",
+  "repeat": 0,
+  "model": "claude-haiku-5-5",
+  "T": 2000000,
+  "budgets": "{\"planner\": 400000, \"researcher\": 400000, \"coder\": 400000, \"evaluator\": 400000, \"reviewer\": 400000}",
+  "shareable_pct": "",
+  "summit": null,
+  "windows": 4,
+  "windows_to_summit": "not reached",
+  "final_score": 100.0,
+  "tokens_issued": 8000000,
+  "tokens_used": 444912,
+  "tokens_expired": 7555088,
+  "interruptions": 0,
+  "cut_offs": 0,
+  "loans_count": 0,
+  "tokens_moved": 0,
+  "ledger_check": "PASS",
+  "status": "complete",
+  "started_at": "2026-11-18T09:45:21",
+  "ended_at": "2026-11-18T10:00:00",
+  "wall_seconds": 879,
+  "machine": "pietro"
+ },
+ "frames": [
+  {
+   "t": 1,
+   "phase": 0,
+   "score": 0.0,
+   "stages": {
+    "new": 0,
+    "spec": 55,
+    "coded": 0,
+    "reported": 0,
+    "shipped": 0
+   },
+   "B": [
+    400000,
+    400000,
+    400000,
+    400000,
+    400000
+   ],
+   "afs": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "used": [
+    1960,
+    194755,
+    0,
+    0,
+    0
+   ],
+   "lent": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "borrowed": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expired": [
+    398040,
+    205245,
+    400000,
+    400000,
+    400000
+   ],
+   "unmet": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "D": [
+    1960,
+    194755,
+    0,
+    0,
+    0
+   ],
+   "blocked": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "cut": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "denied": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "why": [
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "q": [
+    1,
+    55,
+    0,
+    0,
+    0
+   ],
+   "done": [
+    1,
+    55,
+    0,
+    0,
+    0
+   ],
+   "credit": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "loans": []
+  },
+  {
+   "t": 2,
+   "phase": 1,
+   "score": 0.0,
+   "stages": {
+    "new": 0,
+    "spec": 0,
+    "coded": 55,
+    "reported": 0,
+    "shipped": 0
+   },
+   "B": [
+    400000,
+    400000,
+    400000,
+    400000,
+    400000
+   ],
+   "afs": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "used": [
+    1963,
+    0,
+    120796,
+    0,
+    0
+   ],
+   "lent": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "borrowed": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expired": [
+    398037,
+    400000,
+    279204,
+    400000,
+    400000
+   ],
+   "unmet": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "D": [
+    1963,
+    0,
+    120796,
+    0,
+    0
+   ],
+   "blocked": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "cut": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "denied": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "why": [
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "q": [
+    1,
+    0,
+    55,
+    0,
+    0
+   ],
+   "done": [
+    1,
+    0,
+    55,
+    0,
+    0
+   ],
+   "credit": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "loans": []
+  },
+  {
+   "t": 3,
+   "phase": 2,
+   "score": 0.0,
+   "stages": {
+    "new": 0,
+    "spec": 0,
+    "coded": 0,
+    "reported": 55,
+    "shipped": 0
+   },
+   "B": [
+    400000,
+    400000,
+    400000,
+    400000,
+    400000
+   ],
+   "afs": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "used": [
+    2407,
+    0,
+    0,
+    45759,
+    0
+   ],
+   "lent": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "borrowed": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expired": [
+    397593,
+    400000,
+    400000,
+    354241,
+    400000
+   ],
+   "unmet": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "D": [
+    2407,
+    0,
+    0,
+    45759,
+    0
+   ],
+   "blocked": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "cut": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "denied": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "why": [
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "q": [
+    1,
+    0,
+    0,
+    55,
+    0
+   ],
+   "done": [
+    1,
+    0,
+    0,
+    55,
+    0
+   ],
+   "credit": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "loans": []
+  },
+  {
+   "t": 4,
+   "phase": 2,
+   "score": 100.0,
+   "stages": {
+    "new": 0,
+    "spec": 0,
+    "coded": 0,
+    "reported": 0,
+    "shipped": 55
+   },
+   "B": [
+    400000,
+    400000,
+    400000,
+    400000,
+    400000
+   ],
+   "afs": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "used": [
+    2979,
+    0,
+    0,
+    0,
+    74293
+   ],
+   "lent": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "borrowed": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expired": [
+    397021,
+    400000,
+    400000,
+    400000,
+    325707
+   ],
+   "unmet": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "D": [
+    2979,
+    0,
+    0,
+    0,
+    74293
+   ],
+   "blocked": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "cut": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "denied": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "why": [
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "q": [
+    1,
+    0,
+    0,
+    0,
+    55
+   ],
+   "done": [
+    1,
+    0,
+    0,
+    0,
+    55
+   ],
+   "credit": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "loans": []
+  }
+ ],
+ "calls": [
+  {
+   "window": 1,
+   "role": "planner",
+   "kind": "plan",
+   "slug": "-",
+   "total": 1960,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "triangle",
+   "total": 2705,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "armstrong-numbers",
+   "total": 1910,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "raindrops",
+   "total": 3230,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "reverse-string",
+   "total": 1577,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "isogram",
+   "total": 1988,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "isbn-verifier",
+   "total": 3188,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "secret-handshake",
+   "total": 2648,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "anagram",
+   "total": 3765,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "house",
+   "total": 6474,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "binary-search",
+   "total": 3421,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "line-up",
+   "total": 3874,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "list-ops",
+   "total": 4069,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "etl",
+   "total": 2655,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "space-age",
+   "total": 3182,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "sum-of-multiples",
+   "total": 2934,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "gigasecond",
+   "total": 2902,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "square-root",
+   "total": 2124,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "pig-latin",
+   "total": 3529,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "matching-brackets",
+   "total": 2509,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "sublist",
+   "total": 3580,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "atbash-cipher",
+   "total": 2849,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "diamond",
+   "total": 2560,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "prime-factors",
+   "total": 2001,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "say",
+   "total": 2832,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "acronym",
+   "total": 2330,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "series",
+   "total": 2627,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "robot-name",
+   "total": 1782,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "queen-attack",
+   "total": 3314,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "transpose",
+   "total": 2702,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "state-of-tic-tac-toe",
+   "total": 6025,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "saddle-points",
+   "total": 3317,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "ocr-numbers",
+   "total": 4147,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "sieve",
+   "total": 3331,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "high-scores",
+   "total": 2544,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "kindergarten-garden",
+   "total": 5916,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "bottle-song",
+   "total": 3843,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "simple-cipher",
+   "total": 4082,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "wordy",
+   "total": 4620,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "clock",
+   "total": 5838,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "connect",
+   "total": 3586,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "all-your-base",
+   "total": 3843,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "swift-scheduling",
+   "total": 5065,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "spiral-matrix",
+   "total": 2086,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "variable-length-quantity",
+   "total": 4595,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "rail-fence-cipher",
+   "total": 2943,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "tournament",
+   "total": 4629,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "markdown",
+   "total": 3618,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "hangman",
+   "total": 3580,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "binary-search-tree",
+   "total": 4104,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "knapsack",
+   "total": 2731,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "relative-distance",
+   "total": 7732,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "affine-cipher",
+   "total": 4148,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "react",
+   "total": 4577,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "two-bucket",
+   "total": 4989,
+   "stopped": false
+  },
+  {
+   "window": 1,
+   "role": "researcher",
+   "kind": "spec",
+   "slug": "satellite",
+   "total": 3605,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "planner",
+   "kind": "plan",
+   "slug": "-",
+   "total": 1963,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "triangle",
+   "total": 1551,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "armstrong-numbers",
+   "total": 1058,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "raindrops",
+   "total": 1231,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "reverse-string",
+   "total": 964,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "isogram",
+   "total": 1174,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "isbn-verifier",
+   "total": 1680,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "secret-handshake",
+   "total": 1394,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "anagram",
+   "total": 1420,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "house",
+   "total": 2181,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "binary-search",
+   "total": 1301,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "line-up",
+   "total": 1382,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "list-ops",
+   "total": 2422,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "etl",
+   "total": 1086,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "space-age",
+   "total": 1927,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "sum-of-multiples",
+   "total": 1797,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "gigasecond",
+   "total": 1289,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "square-root",
+   "total": 1209,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "pig-latin",
+   "total": 9191,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "matching-brackets",
+   "total": 1206,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "sublist",
+   "total": 2201,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "atbash-cipher",
+   "total": 2148,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "diamond",
+   "total": 1496,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "prime-factors",
+   "total": 1310,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "say",
+   "total": 2327,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "acronym",
+   "total": 1413,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "series",
+   "total": 1429,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "robot-name",
+   "total": 2000,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "queen-attack",
+   "total": 1532,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "transpose",
+   "total": 2159,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "state-of-tic-tac-toe",
+   "total": 1908,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "saddle-points",
+   "total": 1592,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "ocr-numbers",
+   "total": 3153,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "sieve",
+   "total": 1123,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "high-scores",
+   "total": 1375,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "kindergarten-garden",
+   "total": 2146,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "bottle-song",
+   "total": 3015,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "simple-cipher",
+   "total": 1823,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "wordy",
+   "total": 9580,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "clock",
+   "total": 1898,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "connect",
+   "total": 2808,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "all-your-base",
+   "total": 1711,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "swift-scheduling",
+   "total": 3628,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "spiral-matrix",
+   "total": 2110,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "variable-length-quantity",
+   "total": 2051,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "rail-fence-cipher",
+   "total": 1894,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "tournament",
+   "total": 2454,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "markdown",
+   "total": 3667,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "hangman",
+   "total": 1930,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "binary-search-tree",
+   "total": 1794,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "knapsack",
+   "total": 1321,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "relative-distance",
+   "total": 2405,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "affine-cipher",
+   "total": 2886,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "react",
+   "total": 3495,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "two-bucket",
+   "total": 3688,
+   "stopped": false
+  },
+  {
+   "window": 2,
+   "role": "coder",
+   "kind": "code",
+   "slug": "satellite",
+   "total": 1863,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "planner",
+   "kind": "plan",
+   "slug": "-",
+   "total": 2407,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "pig-latin",
+   "total": 2777,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "triangle",
+   "total": 735,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "armstrong-numbers",
+   "total": 772,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "raindrops",
+   "total": 975,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "reverse-string",
+   "total": 762,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "isogram",
+   "total": 765,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "isbn-verifier",
+   "total": 792,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "secret-handshake",
+   "total": 791,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "anagram",
+   "total": 789,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "house",
+   "total": 758,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "binary-search",
+   "total": 741,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "line-up",
+   "total": 817,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "list-ops",
+   "total": 730,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "etl",
+   "total": 719,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "space-age",
+   "total": 835,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "sum-of-multiples",
+   "total": 749,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "gigasecond",
+   "total": 761,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "square-root",
+   "total": 720,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "matching-brackets",
+   "total": 737,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "sublist",
+   "total": 743,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "atbash-cipher",
+   "total": 761,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "diamond",
+   "total": 750,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "prime-factors",
+   "total": 711,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "say",
+   "total": 930,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "acronym",
+   "total": 736,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "series",
+   "total": 769,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "robot-name",
+   "total": 783,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "queen-attack",
+   "total": 791,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "transpose",
+   "total": 741,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "high-scores",
+   "total": 569,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "state-of-tic-tac-toe",
+   "total": 822,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "saddle-points",
+   "total": 760,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "ocr-numbers",
+   "total": 751,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "sieve",
+   "total": 738,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "kindergarten-garden",
+   "total": 744,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "bottle-song",
+   "total": 744,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "simple-cipher",
+   "total": 876,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "wordy",
+   "total": 772,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "clock",
+   "total": 699,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "connect",
+   "total": 782,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "all-your-base",
+   "total": 765,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "swift-scheduling",
+   "total": 724,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "spiral-matrix",
+   "total": 796,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "variable-length-quantity",
+   "total": 922,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "rail-fence-cipher",
+   "total": 665,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "tournament",
+   "total": 717,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "markdown",
+   "total": 729,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "hangman",
+   "total": 2375,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "binary-search-tree",
+   "total": 711,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "knapsack",
+   "total": 856,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "relative-distance",
+   "total": 778,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "affine-cipher",
+   "total": 739,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "react",
+   "total": 771,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "two-bucket",
+   "total": 785,
+   "stopped": false
+  },
+  {
+   "window": 3,
+   "role": "evaluator",
+   "kind": "report",
+   "slug": "satellite",
+   "total": 729,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "planner",
+   "kind": "plan",
+   "slug": "-",
+   "total": 2979,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "state-of-tic-tac-toe",
+   "total": 1317,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "saddle-points",
+   "total": 1191,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "ocr-numbers",
+   "total": 1309,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "sieve",
+   "total": 1166,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "high-scores",
+   "total": 738,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "kindergarten-garden",
+   "total": 1417,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "bottle-song",
+   "total": 1430,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "simple-cipher",
+   "total": 1385,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "wordy",
+   "total": 1880,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "clock",
+   "total": 1106,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "connect",
+   "total": 1493,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "fix",
+   "slug": "pig-latin",
+   "total": 3728,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "square-root",
+   "total": 1420,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "matching-brackets",
+   "total": 820,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "sublist",
+   "total": 1430,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "atbash-cipher",
+   "total": 1145,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "diamond",
+   "total": 1145,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "prime-factors",
+   "total": 1023,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "say",
+   "total": 1390,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "acronym",
+   "total": 1245,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "series",
+   "total": 1179,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "robot-name",
+   "total": 1495,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "queen-attack",
+   "total": 1203,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "transpose",
+   "total": 1342,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "triangle",
+   "total": 1845,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "armstrong-numbers",
+   "total": 738,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "raindrops",
+   "total": 774,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "isbn-verifier",
+   "total": 1179,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "line-up",
+   "total": 822,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "list-ops",
+   "total": 1030,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "reverse-string",
+   "total": 1093,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "isogram",
+   "total": 1067,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "secret-handshake",
+   "total": 784,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "anagram",
+   "total": 1051,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "house",
+   "total": 1920,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "binary-search",
+   "total": 1084,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "etl",
+   "total": 975,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "space-age",
+   "total": 1287,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "sum-of-multiples",
+   "total": 1219,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "gigasecond",
+   "total": 1046,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "all-your-base",
+   "total": 1189,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "swift-scheduling",
+   "total": 2315,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "spiral-matrix",
+   "total": 1152,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "variable-length-quantity",
+   "total": 1251,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "rail-fence-cipher",
+   "total": 1336,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "tournament",
+   "total": 1476,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "markdown",
+   "total": 1094,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "fix",
+   "slug": "hangman",
+   "total": 3339,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "binary-search-tree",
+   "total": 1449,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "knapsack",
+   "total": 783,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "relative-distance",
+   "total": 1637,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "affine-cipher",
+   "total": 1527,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "react",
+   "total": 1687,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "two-bucket",
+   "total": 1786,
+   "stopped": false
+  },
+  {
+   "window": 4,
+   "role": "reviewer",
+   "kind": "approve",
+   "slug": "satellite",
+   "total": 1361,
+   "stopped": false
+  }
+ ],
+ "tests": [
+  {
+   "at": "2026-11-18T14:49:43+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "triangle",
+   "by": "coder",
+   "passed": 21,
+   "total": 21
+  },
+  {
+   "at": "2026-11-18T14:49:45+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "armstrong-numbers",
+   "by": "coder",
+   "passed": 9,
+   "total": 9
+  },
+  {
+   "at": "2026-11-18T14:49:47+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "raindrops",
+   "by": "coder",
+   "passed": 18,
+   "total": 18
+  },
+  {
+   "at": "2026-11-18T14:49:50+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "reverse-string",
+   "by": "coder",
+   "passed": 7,
+   "total": 7
+  },
+  {
+   "at": "2026-11-18T14:49:52+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "isogram",
+   "by": "coder",
+   "passed": 14,
+   "total": 14
+  },
+  {
+   "at": "2026-11-18T14:49:57+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "isbn-verifier",
+   "by": "coder",
+   "passed": 21,
+   "total": 21
+  },
+  {
+   "at": "2026-11-18T14:50:00+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "secret-handshake",
+   "by": "coder",
+   "passed": 11,
+   "total": 11
+  },
+  {
+   "at": "2026-11-18T14:50:04+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "anagram",
+   "by": "coder",
+   "passed": 18,
+   "total": 18
+  },
+  {
+   "at": "2026-11-18T14:50:11+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "house",
+   "by": "coder",
+   "passed": 14,
+   "total": 14
+  },
+  {
+   "at": "2026-11-18T14:50:13+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "binary-search",
+   "by": "coder",
+   "passed": 11,
+   "total": 11
+  },
+  {
+   "at": "2026-11-18T14:50:17+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "line-up",
+   "by": "coder",
+   "passed": 25,
+   "total": 25
+  },
+  {
+   "at": "2026-11-18T14:50:23+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "list-ops",
+   "by": "coder",
+   "passed": 25,
+   "total": 25
+  },
+  {
+   "at": "2026-11-18T14:50:24+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "etl",
+   "by": "coder",
+   "passed": 4,
+   "total": 4
+  },
+  {
+   "at": "2026-11-18T14:50:29+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "space-age",
+   "by": "coder",
+   "passed": 8,
+   "total": 8
+  },
+  {
+   "at": "2026-11-18T14:50:34+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "sum-of-multiples",
+   "by": "coder",
+   "passed": 16,
+   "total": 16
+  },
+  {
+   "at": "2026-11-18T14:50:37+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "gigasecond",
+   "by": "coder",
+   "passed": 5,
+   "total": 5
+  },
+  {
+   "at": "2026-11-18T14:50:40+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "square-root",
+   "by": "coder",
+   "passed": 6,
+   "total": 6
+  },
+  {
+   "at": "2026-11-18T14:50:58+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "pig-latin",
+   "by": "coder",
+   "passed": 0,
+   "total": 23
+  },
+  {
+   "at": "2026-11-18T14:51:00+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "matching-brackets",
+   "by": "coder",
+   "passed": 20,
+   "total": 20
+  },
+  {
+   "at": "2026-11-18T14:51:04+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "sublist",
+   "by": "coder",
+   "passed": 22,
+   "total": 22
+  },
+  {
+   "at": "2026-11-18T14:51:10+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "atbash-cipher",
+   "by": "coder",
+   "passed": 14,
+   "total": 14
+  },
+  {
+   "at": "2026-11-18T14:51:16+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "diamond",
+   "by": "coder",
+   "passed": 5,
+   "total": 5
+  },
+  {
+   "at": "2026-11-18T14:51:19+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "prime-factors",
+   "by": "coder",
+   "passed": 12,
+   "total": 12
+  },
+  {
+   "at": "2026-11-18T14:51:25+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "say",
+   "by": "coder",
+   "passed": 20,
+   "total": 20
+  },
+  {
+   "at": "2026-11-18T14:51:28+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "acronym",
+   "by": "coder",
+   "passed": 9,
+   "total": 9
+  },
+  {
+   "at": "2026-11-18T14:51:31+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "series",
+   "by": "coder",
+   "passed": 11,
+   "total": 11
+  },
+  {
+   "at": "2026-11-18T14:51:37+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "robot-name",
+   "by": "coder",
+   "passed": 4,
+   "total": 4
+  },
+  {
+   "at": "2026-11-18T14:51:40+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "queen-attack",
+   "by": "coder",
+   "passed": 14,
+   "total": 14
+  },
+  {
+   "at": "2026-11-18T14:51:46+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "transpose",
+   "by": "coder",
+   "passed": 12,
+   "total": 12
+  },
+  {
+   "at": "2026-11-18T14:51:50+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "state-of-tic-tac-toe",
+   "by": "coder",
+   "passed": 29,
+   "total": 29
+  },
+  {
+   "at": "2026-11-18T14:51:53+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "saddle-points",
+   "by": "coder",
+   "passed": 10,
+   "total": 10
+  },
+  {
+   "at": "2026-11-18T14:52:02+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "ocr-numbers",
+   "by": "coder",
+   "passed": 17,
+   "total": 17
+  },
+  {
+   "at": "2026-11-18T14:52:04+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "sieve",
+   "by": "coder",
+   "passed": 5,
+   "total": 5
+  },
+  {
+   "at": "2026-11-18T14:52:07+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "high-scores",
+   "by": "coder",
+   "passed": 12,
+   "total": 12
+  },
+  {
+   "at": "2026-11-18T14:52:13+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "kindergarten-garden",
+   "by": "coder",
+   "passed": 19,
+   "total": 19
+  },
+  {
+   "at": "2026-11-18T14:52:22+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "bottle-song",
+   "by": "coder",
+   "passed": 7,
+   "total": 7
+  },
+  {
+   "at": "2026-11-18T14:52:25+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "simple-cipher",
+   "by": "coder",
+   "passed": 12,
+   "total": 12
+  },
+  {
+   "at": "2026-11-18T14:52:43+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "wordy",
+   "by": "coder",
+   "passed": 31,
+   "total": 31
+  },
+  {
+   "at": "2026-11-18T14:52:48+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "clock",
+   "by": "coder",
+   "passed": 55,
+   "total": 55
+  },
+  {
+   "at": "2026-11-18T14:52:57+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "connect",
+   "by": "coder",
+   "passed": 12,
+   "total": 12
+  },
+  {
+   "at": "2026-11-18T14:53:04+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "all-your-base",
+   "by": "coder",
+   "passed": 21,
+   "total": 21
+  },
+  {
+   "at": "2026-11-18T14:53:14+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "swift-scheduling",
+   "by": "coder",
+   "passed": 17,
+   "total": 17
+  },
+  {
+   "at": "2026-11-18T14:53:19+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "spiral-matrix",
+   "by": "coder",
+   "passed": 6,
+   "total": 6
+  },
+  {
+   "at": "2026-11-18T14:53:25+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "variable-length-quantity",
+   "by": "coder",
+   "passed": 31,
+   "total": 31
+  },
+  {
+   "at": "2026-11-18T14:53:31+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "rail-fence-cipher",
+   "by": "coder",
+   "passed": 6,
+   "total": 6
+  },
+  {
+   "at": "2026-11-18T14:53:38+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "tournament",
+   "by": "coder",
+   "passed": 12,
+   "total": 12
+  },
+  {
+   "at": "2026-11-18T14:53:48+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "markdown",
+   "by": "coder",
+   "passed": 17,
+   "total": 17
+  },
+  {
+   "at": "2026-11-18T14:53:53+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "hangman",
+   "by": "coder",
+   "passed": 5,
+   "total": 7
+  },
+  {
+   "at": "2026-11-18T14:53:56+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "binary-search-tree",
+   "by": "coder",
+   "passed": 10,
+   "total": 10
+  },
+  {
+   "at": "2026-11-18T14:54:00+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "knapsack",
+   "by": "coder",
+   "passed": 7,
+   "total": 7
+  },
+  {
+   "at": "2026-11-18T14:54:07+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "relative-distance",
+   "by": "coder",
+   "passed": 9,
+   "total": 9
+  },
+  {
+   "at": "2026-11-18T14:54:16+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "affine-cipher",
+   "by": "coder",
+   "passed": 16,
+   "total": 16
+  },
+  {
+   "at": "2026-11-18T14:54:27+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "react",
+   "by": "coder",
+   "passed": 14,
+   "total": 14
+  },
+  {
+   "at": "2026-11-18T14:54:39+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "two-bucket",
+   "by": "coder",
+   "passed": 11,
+   "total": 11
+  },
+  {
+   "at": "2026-11-18T14:54:43+00:00",
+   "window": 2,
+   "kind": "tests",
+   "slug": "satellite",
+   "by": "coder",
+   "passed": 9,
+   "total": 9
+  },
+  {
+   "at": "2026-11-18T14:57:49+00:00",
+   "window": 4,
+   "kind": "tests",
+   "slug": "pig-latin",
+   "by": "reviewer",
+   "passed": 23,
+   "total": 23
+  },
+  {
+   "at": "2026-11-18T14:59:39+00:00",
+   "window": 4,
+   "kind": "tests",
+   "slug": "hangman",
+   "by": "reviewer",
+   "passed": 7,
+   "total": 7
+  }
+ ]
+}
