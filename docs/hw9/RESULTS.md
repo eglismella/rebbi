@@ -137,7 +137,7 @@ a shell, and eight tests for the fixes the review found (below). Full suite: 97 
 HW9).
 
 **Existing integration still works.** Nanda Town's four live Rebbi cases (HW8; fork
-`eglismella/nandatown` at `4803f9d`), run against Rebbi `dc06b28`: all four PASSED, every stage
+`eglismella/nandatown` at `4803f9d`), run against Rebbi `7be9a6b` (after PR #2): all four PASSED, every stage
 (`evidence/town-regression.txt`). Town reads only `decision`, `loan_id`, `tokens`, `replayed`,
 `blocker` and `considered` from Rebbi's replies; HW9 added fields and changed none.
 
