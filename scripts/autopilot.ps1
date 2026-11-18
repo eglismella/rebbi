@@ -44,7 +44,7 @@ function Done([string]$name) { Test-Path (Join-Path $State $name) }
 # Headless Claude Code signs in with the long-lived token in .env (from `claude setup-token`),
 # so an expired browser login cannot stop the night's work. The value is never printed.
 $envFile = Join-Path $Root ".env"
-if (-not (Test-Path $envFile)) { Log "no .env at $envFile: run claude setup-token and add CLAUDE_CODE_OAUTH_TOKEN=<token>"; exit 1 }
+if (-not (Test-Path $envFile)) { Log "no .env at ${envFile}; run claude setup-token and add CLAUDE_CODE_OAUTH_TOKEN=<token>"; exit 1 }
 $tokenLine = Get-Content $envFile | Where-Object { $_ -match '^\s*CLAUDE_CODE_OAUTH_TOKEN\s*=' } | Select-Object -First 1
 if (-not $tokenLine) { Log ".env has no CLAUDE_CODE_OAUTH_TOKEN line"; exit 1 }
 $env:CLAUDE_CODE_OAUTH_TOKEN = ($tokenLine -replace '^\s*CLAUDE_CODE_OAUTH_TOKEN\s*=\s*', '').Trim().Trim('"').Trim("'")
