@@ -16,3 +16,73 @@ coder = 14084
 evaluator = 776
 reviewer = 834
 
+[manager]
+fallback_equal_split = false
+manager_tokens = 910
+shareable_tokens = 949
+
+[manager.budgets]
+planner = 2000
+researcher = 3000
+coder = 13000
+evaluator = 3000
+reviewer = 2000
+
+[manager.shareable_pct]
+planner = 30.0
+researcher = 40.0
+coder = 20.0
+evaluator = 25.0
+reviewer = 30.0
+
+[learned.r1]
+manager_tokens = 1616
+
+[learned.r1.budgets]
+planner = 1500
+researcher = 2900
+coder = 15500
+evaluator = 1500
+reviewer = 1600
+
+[learned.r1.shareable_pct]
+planner = 30.0
+researcher = 25.0
+coder = 10.0
+evaluator = 40.0
+reviewer = 25.0
+
+[learned.r2]
+manager_tokens = 1971
+
+[learned.r2.budgets]
+planner = 1600
+researcher = 5000
+coder = 13500
+evaluator = 1200
+reviewer = 1700
+
+[learned.r2.shareable_pct]
+planner = 25.0
+researcher = 10.0
+coder = 5.0
+evaluator = 60.0
+reviewer = 40.0
+
+[learned.r3]
+manager_tokens = 1971
+
+[learned.r3.budgets]
+planner = 1500
+researcher = 3000
+coder = 14500
+evaluator = 1300
+reviewer = 2700
+
+[learned.r3.shareable_pct]
+planner = 40.0
+researcher = 30.0
+coder = 10.0
+evaluator = 50.0
+reviewer = 20.0
+

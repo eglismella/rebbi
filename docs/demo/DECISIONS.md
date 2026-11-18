@@ -29,3 +29,9 @@
   incomplete). Protocol 1 checked only the input, so budgets never bound. The summit is 99.5% of the calibration
   best at window 8 (2.6228 for A, 2.9234 for B): that best equalled the published record, 2.635983, so a summit at
   the record would measure luck. Runs finished under protocol 1 are kept in runs/demo-stale/ and not counted.
+- FINAL phase (Nov 18). The report was regenerated from runs/demo/artifact_data.json. Its embedded data equals that
+  file, and every summary field of the 18 counted runs equals the matching row of runs/demo/results.csv (0 differences).
+- Headline statistic per scenario is the median over the 3 repeats, with the range; no run was dropped or rerun.
+- Runs where the target was reached stop early, so tokens_issued differs between runs (23,000 per window times the
+  windows run). Compare tokens_used and windows_to_summit, not tokens_issued.
+- config/demo.toml and docs/demo/results.html are committed; docs/demo/state/ marker files are left uncommitted.

@@ -36,3 +36,6 @@ tests (section 7), final checks, BUILD_DONE.
 
 ## FIX session (Nov 18)
 - run-all failure confirmed: KeyError 'summit_A' in build_config (old protocol-1 process, expected). No code change needed; 29 demo tests pass. Committed the operator's protocol-2 changes (+ config/demo.toml). runs/ and docs/demo/state untouched. Autopilot can restart run-all.
+
+## FINAL (Nov 18)
+- Report regenerated and checked against results.csv (0 differences). DECISIONS, README, HANDBACK written. Next: commit, push once, FINAL_DONE.
