@@ -73,7 +73,8 @@ function Invoke-Claude([string]$tag, [string]$prompt) {
     if ($script:Sessions -gt $MaxClaudeSessions) { Log "too many Claude sessions; stopping"; exit 2 }
     $out = Join-Path $Logs ("claude-{0:D3}-{1}.jsonl" -f $script:Sessions, $tag)
     Log "Claude session $($script:Sessions) ($tag) -> $out"
-    & claude -p $prompt @script:ClaudeArgs --output-format stream-json --verbose 2>&1 | Out-File -FilePath $out -Encoding utf8
+    $claudeArgs = $script:ClaudeArgs
+    & claude -p $prompt @claudeArgs --output-format stream-json --verbose 2>&1 | Out-File -FilePath $out -Encoding utf8
     $code = $LASTEXITCODE
     $tail = (Get-Content $out -Tail 5 -ErrorAction SilentlyContinue) -join " "
     if ($code -ne 0 -or $tail -match '"is_error":\s*true') {
