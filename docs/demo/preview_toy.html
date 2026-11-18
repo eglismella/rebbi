@@ -1,0 +1,816 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rebbi Demo of Demo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a field notebook for one climb. Setup strip, then the live simulator (hill left, ledger right), then the race, then the build plan. */
+:root{
+  --bg:#F3F4F0; --surface:#FFFFFF; --sunk:#EAECE6; --fg:#17201C; --muted:#5B6660; --line:#D6DAD3;
+  --used:#33413B; --rebbi:#3F4FD6; --rebbi-soft:#DDE1FB; --expired:#AEB4AD; --block:#C9412B; --block-soft:#F7DDD7; --ok:#2C8556;
+  --hill:#DCE3D6; --hill2:#C9D3C2; --contour:#B4C0AE;
+  --s1:#8C8270; --s2:#C27A1E; --s3:#3F4FD6; --s3b:#8A46CF; --s4:#178F7F; --ref:#8A46CF;
+  --f-display:"Space Grotesk",ui-sans-serif,system-ui,sans-serif;
+  --f-body:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121614; --surface:#1A201D; --sunk:#222925; --fg:#E7ECE8; --muted:#9AA59F; --line:#313A35;
+  --used:#C9D3CD; --rebbi:#8D99FF; --rebbi-soft:#2A2F5A; --expired:#5E6762; --block:#FF7A62; --block-soft:#46231C; --ok:#5CC98D;
+  --hill:#232C26; --hill2:#2B352E; --contour:#3A463E;
+  --s1:#B3A88F; --s2:#E9A24A; --s3:#8D99FF; --s3b:#C08BFF; --s4:#4CC9B6; --ref:#C08BFF; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121614; --surface:#1A201D; --sunk:#222925; --fg:#E7ECE8; --muted:#9AA59F; --line:#313A35;
+  --used:#C9D3CD; --rebbi:#8D99FF; --rebbi-soft:#2A2F5A; --expired:#5E6762; --block:#FF7A62; --block-soft:#46231C; --ok:#5CC98D;
+  --hill:#232C26; --hill2:#2B352E; --contour:#3A463E;
+  --s1:#B3A88F; --s2:#E9A24A; --s3:#8D99FF; --s3b:#C08BFF; --s4:#4CC9B6; --ref:#C08BFF; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{overflow-x:clip;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 64px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:44px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;letter-spacing:-.01em}
+h1{font-size:clamp(28px,4.4vw,46px);line-height:1.05;font-weight:700}
+h2{font-size:clamp(21px,2.4vw,27px);font-weight:600}
+h3{font-size:16px;font-weight:600}
+p{margin:0}
+.eyebrow{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.lede{max-width:68ch;color:var(--muted);font-size:16px}
+header{display:flex;flex-direction:column;gap:14px}
+.notice{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;width:100vw;margin-left:calc(50% - 50vw);margin-block:6px;
+  padding:14px max(16px,env(safe-area-inset-left,0px));background:#C0261B;color:#FFFFFF;font-size:15.5px;font-weight:500;line-height:1.4;text-align:center}
+.notice b{color:#FFFFFF;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+section{display:flex;flex-direction:column;gap:16px}
+.sechead{display:flex;flex-direction:column;gap:6px}
+
+/* setup strip */
+.setup{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.setup>div{background:var(--surface);padding:16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.setup .k{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.setup p{font-size:13.5px;color:var(--muted)}
+.setup strong{color:var(--fg);font-weight:600}
+@media (max-width:860px){.setup{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.setup{grid-template-columns:1fr}}
+
+/* tabs */
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:8px;padding:8px 12px;font:500 13.5px var(--f-body);cursor:pointer;display:flex;gap:8px;align-items:center}
+.tab .n{font-family:var(--f-mono);font-size:12px;width:26px;height:22px;border-radius:5px;display:grid;place-items:center;color:var(--surface);background:var(--c)}
+.tab[aria-selected="true"]{border-color:var(--c);box-shadow:inset 0 0 0 1px var(--c)}
+.tab:focus-visible,.btn:focus-visible,input:focus-visible{outline:2px solid var(--rebbi);outline-offset:2px}
+
+.rules{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:20px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.rules .txt{display:flex;flex-direction:column;gap:8px;min-width:0}
+.rules .txt p{font-size:14px;color:var(--muted);max-width:62ch}
+.rules .txt p b{color:var(--fg);font-weight:600}
+.btab{width:100%;border-collapse:collapse;font-size:12.5px}
+.btab th{font:500 11px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:right;padding:4px 6px;border-bottom:1px solid var(--line)}
+.btab th:first-child,.btab td:first-child{text-align:left}
+.btab td{padding:5px 6px;text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums;border-bottom:1px solid var(--line)}
+.btab tr:last-child td{border-bottom:0}
+.btab .over{color:var(--block)} .btab .under{color:var(--ok)}
+.market{display:flex;gap:18px;flex-wrap:wrap;margin-top:4px}
+.market label{display:flex;flex-direction:column;gap:2px;font-size:12.5px;color:var(--muted);min-width:180px;flex:1}
+.market output{font-family:var(--f-mono);color:var(--fg)}
+input[type=range]{accent-color:var(--s4);width:100%}
+@media (max-width:820px){.rules{grid-template-columns:1fr}}
+
+/* controls */
+.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:8px;padding:7px 12px;font:500 13px var(--f-body);cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.btn.primary{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.btn:hover{border-color:var(--muted)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{appearance:none;border:0;background:var(--surface);color:var(--muted);padding:7px 10px;font:500 12.5px var(--f-mono);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--sunk);color:var(--fg)}
+.spacer{flex:1}
+.seedtag{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+
+/* simulator */
+.sim{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:16px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.panel-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.hillsvg,.routesvg,.racesvg{width:100%;height:auto;display:block}
+.tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.tile{background:var(--sunk);border-radius:8px;padding:9px 10px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.tile .l{font-size:11px;color:var(--muted);line-height:1.25}
+.tile .v{font:600 20px var(--f-mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.tile .s{font:400 11px var(--f-mono);color:var(--muted)}
+@media (max-width:960px){.sim{grid-template-columns:1fr}}
+@media (max-width:560px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.lanes{display:flex;flex-direction:column;gap:9px}
+.lane{display:grid;grid-template-columns:96px minmax(0,1fr) 92px;gap:10px;align-items:center}
+.lane .who{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.lane .who b{font:600 13.5px var(--f-display)}
+.lane .who span{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar{position:relative;height:22px;background:var(--sunk);border-radius:5px;overflow:hidden}
+.bar>i{position:absolute;top:0;bottom:0;transition:left .45s ease,width .45s ease}
+.seg-used{background:var(--used)}
+.seg-lent{background:repeating-linear-gradient(135deg,var(--rebbi) 0 4px,var(--rebbi-soft) 4px 7px)}
+.seg-exp{background:repeating-linear-gradient(135deg,var(--expired) 0 2px,transparent 2px 6px);border-left:1px solid var(--surface)}
+.seg-bor{background:var(--rebbi)}
+.seg-unmet{background:repeating-linear-gradient(45deg,var(--block) 0 3px,var(--block-soft) 3px 7px);opacity:.9}
+.bar .bline{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--fg);transition:left .45s ease}
+.bar .afsline{position:absolute;top:0;bottom:0;width:0;border-left:2px dotted var(--rebbi);transition:left .45s ease}
+.lane .num{font:400 11.5px var(--f-mono);color:var(--muted);text-align:right;line-height:1.25;font-variant-numeric:tabular-nums}
+.chip{display:inline-block;font:500 10.5px var(--f-mono);letter-spacing:.03em;padding:1px 6px;border-radius:4px;margin-top:3px;align-self:flex-start;white-space:nowrap}
+.chip.work{background:var(--sunk);color:var(--muted)}
+.chip.blk{background:var(--block-soft);color:var(--block)}
+.chip.bor,.chip.lend{background:var(--rebbi-soft);color:var(--rebbi)}
+.chip.idle{background:var(--sunk);color:var(--muted);text-decoration:line-through}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11.5px;color:var(--muted)}
+.legend span{display:inline-flex;gap:5px;align-items:center}
+.legend i{display:inline-block;width:16px;height:10px;border-radius:2px}
+@media (max-width:480px){.lane{grid-template-columns:78px minmax(0,1fr)}.lane .num{grid-column:2;text-align:left}}
+
+.log{font:400 12.5px var(--f-mono);display:flex;flex-direction:column;gap:3px;max-height:172px;overflow:auto;padding-right:4px}
+.log div{display:grid;grid-template-columns:44px minmax(0,1fr);gap:6px;color:var(--muted)}
+.log div b{color:var(--fg);font-weight:500}
+.log .e-blk{color:var(--block)} .log .e-loan{color:var(--rebbi)} .log .e-ms{color:var(--ok)}
+
+/* race */
+.race{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px}
+@media (max-width:960px){.race{grid-template-columns:1fr}}
+.rtab{width:100%;border-collapse:collapse;font-size:13px}
+.rtab th{font:500 10.5px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;padding:6px 6px;border-bottom:1px solid var(--line);vertical-align:bottom}
+.rtab td{padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+.rtab td.n{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.rtab .mini{display:block;height:5px;border-radius:3px;background:var(--c);margin-top:4px;opacity:.85}
+.rtab .sw{display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--c);margin-right:6px;vertical-align:-1px}
+.rtab tr.ref td{color:var(--muted);font-style:italic}
+.scroll-x{overflow-x:auto}
+.callout{font-size:13.5px;color:var(--muted);border-left:3px solid var(--line);padding:2px 0 2px 12px;max-width:72ch}
+.callout b{color:var(--fg)}
+
+/* testbeds + plan */
+.beds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.beds{grid-template-columns:1fr}}
+.bed{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.bed.pick{border-color:var(--rebbi);box-shadow:inset 0 0 0 1px var(--rebbi)}
+.bed .top{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
+.bed p{font-size:13.5px;color:var(--muted)}
+.bed .fit{font:500 11px var(--f-mono);padding:2px 7px;border-radius:4px;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.bed.pick .fit{background:var(--rebbi-soft);color:var(--rebbi)}
+.plan{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;counter-reset:step}
+@media (max-width:860px){.plan{grid-template-columns:1fr}}
+.plan>div{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:6px}
+.plan>div h3::before{counter-increment:step;content:counter(step) ". ";color:var(--muted);font-family:var(--f-mono);font-weight:500}
+.plan p,.plan li{font-size:13.5px;color:var(--muted)}
+.plan ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:3px}
+footer{font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+@media (prefers-reduced-motion: reduce){.bar>i,.bar .bline,.bar .afsline{transition:none}}
+</style>
+</head><body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">MAS.665 AI Studio · Rebbi · demo preview, Nov 12 2026</div>
+  <h1>One hill, five ways to budget an agent team</h1>
+  <p class="lede">Five agents climb the same hill-climbing exercise under five budget regimes. Every regime spends the same 100k tokens per window. We watch how long the climb takes, how many tokens expire unused, and how often an agent is cut off mid-task.</p>
+  <div class="notice"><b>Illustrative simulation.</b> Synthetic demand and a toy progress model, built to preview the real demo. These are not measured results.</div>
+</header>
+
+<section aria-labelledby="h-setup">
+  <div class="sechead"><div class="eyebrow">What stays fixed</div><h2 id="h-setup">The test bench</h2></div>
+  <div class="setup">
+    <div><span class="k">The hill</span><h3 id="exname">Speed up a sparse linear solver</h3><p>Score is the speedup over a reference solver. <strong>Summit: 2.0×.</strong> Each step means planning an idea, coding it, scoring it and reviewing it. Gains shrink near the top.</p></div>
+    <div><span class="k">The team</span><h3>Five roles, fresh memory</h3><p><strong>Planner, Researcher, Coder, Evaluator, Reviewer.</strong> Each scenario restarts the agents with empty memory on the same exercise and the same random draws (seed).</p></div>
+    <div><span class="k">The clock</span><h3>Budget windows</h3><p>One window is one budget refresh. <strong>Unused tokens expire at the refresh.</strong> The org issues 100k tokens per window in every scenario, up to 40 windows.</p></div>
+    <div><span class="k">What we measure</span><h3>Four numbers</h3><p><strong>Windows to summit, tokens expired, interruptions</strong> (an agent runs out mid-task and loses a quarter of that work), and tokens moved by Rebbi.</p></div>
+  </div>
+</section>
+
+<section aria-labelledby="h-sim">
+  <div class="sechead"><div class="eyebrow">Live simulator</div><h2 id="h-sim">Pick a scenario and press play</h2></div>
+  <div class="tabs" role="tablist" id="tabs"></div>
+  <div class="rules" id="rules">
+    <div class="txt">
+      <div class="eyebrow" id="r-eyebrow"></div>
+      <h3 id="r-title"></h3>
+      <p id="r-desc"></p>
+      <p id="r-how"></p>
+      <div class="market" id="market" hidden>
+        <label for="rate">Interest on tokens lent (claim on the pool) <output id="rate-o"></output><input type="range" id="rate" min="0" max="20" step="1" value="5"></label>
+        <label for="debt">Debt limit, in windows of own budget <output id="debt-o"></output><input type="range" id="debt" min="0.5" max="8" step="0.5" value="4"></label>
+      </div>
+    </div>
+    <div class="scroll-x"><table class="btab" id="btab"></table></div>
+  </div>
+  <div class="controls">
+    <button class="btn primary" id="play" type="button">? Play</button>
+    <button class="btn" id="step" type="button">Step one window</button>
+    <button class="btn" id="reset" type="button">Reset</button>
+    <div class="seg" role="group" aria-label="Speed" id="speed">
+      <button type="button" data-s="1" aria-pressed="true">1×</button><button type="button" data-s="2" aria-pressed="false">2×</button><button type="button" data-s="4" aria-pressed="false">4×</button>
+    </div>
+    <div class="spacer"></div>
+    <span class="seedtag" id="seedtag"></span>
+    <button class="btn" id="reseed" type="button">New random draws</button>
+  </div>
+  <div class="sim">
+    <div class="panel">
+      <div class="panel-h"><h3>The climb</h3><span class="eyebrow" id="phase"></span></div>
+      <svg class="hillsvg" id="hill" viewBox="0 0 600 320" role="img" aria-label="Hill profile with the team's position"></svg>
+      <div class="tiles">
+        <div class="tile"><span class="l">Window</span><span class="v" id="m-w">0</span><span class="s">of 40 max</span></div>
+        <div class="tile"><span class="l">Speedup</span><span class="v" id="m-p">1.00×</span><span class="s" id="m-ps">0% of climb</span></div>
+        <div class="tile"><span class="l">Tokens expired</span><span class="v" id="m-e">0k</span><span class="s" id="m-es">0% of issued</span></div>
+        <div class="tile"><span class="l">Interruptions</span><span class="v" id="m-b">0</span><span class="s">agent-windows</span></div>
+        <div class="tile"><span class="l">Moved by Rebbi</span><span class="v" id="m-m">0k</span><span class="s" id="m-ms">0 loans</span></div>
+      </div>
+      <div class="panel-h"><h3>Event log</h3><span class="eyebrow">newest first</span></div>
+      <div class="log" id="log" aria-live="polite"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-h"><h3>Token flow this window</h3><span class="eyebrow" id="flowtag"></span></div>
+      <svg class="routesvg" id="route" viewBox="0 0 400 290" role="img" aria-label="Token flows between agents"></svg>
+      <div class="panel-h"><h3>Budget ledger this window</h3><span class="eyebrow">k tokens</span></div>
+      <div class="lanes" id="lanes"></div>
+      <div class="legend">
+        <span><i class="seg-used"></i>used, own budget</span>
+        <span><i class="seg-bor"></i>borrowed</span>
+        <span><i class="seg-lent"></i>lent out</span>
+        <span><i class="seg-exp" style="border:1px solid var(--line)"></i>expired</span>
+        <span><i class="seg-unmet"></i>needed, not covered</span>
+        <span><i style="width:2px;background:var(--fg)"></i>budget</span>
+        <span id="lg-afs"><i style="width:0;border-left:2px dotted var(--rebbi);border-radius:0"></i>dotted line: the part of the budget to its right is shareable</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="h-race">
+  <div class="sechead"><div class="eyebrow">Side by side, same draws</div><h2 id="h-race">The race</h2>
+    <p class="lede">All scenarios run on the current random draws. Scenario 3b climbs Exercise B, a sibling task with heavier scoring and lighter research, so its fair comparison is the dashed line: the scenario 3 setup run on Exercise B without learning.</p></div>
+  <div class="race">
+    <div class="panel">
+      <div class="panel-h"><h3>Climb progress by window</h3><button class="btn" id="replay" type="button">Replay race</button></div>
+      <svg class="racesvg" id="race" viewBox="0 0 640 330" role="img" aria-label="Progress over windows for each scenario"></svg>
+    </div>
+    <div class="panel">
+      <div class="panel-h"><h3>Results</h3><span class="eyebrow" id="race-seed"></span></div>
+      <div class="scroll-x"><table class="rtab" id="rtab"></table></div>
+      <p class="callout" id="takeaway"></p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="h-beds">
+  <div class="sechead"><div class="eyebrow">Where the real version runs</div><h2 id="h-beds">Test bench candidates</h2>
+    <p class="lede">We searched for ready-made environments. None meters per-agent token budgets out of the box, so the budget layer is ours either way. The pick below reuses what we already built for HW8.</p></div>
+  <div class="beds">
+    <div class="bed pick"><div class="top"><h3>Nanda Town + one AlgoTune task</h3><span class="fit">Recommended</span></div>
+      <p>Nanda Town already runs Rebbi as an MCP plugin (PR #360). AlgoTune gives the hill: 154 tasks, each with a reference solver, a correctness check and a timed speedup score. Pick two sibling tasks for Exercise A and B.</p></div>
+    <div class="bed"><div class="top"><h3>MultiAgentBench (MARBLE)</h3><span class="fit">Good for roles</span></div>
+      <p>Built for multi-agent teams, with milestone-based scoring and star, chain, tree and graph coordination. Milestones map to our flags. Its tasks are less of a smooth climb.</p></div>
+    <div class="bed"><div class="top"><h3>MLE-bench</h3><span class="fit">Too heavy for class</span></div>
+      <p>Kaggle competitions with bronze, silver and gold thresholds: a natural hill. One run needs hours and a GPU, so five scenarios with repeats would not fit our time or credits.</p></div>
+    <div class="bed"><div class="top"><h3>Our HW7 dependency audit</h3><span class="fit">Fallback</span></div>
+      <p>Already scripted, verified by an answer key, 105 runs logged. It is pass or fail, so there is no climb to draw, but it can stand in if AlgoTune setup slips.</p></div>
+  </div>
+</section>
+
+<section aria-labelledby="h-plan">
+  <div class="sechead"><div class="eyebrow">From preview to real runs</div><h2 id="h-plan">Build plan</h2></div>
+  <div class="plan">
+    <div><h3>Bench</h3><ul><li>Wrap two AlgoTune tasks as Town jobs with a score per window</li><li>Five role prompts, memory wiped per run</li><li>Window clock: refill budgets every N model calls</li></ul></div>
+    <div><h3>Budget layer</h3><ul><li>Equal and manager modes (scenarios 1, 2)</li><li>Shareable % per agent in config/scenario.toml (3)</li><li>Usage history to suggest budgets and shareable % (3b)</li><li>Agent-set shareable %, interest claims, debt limit (4)</li></ul></div>
+    <div><h3>Evidence</h3><ul><li>Same four metrics, 3+ seeds per scenario</li><li>Ledger check after every run (rebbi check)</li><li>This page reads the real results.csv in place of the toy model</li></ul></div>
+  </div>
+</section>
+
+<footer>Toy model: each agent's demand per window follows its role and the climb phase (explore, build, polish) with random noise and spikes. Unmet work carries over. Team progress per window is a weighted geometric mean of how fully each agent was served, so one starved agent slows everyone. Rebbi lends only from the shareable part of each budget and only what the lender is not using this window.</footer>
+</div>
+<script>
+// Rebbi demo simulation engine (synthetic; illustrative only)
+const SIM = (function(){
+function rng(seed){let a=seed>>>0;return function(){a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+
+const ROLES=[
+ {id:'PL',name:'Planner',job:'Picks the next idea to try'},
+ {id:'RS',name:'Researcher',job:'Reads docs, papers, prior solutions'},
+ {id:'CD',name:'Coder',job:'Writes each candidate solution'},
+ {id:'EV',name:'Evaluator',job:'Runs the scorer, checks speed'},
+ {id:'RV',name:'Reviewer',job:'Checks correctness before submit'},
+];
+const N=ROLES.length;
+const T=100; // org budget per window, in k tokens
+const MAXW=40;
+
+// Mean demand per window (k tokens) by phase: explore <30, build <75, polish
+const EX={
+ A:{name:'Exercise A',task:'Speed up a sparse linear solver',
+    dem:[[22,30,14,8,6],[10,10,38,22,10],[8,4,24,30,20]],
+    w:[[.3,.35,.15,.1,.1],[.15,.1,.4,.25,.1],[.1,.05,.3,.3,.25]]},
+ B:{name:'Exercise B',task:'Speed up a graph shortest-path routine',
+    dem:[[20,22,18,14,6],[10,6,34,30,10],[8,4,20,34,22]],
+    w:[[.3,.3,.2,.12,.08],[.15,.08,.37,.3,.1],[.1,.05,.27,.33,.25]]},
+};
+const phaseOf=p=>p<30?0:p<75?1:2;
+const PHASES=['Explore','Build','Polish'];
+
+// Manager's up-front guess from role descriptions (shares of T)
+const MGR_SHARE=[.18,.24,.28,.16,.14];
+const MGR_AFS=[.35,.40,.10,.15,.40];
+const CRIT=[.8,.5,1,.9,.6];
+
+
+function noiseTables(seed){
+  const r=rng(seed);const dem=[],luck=[];
+  for(let t=0;t<MAXW;t++){const row=[];for(let i=0;i<N;i++){
+    // lognormal-ish noise with occasional spikes
+    let u=0;for(let k=0;k<4;k++)u+=r();u=(u-2)/0.577; // ~N(0,1)
+    let m=Math.exp(0.32*u-0.05); if(r()<0.08) m*=1.8; row.push(m);}
+    dem.push(row); luck.push(0.6+0.8*r());}
+  return {dem,luck};
+}
+
+// cfg: {ex, budgets[], afs[] or null, rebbi:bool, market:bool, seed}
+function run(cfg){
+  const DEBT=cfg.debt??4, RATE=cfg.rate??0.05;
+  const ex=EX[cfg.ex];const nz=noiseTables(cfg.seed+(cfg.ex==='B'?7919:0));
+  let p=0;const backlog=new Array(N).fill(0);
+  const B=cfg.budgets.slice();
+  let afs=cfg.afs?cfg.afs.slice():new Array(N).fill(0);
+  const credit=new Array(N).fill(0);const ema=afs.slice();
+  const tot={expired:0,blocks:0,moved:0,loans:0,used:0,issued:0,nfsExpired:0,rework:0};
+  const frames=[];let done=null;
+  const usage=ROLES.map(()=>({need:0,spare:0,fresh:0}));
+  for(let t=0;t<MAXW && done===null;t++){
+    const ph=phaseOf(p);
+    const D=[],own=[],spare=[],short=[];
+    for(let i=0;i<N;i++){
+      const d=ex.dem[ph][i]*nz.dem[t][i]+backlog[i];
+      D.push(d);own.push(Math.min(d,B[i]));
+      spare.push(Math.max(0,B[i]-d));short.push(Math.max(0,d-B[i]));
+    }
+    const lendable=spare.map((s,i)=>cfg.rebbi?Math.min(s,afs[i]*B[i]):0);
+    const lent=new Array(N).fill(0),borrowed=new Array(N).fill(0);
+    const loans=[];const denied=new Array(N).fill(false);const why=new Array(N).fill('');
+    const pool0=lendable.reduce((a,b)=>a+b,0);
+    if(cfg.rebbi){
+      let order=[...Array(N).keys()].filter(i=>short[i]>0.01);
+      if(cfg.market) order.sort((a,b)=>credit[b]-credit[a]);
+      else order.sort((a,b)=>CRIT[b]-CRIT[a]);
+      for(const i of order){
+        let want=short[i];
+        if(cfg.market){
+          if(afs[i]<=0.001){denied[i]=true;why[i]='share';continue;}
+          const limit=credit[i]+DEBT*B[i];
+          want=Math.min(want,Math.max(0,limit));
+          if(want<short[i]-0.01){denied[i]=true;why[i]='debt';}
+        }
+        const pool=lendable.reduce((a,b,j)=>a+(j===i?0:b),0);
+        if(pool<=0.01||want<=0.01) continue;
+        const take=Math.min(want,pool);
+        for(let j=0;j<N;j++){ if(j===i||lendable[j]<=0) continue;
+          const a=take*lendable[j]/pool; lendable[j]-=a; lent[j]+=a; borrowed[i]+=a;
+          loans.push({from:j,to:i,amt:a});
+          if(cfg.market){credit[j]+=a*(1+RATE);}
+        }
+        if(cfg.market) credit[i]-=take;
+      }
+    }
+    // settle the window
+    const used=[],prod=[],expired=[],blocked=[],served=[];
+    let gainEff=1;
+    for(let i=0;i<N;i++){
+      const allow=B[i]+borrowed[i]-lent[i];
+      const u=Math.min(D[i],allow);
+      const blk=u<D[i]-0.01;
+      const pr=blk?u*0.75:u;
+      const s=D[i]>0?pr/D[i]:1;
+      used.push(u);prod.push(pr);blocked.push(blk);served.push(s);
+      const ex_=Math.max(0,allow-u);expired.push(ex_);
+      backlog[i]=Math.min(D[i]-pr,ex.dem[ph][i]*1.0);
+      gainEff*=Math.pow(Math.max(s,0.02),ex.w[ph][i]);
+      tot.expired+=ex_;tot.used+=u;if(blk)tot.blocks++;tot.rework+=blk?u*0.25:0;
+      usage[i].need+=D[i];usage[i].fresh+=ex.dem[ph][i]*nz.dem[t][i];usage[i].spare+=Math.max(0,B[i]-D[i]);
+    }
+    tot.issued+=T;
+    const lm=loans.reduce((a,l)=>a+l.amt,0);tot.moved+=lm;tot.loans+=loans.length?([...new Set(loans.map(l=>l.to))].length):0;
+    const gain=9.5*nz.luck[t]*gainEff*(1-0.45*p/100);
+    const p0=p;p=Math.min(100,p+gain);
+    const ms=[25,50,75,100].filter(m=>p0<m&&p>=m);
+    frames.push({t:t+1,phase:ph,p0,p,gain,eff:gainEff,D,B:B.slice(),afs:afs.slice(),used,lent,borrowed,expired,blocked,served,denied,why,pool0,loans,credit:credit.slice(),ms,
+      cum:{...tot}});
+    if(p>=100) done=t+1;
+    // market: each agent adapts its share for next window
+    if(cfg.market){
+      for(let i=0;i<N;i++){
+        const sf=spare[i]/B[i];
+        // offer what sat idle, plus a margin for the interest it earns;
+        // an agent in debt offers more when it has spare, to rebuild its claim
+        ema[i]=0.6*ema[i]+0.4*sf;
+        let target=Math.min(0.9,ema[i]+3*RATE+(credit[i]<0&&sf>0?0.1:0));
+        if(afs[i]<=0.001){ if(denied[i]){afs[i]=0.15;} continue; } // learns: no share, no loans
+        afs[i]=Math.max(0.05,Math.min(0.9,afs[i]+0.6*(target-afs[i])));
+      }
+    }
+  }
+  return {cfg,frames,done,tot:frames.length?frames[frames.length-1].cum:tot,usage,windows:frames.length};
+}
+
+function scale(sh){const s=sh.reduce((a,b)=>a+b,0);return sh.map(x=>x/s*T);}
+
+function scenarios(seed,mk){mk=mk||{};
+  const eq=new Array(N).fill(T/N);
+  const mgr=scale(MGR_SHARE);
+  const s1=run({ex:'A',budgets:eq,rebbi:false,seed});
+  const s2=run({ex:'A',budgets:mgr,rebbi:false,seed});
+  const s3=run({ex:'A',budgets:mgr,afs:MGR_AFS,rebbi:true,seed});
+  // 3b: Rebbi + manager set budgets and shares from scenario 3 data
+  const w=s3.windows;
+  const needSh=s3.usage.map(u=>u.need/w);
+  const dataB=scale(needSh);
+  const bud3b=scale(dataB.map((x,i)=>0.75*x+0.25*mgr[i]));
+  const afs3b=bud3b.map((b,i)=>{
+    const meanSpare=Math.max(0,b-needSh[i]*T/needSh.reduce((a,c)=>a+c,0));
+    return Math.max(0.15,Math.min(0.8,meanSpare/b+0.3));});
+  const s3b=run({ex:'B',budgets:bud3b,afs:afs3b,rebbi:true,seed});
+  const s3onB=run({ex:'B',budgets:mgr,afs:MGR_AFS,rebbi:true,seed});
+  const s4=run({ex:'A',budgets:mgr,afs:[.30,.50,0,.10,.40],rebbi:true,market:true,seed,rate:mk.rate,debt:mk.debt});
+  return {s1,s2,s3,s3b,s3onB,s4,bud3b,afs3b,mgr,eq};
+}
+return {ROLES,N,T,MAXW,EX,PHASES,MGR_SHARE,MGR_AFS,run,scenarios};
+})();
+</script><script>
+(function(){
+const {ROLES,N,T,MAXW,EX,PHASES,MGR_AFS}=SIM;
+const $=id=>document.getElementById(id);
+const NS='http://www.w3.org/2000/svg';
+const el=(tag,attrs,parent)=>{const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;};
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const k=x=>{x=Math.max(0,x);return x>=1000?(x/1000).toFixed(1)+'M':Math.round(x)+'k'};
+const pct=x=>Math.round(x*100)+'%';
+const sp=p=>(1+p/100).toFixed(2)+'×';
+
+const SC=[
+ {k:'s1',tag:'1',name:'Fixed equal budgets',c:'--s1',ex:'A',rebbi:false,mgr:false,
+  eyebrow:'Scenario 1 · no Rebbi · no manager',
+  desc:'Every agent gets the same <b>20k tokens per window</b> and keeps it. No sharing, hard stop at the cap. This is how most organizations set agent limits today.',
+  how:'Watch the Coder hit its cap in the build phase while the Planner and Reviewer let tokens expire at each refresh.'},
+ {k:'s2',tag:'2',name:'Manager sets budgets',c:'--s2',ex:'A',rebbi:false,mgr:true,
+  eyebrow:'Scenario 2 · manager agent · no Rebbi',
+  desc:'Before the climb, a <b>manager agent</b> reads the five role descriptions and splits the same 100k by its estimate of each role\'s need. Budgets stay fixed for the whole climb.',
+  how:'The estimate is a guess from job titles. The table compares it with the new work each role actually brought per window. The team total stays close to the 100k issued, so the split is what goes wrong.'},
+ {k:'s3',tag:'3',name:'Manager + Rebbi',c:'--s3',ex:'A',rebbi:true,mgr:true,
+  eyebrow:'Scenario 3 · manager agent · Rebbi routes loans',
+  desc:'Same manager budgets. The manager also sets, by role importance, <b>what percentage of each agent\'s budget is shareable</b> (see the Shareable column). When an agent runs short, <b>Rebbi</b> routes a loan from the idle shareable tokens of other agents and books it in the ledger.',
+  how:'Rebbi can move at most the total budget minus the unused tokens in the non-shareable part of each budget. Those still expire.'},
+ {k:'s3b',tag:'3b',name:'Rebbi learns',c:'--s3b',ex:'B',rebbi:true,mgr:true,
+  eyebrow:'Scenario 3b · new exercise · Rebbi advises the manager',
+  desc:'A <b>sibling exercise</b> (Exercise B). Before the climb, Rebbi gives the manager the usage data from scenario 3. Together they reset budgets (75% data, 25% manager judgment) and reset each agent\'s shareable percentage to match where idle tokens actually sat.',
+  how:'Fair comparison: the dashed line in the race, which runs the scenario 3 setup on Exercise B without learning.'},
+ {k:'s4',tag:'4',name:'Open token market',c:'--s4',ex:'A',rebbi:true,mgr:true,market:true,
+  eyebrow:'Scenario 4 · agents set their own shareable % · Rebbi clears',
+  desc:'The manager sets starting budgets, then <b>each agent sets its own shareable percentage every window</b>. Tokens lent earn a claim on the pool plus interest. An agent at 0% shareable cannot borrow, and no agent can owe more than the debt limit.',
+  how:'The Coder starts at 0% shareable. Drag the debt limit down to see lending stall, or up to see the market pass scenario 3.'},
+];
+const byK=Object.fromEntries(SC.map(s=>[s.k,s]));
+const state={seed:101,sc:'s1',t:0,playing:false,speed:1,mk:{rate:0.05,debt:4},res:null,acc:0,last:0};
+const STEP_MS=1250;
+
+function compute(){state.res=SIM.scenarios(state.seed,state.mk);}
+const R=()=>state.res[state.sc];
+const S=()=>byK[state.sc];
+
+/* tabs */
+function buildTabs(){
+  const tabs=$('tabs');tabs.innerHTML='';
+  for(const s of SC){
+    const b=document.createElement('button');b.type='button';b.className='tab';b.setAttribute('role','tab');b.id='tab-'+s.k;
+    b.style.setProperty('--c',`var(${s.c})`);
+    b.innerHTML=`<span class="n">${s.tag}</span>${s.name}`;
+    b.addEventListener('click',()=>{state.sc=s.k;state.t=Math.min(state.t,R().frames.length);renderAll(true);});
+    tabs.appendChild(b);
+  }
+}
+
+/* rules panel */
+function renderRules(){
+  const s=S(),r=R();
+  $('r-eyebrow').textContent=s.eyebrow;$('r-title').textContent=s.name+' · '+EX[s.ex].name+': '+EX[s.ex].task.toLowerCase();
+  $('r-desc').innerHTML=s.desc;$('r-how').innerHTML=s.how;
+  $('market').hidden=!s.market;
+  $('rate-o').textContent=Math.round(state.mk.rate*100)+'% per loan';
+  $('debt-o').textContent=state.mk.debt+' windows';
+  $('exname').textContent=EX[s.ex].task;
+  const w=r.windows;
+  const B=r.cfg.budgets, A=r.cfg.afs;
+  let h='<thead><tr><th>Agent</th><th>Budget / window</th><th>'+(s.market?'Shareable at start<br>(% of budget, agent adjusts)':'Shareable<br>(% of budget)')+'</th><th>Avg new work / window</th></tr></thead><tbody>';
+  ROLES.forEach((ro,i)=>{
+    const need=r.usage[i].fresh/w;
+    const cls=need>B[i]*1.08?'over':need<B[i]*0.92?'under':'';
+    h+=`<tr><td>${ro.name}</td><td>${k(B[i])}</td><td>${s.rebbi?pct(A[i])+' · '+k(A[i]*B[i]):'0% · 0k'}</td><td class="${cls}">${k(need)}</td></tr>`;
+  });
+  h+=`<tr><td><b>Team</b></td><td>${k(T)}</td><td></td><td>${k(r.usage.reduce((a,u)=>a+u.fresh,0)/w)}</td></tr></tbody>`;
+  $('btab').innerHTML=h;
+}
+
+/* hill */
+let hill={};
+function buildHill(){
+  const svg=$('hill');svg.innerHTML='';
+  const d='M 20 296 C 70 292 100 272 140 263 C 185 253 205 229 245 220 C 290 210 302 186 340 173 C 380 160 396 129 430 113 C 466 96 482 70 520 53 C 541 44 556 40 578 38';
+  const defs=el('defs',{},svg);
+  const cp=el('clipPath',{id:'gclip'},defs);
+  el('path',{d:d+' L 600 38 L 600 320 L 0 320 L 0 296 Z'},cp);
+  // axis guides
+  for(const m of [0,25,50,75,100]){
+    const y=296-(m/100)*258;
+    el('line',{x1:0,x2:600,y1:y,y2:y,stroke:'var(--line)','stroke-width':1,'stroke-dasharray':'2 4'},svg);
+  }
+  el('path',{d:d+' L 600 38 L 600 320 L 0 320 L 0 296 Z',fill:'var(--hill)'},svg);
+  const cg=el('g',{'clip-path':'url(#gclip)'},svg);
+  for(let i=1;i<8;i++) el('path',{d,transform:`translate(${-i*6} ${i*18})`,fill:'none',stroke:'var(--contour)','stroke-width':1,opacity:(1-i*0.1).toFixed(2)},cg);
+  const path=el('path',{d,fill:'none',stroke:'var(--muted)','stroke-width':2},svg);
+  hill.path=path;hill.L=path.getTotalLength();
+  // milestones
+  for(const m of [25,50,75,100]){
+    const pt=pAt(m);
+    el('line',{x1:pt.x,x2:pt.x,y1:pt.y,y2:pt.y-30,stroke:'var(--fg)','stroke-width':1.3},svg);
+    el('path',{d:`M ${pt.x} ${pt.y-30} l 16 5 l -16 5 Z`,fill:m===100?'var(--ok)':'var(--fg)'},svg);
+    const t=el('text',{x:m===100?pt.x-8:pt.x-4,y:m===100?pt.y-18:pt.y-34,'text-anchor':m===100?'end':'middle','font-family':'var(--f-mono)','font-size':11,fill:'var(--muted)'},svg);
+    t.textContent=m===100?'summit 2.00×':sp(m);
+  }
+  const base=el('text',{x:22,y:314,'font-family':'var(--f-mono)','font-size':11,fill:'var(--muted)'},svg);base.textContent='start 1.00× (reference solver)';
+  hill.trail=el('g',{},svg);
+  hill.ghosts=el('g',{},svg);
+  hill.me=el('g',{},svg);
+  hill.meC=el('circle',{r:11,cx:0,cy:0,stroke:'var(--surface)','stroke-width':2.5},hill.me);
+  hill.meT=el('text',{x:0,y:4,'text-anchor':'middle','font-family':'var(--f-mono)','font-size':10.5,'font-weight':600,fill:'var(--surface)'},hill.me);
+  hill.tip=el('text',{x:0,y:0,'font-family':'var(--f-mono)','font-size':11.5,fill:'var(--fg)','text-anchor':'middle'},svg);
+}
+function pAt(p){return hill.path.getPointAtLength(hill.L*Math.min(100,Math.max(0,p))/100);}
+function progAt(r,t){if(t<=0)return 0;const f=r.frames[Math.min(t,r.frames.length)-1];return f.p;}
+function renderHill(){
+  const s=S(),r=R(),t=state.t;
+  hill.trail.innerHTML='';
+  for(let i=1;i<=Math.min(t,r.frames.length);i++){const pt=pAt(r.frames[i-1].p);
+    el('circle',{cx:pt.x,cy:pt.y,r:3,fill:`var(${s.c})`,opacity:0.55},hill.trail);}
+  hill.ghosts.innerHTML='';
+  for(const o of SC){ if(o.k===s.k) continue; const rr=state.res[o.k];
+    const pt=pAt(progAt(rr,t)); const g=el('g',{transform:`translate(${pt.x} ${pt.y+18})`,opacity:0.8},hill.ghosts);
+    el('circle',{r:8,fill:'var(--surface)',stroke:`var(${o.c})`,'stroke-width':1.5},g);
+    const tx=el('text',{y:3.5,'text-anchor':'middle','font-family':'var(--f-mono)','font-size':8.5,fill:`var(${o.c})`},g);tx.textContent=o.tag;}
+  const p=progAt(r,t),pt=pAt(p);
+  hill.me.setAttribute('transform',`translate(${pt.x} ${pt.y-2})`);
+  hill.meC.setAttribute('fill',`var(${s.c})`);hill.meT.textContent=s.tag;
+  hill.tip.setAttribute('x',Math.min(540,Math.max(60,pt.x)));hill.tip.setAttribute('y',pt.y+44>312?pt.y-22:pt.y+44);
+  const done=r.done&&t>=r.done;
+  hill.tip.textContent=t===0?'ready':done?`summit in ${r.done} windows`:sp(p);
+}
+
+/* route diagram */
+let route={};
+const HUB={x:200,y:128};
+function nodePos(i){const a=(-90+72*i)*Math.PI/180;return {x:HUB.x+112*Math.cos(a)*1.15,y:HUB.y+98*Math.sin(a)};}
+function buildRoute(){
+  const svg=$('route');svg.innerHTML='';const s=S();
+  route.sink={x:200,y:268};
+  route.edges=el('g',{},svg);
+  for(let i=0;i<N;i++){const p=nodePos(i);
+    if(s.rebbi) el('line',{x1:p.x,y1:p.y,x2:HUB.x,y2:HUB.y,stroke:'var(--line)','stroke-width':1.2},route.edges);
+    el('line',{x1:p.x,y1:p.y,x2:route.sink.x,y2:route.sink.y,stroke:'var(--line)','stroke-width':1,'stroke-dasharray':'2 4'},route.edges);
+  }
+  if(s.mgr){
+    const m=el('g',{transform:'translate(36 22)'},svg);
+    el('rect',{x:-30,y:-13,width:60,height:26,rx:6,fill:'var(--sunk)',stroke:`var(${s.c})`,'stroke-width':1.2},m);
+    const t=el('text',{y:4,'text-anchor':'middle','font-family':'var(--f-display)','font-size':11.5,'font-weight':600,fill:'var(--fg)'},m);t.textContent='Manager';
+    const t2=el('text',{x:-30,y:28,'font-family':'var(--f-mono)','font-size':9,fill:'var(--muted)'},m);t2.textContent=s.market?'starting budgets':(s.k==='s3b'?'budgets + data':'sets budgets');
+  }
+  const sk=el('g',{transform:`translate(${route.sink.x} ${route.sink.y})`},svg);
+  el('rect',{x:-70,y:-12,width:140,height:24,rx:12,fill:'var(--sunk)',stroke:'var(--expired)'},sk);
+  route.sinkT=el('text',{y:4,'text-anchor':'middle','font-family':'var(--f-mono)','font-size':10.5,fill:'var(--muted)'},sk);
+  const hub=el('g',{transform:`translate(${HUB.x} ${HUB.y})`},svg);
+  if(s.rebbi){
+    el('rect',{x:-36,y:-19,width:72,height:38,rx:9,fill:'var(--rebbi)'},hub);
+    const t=el('text',{y:0,'text-anchor':'middle','font-family':'var(--f-display)','font-size':14,'font-weight':700,fill:'var(--surface)'},hub);t.textContent='Rebbi';
+    route.hubT=el('text',{y:12,'text-anchor':'middle','font-family':'var(--f-mono)','font-size':9,fill:'var(--surface)'},hub);
+  } else {
+    el('circle',{r:30,fill:'none',stroke:'var(--line)','stroke-dasharray':'3 4'},hub);
+    const t=el('text',{y:-2,'text-anchor':'middle','font-family':'var(--f-mono)','font-size':9.5,fill:'var(--muted)'},hub);t.textContent='no';
+    const t2=el('text',{y:10,'text-anchor':'middle','font-family':'var(--f-mono)','font-size':9.5,fill:'var(--muted)'},hub);t2.textContent='exchange';
+    route.hubT=null;
+  }
+  route.parts=el('g',{},svg);
+  route.nodes=[];
+  for(let i=0;i<N;i++){const p=nodePos(i);
+    const g=el('g',{transform:`translate(${p.x} ${p.y})`},svg);
+    const c=el('circle',{r:21,fill:'var(--surface)',stroke:'var(--muted)','stroke-width':1.5},g);
+    const t=el('text',{y:4,'text-anchor':'middle','font-family':'var(--f-display)','font-size':12.5,'font-weight':700,fill:'var(--fg)'},g);t.textContent=ROLES[i].id;
+    const lab=el('text',{y:35,'text-anchor':'middle','font-family':'var(--f-mono)','font-size':9.5,fill:'var(--muted)'},g);
+    route.nodes.push({c,lab});
+  }
+  route.list=[];
+}
+function renderRouteStatic(f){
+  const s=S();
+  route.sinkT.textContent=f?`expired at refresh: ${k(f.expired.reduce((a,b)=>a+b,0))}`:'expires at refresh';
+  if(route.hubT) route.hubT.textContent=f?`moved ${k(f.loans.reduce((a,l)=>a+l.amt,0))}`:'ledger';
+  for(let i=0;i<N;i++){const n=route.nodes[i];
+    if(!f){n.c.setAttribute('stroke','var(--muted)');n.c.setAttribute('fill','var(--surface)');n.lab.textContent=ROLES[i].name;n.lab.setAttribute('fill','var(--muted)');continue;}
+    let txt=ROLES[i].name,col='var(--muted)',stroke='var(--muted)',fill='var(--surface)';
+    if(f.blocked[i]){txt=f.denied[i]&&f.why[i]==='share'?'blocked, 0% shareable':'blocked';col='var(--block)';stroke='var(--block)';fill='var(--block-soft)';}
+    else if(f.borrowed[i]>0.5){txt='borrows '+k(f.borrowed[i]);col='var(--rebbi)';stroke='var(--rebbi)';fill='var(--rebbi-soft)';}
+    else if(f.lent[i]>0.5){txt='lends '+k(f.lent[i]);col='var(--rebbi)';stroke='var(--rebbi)';}
+    else if(f.expired[i]>2){txt=k(f.expired[i])+' expire';}
+    n.c.setAttribute('stroke',stroke);n.c.setAttribute('fill',fill);n.lab.textContent=txt;n.lab.setAttribute('fill',col);
+  }
+}
+function spawnParticles(f){
+  const now=performance.now(),dur=STEP_MS/state.speed*0.85;
+  for(const l of f.loans){ if(l.amt<0.5) continue; const n=Math.min(6,Math.max(1,Math.round(l.amt/2.5)));
+    const a=nodePos(l.from),b=nodePos(l.to);
+    for(let j=0;j<n;j++) route.list.push({pts:[a,HUB,b],t0:now+j*dur*0.08,dur:dur*0.7,col:'var(--rebbi)',r:3.2});}
+  for(let i=0;i<N;i++){const e=f.expired[i]; if(e<1) continue; const n=Math.min(6,Math.max(1,Math.round(e/3)));
+    const a=nodePos(i);
+    for(let j=0;j<n;j++) route.list.push({pts:[a,route.sink],t0:now+dur*0.35+j*dur*0.07,dur:dur*0.55,col:'var(--expired)',r:2.6});}
+}
+function drawParticles(now){
+  route.parts.innerHTML='';
+  route.list=route.list.filter(p=>now<p.t0+p.dur);
+  for(const p of route.list){ if(now<p.t0) continue; let u=(now-p.t0)/p.dur; u=u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
+    const segs=p.pts.length-1, x=u*segs, si=Math.min(segs-1,Math.floor(x)), lu=x-si, A=p.pts[si],B=p.pts[si+1];
+    el('circle',{cx:A.x+(B.x-A.x)*lu,cy:A.y+(B.y-A.y)*lu,r:p.r,fill:p.col},route.parts);}
+}
+
+/* lanes */
+const SCALE=72;
+function buildLanes(){
+  const box=$('lanes');box.innerHTML='';
+  ROLES.forEach((ro,i)=>{
+    const d=document.createElement('div');d.className='lane';
+    d.innerHTML=`<div class="who"><b>${ro.name}</b><span>${ro.job}</span><span class="chip work" id="chip${i}">waiting</span></div>
+    <div class="bar" id="bar${i}"><i class="seg-used"></i><i class="seg-lent"></i><i class="seg-exp"></i><i class="seg-bor"></i><i class="seg-unmet"></i><span class="afsline"></span><span class="bline"></span></div>
+    <div class="num" id="num${i}"></div>`;
+    box.appendChild(d);
+  });
+}
+function renderLanes(f){
+  const s=S(),r=R();
+  $('lg-afs').hidden=!s.rebbi;
+  for(let i=0;i<N;i++){
+    const bar=$('bar'+i),segs=bar.querySelectorAll('i');
+    const B=f?f.B[i]:r.cfg.budgets[i];
+    const afs=f?f.afs[i]:(r.cfg.afs?r.cfg.afs[i]:0);
+    const bl=bar.querySelector('.bline'),al=bar.querySelector('.afsline');
+    const X=v=>Math.min(100,v/SCALE*100);
+    bl.style.left=`calc(${X(B)}% - 1px)`;
+    al.style.display=s.rebbi?'block':'none';al.style.left=X(B*(1-afs))+'%';
+    let vals=[0,0,0,0,0];
+    if(f){
+      const lent=f.lent[i],bor=f.borrowed[i],used=f.used[i],exp=f.expired[i];
+      const ownUsed=Math.min(used,B-lent),borUsed=Math.max(0,used-ownUsed);
+      const unmet=Math.max(0,f.D[i]-used);
+      vals=[ownUsed,lent,exp,borUsed,unmet];
+    }
+    let acc=0;
+    segs.forEach((sg,j)=>{const w=vals[j];sg.style.left=X(acc)+'%';sg.style.width=Math.max(0,X(acc+w)-X(acc))+'%';acc+=w;});
+    const chip=$('chip'+i),num=$('num'+i);
+    if(!f){chip.className='chip work';chip.textContent='waiting';num.innerHTML=`budget ${k(B)}`+(s.rebbi?`<br>shareable ${pct(afs)}`:'');continue;}
+    let cl='work',tx='working';
+    if(f.blocked[i]){cl='blk';tx=f.denied[i]?(f.why[i]==='share'?'denied: 0% shareable':'denied: debt limit'):'blocked';}
+    else if(f.borrowed[i]>0.5){cl='bor';tx='borrowing';}
+    else if(f.lent[i]>0.5){cl='lend';tx='lending';}
+    else if(f.expired[i]>0.3*B){cl='idle';tx='tokens expiring';}
+    chip.className='chip '+cl;chip.textContent=tx;
+    let n=`need ${k(f.D[i])} · used ${k(f.used[i])}`;
+    if(s.market) n+=`<br>shareable ${pct(afs)} · claim ${f.credit[i]>=0?'+':'?'}${k(Math.abs(f.credit[i]))}`;
+    else if(s.rebbi) n+=`<br>shareable ${pct(afs)}`;
+    else n+=`<br>budget ${k(B)}`;
+    num.innerHTML=n;
+  }
+}
+
+/* metrics + log */
+function renderMetrics(f){
+  const r=R();const c=f?f.cum:{expired:0,issued:0,blocks:0,moved:0,loans:0};
+  $('m-w').textContent=f?f.t:0;
+  const p=f?f.p:0;$('m-p').textContent=sp(p);$('m-ps').textContent=Math.round(p)+'% of climb';
+  $('m-e').textContent=k(c.expired);$('m-es').textContent=c.issued?pct(c.expired/c.issued)+' of issued':'0% of issued';
+  $('m-b').textContent=c.blocks;
+  $('m-m').textContent=k(c.moved);$('m-ms').textContent=(f?r.frames.slice(0,f.t).reduce((a,x)=>a+x.loans.filter(l=>l.amt>=0.5).length,0):0)+' loans';
+  $('phase').textContent=f?('Phase: '+PHASES[f.phase]):'Phase: Explore';
+  $('flowtag').textContent=f?('window '+f.t):'before window 1';
+}
+function eventsFor(f,prev,s){
+  const out=[];const nm=i=>ROLES[i].name;
+  for(const m of f.ms) out.push(['e-ms',m===100?`<b>Summit: ${sp(100)} reached</b>`:`passes ${sp(m)}`]);
+  if(prev&&prev.phase!==f.phase) out.push(['',`phase changes to <b>${PHASES[f.phase]}</b>`]);
+  const pairs={};for(const l of f.loans){if(l.amt<0.5)continue;const key=l.to;(pairs[key]=pairs[key]||[]).push(l);}
+  for(const to in pairs){const ls=pairs[to].sort((a,b)=>b.amt-a.amt);const tot=ls.reduce((a,l)=>a+l.amt,0);
+    out.push(['e-loan',`Rebbi lends ${k(tot)} to ${nm(+to)} from ${ls.slice(0,2).map(l=>nm(l.from)).join(', ')}${ls.length>2?' +'+(ls.length-2):''}`]);}
+  f.blocked.forEach((b,i)=>{if(!b)return;
+    const why=f.denied[i]?(f.why[i]==='share'?' (0% shareable, so no loan)':' (at debt limit)'):(s.rebbi?' (pool empty)':'');
+    out.push(['e-blk',`${nm(i)} cut off: needed ${k(f.D[i])}, had ${k(f.used[i])}${why}`]);});
+  if(s.market&&prev){f.afs.forEach((a,i)=>{if(prev.afs[i]<=0.001&&a>0.001)out.push(['e-loan',`${nm(i)} starts sharing ${pct(a)} of its budget`]);});}
+  const ex=f.expired.reduce((a,b)=>a+b,0);if(ex>=1)out.push(['',`${k(ex)} expire at refresh`]);
+  return out;
+}
+function renderLog(){
+  const r=R(),s=S(),t=state.t,box=$('log');
+  if(t===0){box.innerHTML=`<div><span>W0</span><span>${s.mgr?'Manager sets budgets. ':''}${s.rebbi?'Rebbi opens the ledger. ':''}Agents start with empty memory.</span></div>`;return;}
+  let html='';
+  for(let i=Math.min(t,r.frames.length)-1;i>=0&&i>=t-8;i--){
+    const f=r.frames[i],ev=eventsFor(f,r.frames[i-1],s);
+    for(const [c,txt] of ev) html+=`<div class="${c}"><span>W${f.t}</span><span>${txt}</span></div>`;
+  }
+  box.innerHTML=html;
+}
+
+/* race */
+const RX=w=>52+w/MAXW*560, RY=p=>290-p/100*230;
+let raceClip=null;
+function renderRace(animate){
+  const svg=$('race');svg.innerHTML='';
+  const defs=el('defs',{},svg);const cp=el('clipPath',{id:'rclip'},defs);
+  raceClip=el('rect',{x:0,y:0,width:animate?52:640,height:330},cp);
+  for(const m of [0,25,50,75,100]){const y=RY(m);
+    el('line',{x1:52,x2:612,y1:y,y2:y,stroke:'var(--line)','stroke-width':1},svg);
+    const t=el('text',{x:46,y:y+4,'text-anchor':'end','font-family':'var(--f-mono)','font-size':10.5,fill:'var(--muted)'},svg);t.textContent=sp(m);}
+  for(let w=0;w<=MAXW;w+=5){const x=RX(w);
+    el('line',{x1:x,x2:x,y1:290,y2:295,stroke:'var(--muted)'},svg);
+    const t=el('text',{x,y:309,'text-anchor':'middle','font-family':'var(--f-mono)','font-size':10.5,fill:'var(--muted)'},svg);t.textContent=w;}
+  const xl=el('text',{x:612,y:325,'text-anchor':'end','font-family':'var(--f-mono)','font-size':10.5,fill:'var(--muted)'},svg);xl.textContent='budget windows';
+  const g=el('g',{'clip-path':'url(#rclip)'},svg);
+  const series=[...SC.map(s=>({s,r:state.res[s.k],dash:null})),{s:{k:'ref',tag:'3',c:'--ref',name:'Scenario 3 setup on Exercise B'},r:state.res.s3onB,dash:'5 4'}];
+  const ends=[];
+  for(const it of series){
+    const pts=[[RX(0),RY(0)],...it.r.frames.map(f=>[RX(f.t),RY(f.p)])];
+    el('path',{d:'M'+pts.map(p=>p.map(v=>v.toFixed(1)).join(' ')).join(' L'),fill:'none',stroke:`var(${it.s.c})`,'stroke-width':it.dash?1.8:2.4,'stroke-dasharray':it.dash||'none','stroke-linejoin':'round',opacity:it.dash?0.8:1},g);
+    const last=pts[pts.length-1];ends.push({x:last[0],y:last[1],it});
+  }
+  // stack end markers that land close together
+  ends.sort((a,b)=>a.x-b.x);
+  const placed=[];
+  for(const e of ends){let lvl=0;while(placed.some(p=>Math.abs(p.x-e.x)<20&&p.lvl===lvl&&Math.abs(p.baseY-e.y)<20))lvl++;
+    placed.push({x:e.x,lvl,baseY:e.y});
+    const y=e.y-14-lvl*19;
+    const m=el('g',{transform:`translate(${e.x} ${y})`},g);
+    if(lvl>0) el('line',{x1:0,y1:9,x2:0,y2:14+lvl*19-3,stroke:`var(${e.it.s.c})`,'stroke-width':1},m);
+    el('circle',{r:9,fill:e.it.dash?'var(--surface)':`var(${e.it.s.c})`,stroke:`var(${e.it.s.c})`,'stroke-width':1.5,'stroke-dasharray':e.it.dash?'2 2':'none'},m);
+    const t=el('text',{y:3.5,'text-anchor':'middle','font-family':'var(--f-mono)','font-size':9,'font-weight':600,fill:e.it.dash?`var(${e.it.s.c})`:'var(--surface)'},m);t.textContent=e.it.dash?'3·B':e.it.s.tag;
+  }
+  if(animate){const t0=performance.now(),D=4200;
+    const tick=now=>{const u=Math.min(1,(now-t0)/D);raceClip.setAttribute('width',52+u*588);if(u<1)requestAnimationFrame(tick);};requestAnimationFrame(tick);}
+  // table
+  const rows=[...SC.map(s=>({s,r:state.res[s.k],ref:false}))];
+  rows.splice(4,0,{s:{tag:'3·B',c:'--ref',name:'Scenario 3 setup, Exercise B'},r:state.res.s3onB,ref:true});
+  const maxE=Math.max(...rows.map(x=>x.r.tot.expired/x.r.tot.issued));
+  let h='<thead><tr><th>Scenario</th><th>Windows to summit</th><th>Expired</th><th>Cut-offs</th><th>Moved</th></tr></thead><tbody>';
+  for(const x of rows){const r=x.r,e=r.tot.expired/r.tot.issued;
+    h+=`<tr class="${x.ref?'ref':''}" style="--c:var(${x.s.c})"><td><span class="sw"></span>${x.s.tag} · ${x.s.name}${x.s.ex==='B'?' (Ex. B)':''}</td>
+    <td class="n">${r.done||'>'+MAXW}<span class="mini" style="width:${(r.windows/MAXW*100).toFixed(0)}%"></span></td>
+    <td class="n">${k(r.tot.expired)} · ${pct(e)}<span class="mini" style="width:${(e/maxE*100).toFixed(0)}%"></span></td>
+    <td class="n">${r.tot.blocks}</td><td class="n">${k(r.tot.moved)}</td></tr>`;}
+  $('rtab').innerHTML=h+'</tbody>';
+  $('race-seed').textContent='draws #'+state.seed;
+  const a=state.res;
+  const W=x=>x.done?x.done+' windows':'more than 40 windows';
+  const E=x=>pct(x.tot.expired/x.tot.issued);
+  $('takeaway').innerHTML=`On these draws, fixed equal budgets took <b>${W(a.s1)}</b> and let <b>${E(a.s1)}</b> of issued tokens expire. With Rebbi routing loans (3) the climb took <b>${W(a.s3)}</b> with ${E(a.s3)} expired. On Exercise B, learning from scenario 3 data (3b) took ${W(a.s3b)} with ${E(a.s3b)} expired, against ${W(a.s3onB)} and ${E(a.s3onB)} without it. The market (4), at a debt limit of ${state.mk.debt} windows, took ${W(a.s4)} with ${E(a.s4)} expired.`;
+}
+
+/* playback */
+function frame(){const r=R();return state.t>0?r.frames[Math.min(state.t,r.frames.length)-1]:null;}
+function renderAll(rebuild){
+  for(const s of SC){const b=$('tab-'+s.k);if(b)b.setAttribute('aria-selected',s.k===state.sc?'true':'false');}
+  if(rebuild){buildRoute();}
+  renderRules();
+  const f=frame();
+  renderHill();renderLanes(f);renderMetrics(f);renderLog();renderRouteStatic(f);
+  $('seedtag').textContent='random draws #'+state.seed;
+  $('play').textContent=state.playing?'?? Pause':(state.t>=R().frames.length?'? Replay':'? Play');
+}
+function stepOnce(){
+  const r=R();if(state.t>=r.frames.length){state.playing=false;renderAll();return;}
+  state.t++;const f=frame();spawnParticles(f);renderAll();
+  if(state.t>=r.frames.length){state.playing=false;renderAll();}
+}
+function loop(now){
+  const dt=now-(state.last||now);state.last=now;
+  if(state.playing){state.acc+=dt*state.speed;if(state.acc>=STEP_MS){state.acc=0;stepOnce();}}
+  drawParticles(now);
+  requestAnimationFrame(loop);
+}
+$('play').addEventListener('click',()=>{
+  if(state.t>=R().frames.length){state.t=0;}
+  state.playing=!state.playing;state.acc=STEP_MS*0.9;renderAll();});
+$('step').addEventListener('click',()=>{state.playing=false;stepOnce();});
+$('reset').addEventListener('click',()=>{state.playing=false;state.t=0;route.list=[];renderAll();});
+$('speed').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;state.speed=+b.dataset.s;
+  $('speed').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));});
+$('reseed').addEventListener('click',()=>{state.seed=1+Math.floor(Math.random()*9000);compute();state.t=Math.min(state.t,R().frames.length);renderAll();renderRace(true);});
+$('replay').addEventListener('click',()=>renderRace(true));
+const onMk=()=>{state.mk.rate=+$('rate').value/100;state.mk.debt=+$('debt').value;compute();state.t=Math.min(state.t,R().frames.length);renderAll();renderRace(false);};
+$('rate').addEventListener('input',onMk);$('debt').addEventListener('input',onMk);
+
+compute();state.t=6;buildTabs();buildHill();buildLanes();renderAll(true);renderRace(false);
+requestAnimationFrame(loop);
+})();
+</script></body></html>

@@ -1,0 +1,11 @@
+# Worklog
+- Read AGENT_INTERFACE.md, .mcp.json, dep-audit-v1.md: Rebbi stdio MCP; loan cap 60k, 900s TTL; spec needs 7 sections + JSON.
+- Wrote rebbi_call.py (MCP stdio client using .mcp.json). First run failed on attribute name isError -> fixed to is_error.
+- get_budget: balance 7000, no loans.
+- post_handoff 60000 (request_id auditor-01-audit-1): LEND loan 1, 60000 from analyst-07, expires 04:13:23Z.
+- Listed target, read setup.py: 6 install_requires, 5 extras groups.
+- grep of imports in sqlite_utils/: found third-party imports and try/except contexts (trogon, sqlite_dump, pandas, numpy, pysqlite3, sqlean).
+- Looked for commit hash: no .git, only test-fixture hashes; commit not determinable.
+- Wrote report.md.
+- settle loan 1 done: returned_tokens 60000.
+- Wrote budget.json.

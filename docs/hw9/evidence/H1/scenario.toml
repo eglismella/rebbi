@@ -1,0 +1,61 @@
+# Demo scenario: the owner's setup of the fleet.
+#
+# Calibrated on Oct 27 from real-model runs (python -m rebbi.calibrate). Full audits of the pinned
+# commit took 2 to 6 calls and 17,000 to 59,757 tokens; the first call is about 5,200 with the rebbi
+# tools and 4,100 without. A call goes ahead only if the balance covers its input, so auditor-01's
+# 7,000 covers the one call in which it asks Rebbi for the difference, and not a second call, which
+# re-sends the first: without Rebbi it is refused before it can write its report. The loan cap and
+# analyst-07's budget cover the largest audit measured. Pietro confirms or changes them (tasks 3 and 4);
+# this is the only file that holds a budget, a reserve or a rule value. Token figures count input,
+# cache writes, cache reads and output.
+
+[rules]
+max_loan_tokens = 60000   # cap on any single loan
+min_loan_tokens = 5000    # smaller offers are not worth booking
+loan_ttl_s = 900          # a loan's extra allowance stops after 15 minutes
+
+[harness]
+warn_fraction = 0.2       # warn an agent once below 20% of its budget (or two calls' worth, if more)
+max_turns = 60            # safety stops for one agent session, independent of Rebbi
+max_usd = 3.0
+
+# The job auditor-01 runs. Pinned so every demo run sees the same code.
+[target]
+repo = "https://github.com/simonw/sqlite-utils"
+commit = "9d7da0606e98713896bbc9fc885a5b0cd54ac2fd"   # tag 3.38
+local_path = "targets/sqlite-utils"
+key = "specs/answer-key-sqlite-utils-3.38.json"
+expected_tokens = 60000   # the most a measured audit of this commit took: 17,000 to 59,757 tokens
+
+[[agents]]
+id = "auditor-01"
+owner = "platform-team"
+model = "claude-sonnet-5-5"
+role = "Runs the dependency audit; its budget covers one call, not the job"
+budget_tokens = 7000
+reserve_tokens = 0
+expected_demand_tokens = 0
+will_lend = false
+tools = ["repo.read"]
+
+[[agents]]
+id = "analyst-07"
+owner = "platform-team"
+model = "claude-haiku-5-5"
+role = "Idle this window; lends what sits above its reserve"
+budget_tokens = 180000
+reserve_tokens = 80000
+expected_demand_tokens = 20000
+will_lend = true
+tools = ["repo.read", "sql.read"]
+
+[[agents]]
+id = "writer-03"
+owner = "platform-team"
+model = "claude-haiku-5-5"
+role = "Busy this window; nothing above its reserve, so it is skipped"
+budget_tokens = 100000
+reserve_tokens = 70000
+expected_demand_tokens = 30000
+will_lend = true
+tools = ["docs.write"]

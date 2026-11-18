@@ -1,5 +1,10 @@
 # Rebbi
 
+**Agents and builders: start with [docs/AGENT_INTERFACE.md](docs/AGENT_INTERFACE.md).** It covers
+connecting over MCP (stdio or HTTP with per-agent tokens), each tool's inputs and outputs, the
+limits, and a worked example. Install: `pip install "git+https://github.com/eglismella/rebbi"`,
+then `rebbi init fleet`.
+
 Lends spare token budget between AI agents in one fleet. An agent about to run
 out mid-job calls `post_handoff` over MCP; the broker finds an agent with
 capacity above its reserve, books the loan atomically in the ledger, and
@@ -16,6 +21,13 @@ with the same id returns the first decision, marked `replayed`, instead of booki
 same id with a different request is refused. `settle` is safe to resend too. Testing Rebbi inside
 Nanda Town found the gap: when Town dropped Rebbi's reply or delivered a request twice, Rebbi booked
 two loans for one job and left one open, while `rebbi check` still passed.
+
+Outside agents (added in HW9, `docs/hw9/RESULTS.md`): Rebbi installs from GitHub with a starter
+fleet (`rebbi init`), serves MCP over stdio or over HTTP with one bearer token per agent, logs every
+call with `REBBI_TRACE`, and has `rebbi call` for agents with only a shell. Replies now say when a
+loan is partial and why, carry the fleet's limits, and refusals give their reason. Five cold-start
+runs by fresh agent sessions, working from `docs/AGENT_INTERFACE.md` alone, all borrowed, used and
+settled correctly.
 
 ## Run the demo
 
@@ -91,7 +103,11 @@ Without the model, for the ledger and MCP alone:
 | `rebbi/ledger.py` | SQLite ledger, the one home for balances, reserves, loans, usage and decisions. Append-only entries; balances are sums. |
 | `rebbi/rules.py` | Who can lend and how much: `lendable = balance - reserve - declared demand`, capped per loan. |
 | `rebbi/broker.py` | `post_handoff`, `report_headroom`, `settle`, `budget`. Expires loans before every decision. |
-| `rebbi/mcp_server.py` | Agent-facing MCP server, one stdio process per agent; identity comes from `REBBI_AGENT_ID`, never from a tool argument. |
+| `rebbi/mcp_server.py` | Agent-facing MCP server: one stdio process per agent (identity from `REBBI_AGENT_ID`), or one HTTP server per fleet (identity from the agent's bearer token); never from a tool argument. `REBBI_TRACE` logs every call. |
+| `rebbi/call.py` | `rebbi call <tool> '<json>'`: one call through an `.mcp.json` connection, for agents without MCP tools. |
+| `rebbi/starter_fleet.toml` | Copy of `config/scenario.toml` shipped in the package for `rebbi init`; a test keeps them identical. |
+| `docs/AGENT_INTERFACE.md` | The interface doc for outside agents and builders. |
+| `docs/hw9/` | HW9: pre-registered protocol, results, and evidence of the cold-start runs. |
 | `rebbi/gateway.py` | Pass-through for Claude API calls. Refuses a call unless the agent's ledger balance covers its input (counted with count_tokens), after auto-borrow if Rebbi is on; debits the tokens each call really used (input, cache writes, cache reads, output). Holds the only real API key. |
 | `rebbi/fleet.py` | The demo harness: three Claude Agent SDK agents, the gateway beside them (or harness metering in subscription mode), a low-budget warning hook, verification and the ledger check after each run. |
 | `rebbi/demo.py` | Baseline then Rebbi on the same budgets, then a side-by-side table: the evidence shot for the video. |

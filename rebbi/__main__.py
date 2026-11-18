@@ -6,13 +6,20 @@
     python -m rebbi fetch-target     # clone the audit repo at its pinned commit
     python -m rebbi fetch-target --all             # every repo in config/targets.toml
     python -m rebbi fetch-target --target llm-0.12
+    rebbi init fleet                 # a fleet folder anywhere: fleet file, seeded ledger, HTTP tokens
+    rebbi client-config --dir fleet --agent auditor-01   # the .mcp.json entry for one agent
+    rebbi call post_handoff '{"goal": "audit", "budget_tokens": 30000}'   # one call, from a shell
 """
 
 from __future__ import annotations
 
 import argparse
+import json
+import secrets
+import shutil
 import subprocess
 import sys
+import tomllib
 from pathlib import Path
 
 from rebbi import rules as lending
@@ -38,6 +45,57 @@ def fetch(target: scenario.AuditTarget) -> int:
     return 0
 
 
+def init(folder: Path, force: bool, new_tokens: bool = False) -> int:
+    """A fleet that lives outside the repository: what an operator sets up for outside agents."""
+    folder.mkdir(parents=True, exist_ok=True)
+    fleet, db, tokens = folder / "scenario.toml", folder / "rebbi.db", folder / "tokens.toml"
+    if db.exists() and not force:
+        print(f"{db} already exists; pass --force to start the ledger over from {fleet}")
+        return 1
+    if not fleet.exists():
+        shutil.copyfile(scenario.STARTER_FLEET, fleet)
+    for suffix in ("", "-wal", "-shm"):
+        Path(str(db) + suffix).unlink(missing_ok=True)
+    sc = scenario.load(fleet)  # --force keeps the operator's edited fleet file
+    scenario.seed(Ledger(db), sc, utcnow())
+    old = tomllib.loads(tokens.read_text(encoding="utf-8")).get("tokens", {}) if tokens.exists() else {}
+    # Keep issued tokens so existing HTTP client configs keep working; new agents get new ones.
+    kept = {a.id: old[a.id] for a in sc.agents if a.id in old and not new_tokens}
+    lines = ["# Bearer tokens for `rebbi-mcp --http`: one per agent. Keep this file private.", "[tokens]"]
+    lines += [f'"{a.id}" = "{kept.get(a.id) or secrets.token_urlsafe(24)}"' for a in sc.agents]
+    tokens.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    try:
+        tokens.chmod(0o600)
+    except OSError:
+        pass
+    print(f"fleet file   {fleet}  (edit budgets, reserves and rules here, then `rebbi init {folder} --force`)")
+    print(f"ledger       {db}  ({len(sc.agents)} agents: {', '.join(a.id for a in sc.agents)})")
+    print(f"HTTP tokens  {tokens}")
+    print(f"next: rebbi client-config --dir {folder} --agent {sc.agents[0].id}")
+    return 0
+
+
+def client_config(folder: Path, agent: str, trace: str | None, http_url: str | None) -> int:
+    """Print an MCP client entry (the `mcpServers` shape Claude Code, Claude Desktop and others read)."""
+    folder = folder.resolve()
+    sc = scenario.load(folder / "scenario.toml")
+    if agent not in {a.id for a in sc.agents}:
+        print(f"no agent {agent!r} in {folder / 'scenario.toml'}", file=sys.stderr)
+        return 1
+    if http_url:
+        data = tomllib.loads((folder / "tokens.toml").read_text(encoding="utf-8"))
+        entry = {"type": "http", "url": http_url,
+                 "headers": {"Authorization": f"Bearer {data['tokens'][agent]}"}}
+    else:
+        env = {"REBBI_AGENT_ID": agent, "REBBI_DB": str(folder / "rebbi.db"),
+               "REBBI_SCENARIO": str(folder / "scenario.toml")}
+        if trace:
+            env["REBBI_TRACE"] = str(Path(trace).resolve())
+        entry = {"type": "stdio", "command": sys.executable, "args": ["-m", "rebbi.mcp_server"], "env": env}
+    print(json.dumps({"mcpServers": {"rebbi": entry}}, indent=2))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="rebbi")
     p.add_argument("--db", default="rebbi.db")
@@ -50,7 +108,30 @@ def main(argv: list[str] | None = None) -> int:
     fetch_target = sub.add_parser("fetch-target", help="clone the audit repo at the commit pinned in the scenario")
     fetch_target.add_argument("--target", help="a repo from config/targets.toml instead of the scenario's")
     fetch_target.add_argument("--all", action="store_true", help="every repo in config/targets.toml")
+    init_p = sub.add_parser("init", help="create a fleet folder: fleet file, seeded ledger and HTTP tokens")
+    init_p.add_argument("folder", type=Path)
+    init_p.add_argument("--force", action="store_true",
+                        help="start the ledger over from the folder's (possibly edited) fleet file")
+    init_p.add_argument("--new-tokens", action="store_true", help="issue new HTTP tokens for every agent")
+    cc = sub.add_parser("client-config", help="print the MCP client entry for one agent of a fleet folder")
+    cc.add_argument("--dir", type=Path, required=True, help="the folder `rebbi init` created")
+    cc.add_argument("--agent", required=True)
+    cc.add_argument("--trace", help="stdio: log every tool call to this JSONL file")
+    cc.add_argument("--http", metavar="URL", help="connect to `rebbi-mcp --http` at this URL instead of stdio")
+    call_p = sub.add_parser("call", help="call one Rebbi tool through an .mcp.json connection; prints JSON")
+    call_p.add_argument("tool", choices=["get_budget", "post_handoff", "settle", "report_headroom"])
+    call_p.add_argument("arguments", nargs="?", help="the tool's arguments as a JSON object")
+    call_p.add_argument("--config", type=Path, default=Path(".mcp.json"), help="default: ./.mcp.json")
     args = p.parse_args(argv)
+
+    if args.cmd == "call":
+        from rebbi.call import main as call_main
+
+        return call_main(args.tool, args.arguments, args.config)
+    if args.cmd == "init":
+        return init(args.folder, args.force, args.new_tokens)
+    if args.cmd == "client-config":
+        return client_config(args.dir, args.agent, args.trace, args.http)
 
     if args.cmd == "fetch-target":
         known = scenario.targets()

@@ -529,6 +529,10 @@ def start(mode: str, budgets: dict[str, int], upstream: str, auth: str,
         direct_env = ({"ANTHROPIC_BASE_URL": upstream, "ANTHROPIC_API_KEY": "local-test"} if local
                       else {"CLAUDE_CODE_OAUTH_TOKEN": oauth_token(ENV_FILE)})
     run_dir = ROOT / "runs" / f"{datetime.now(UTC):%Y%m%d-%H%M%S}-{mode}{'-scripted' if local else ''}"
+    base, n = run_dir, 1
+    while run_dir.exists():  # two runs started in the same second (seen in the test suite) get -2, -3
+        n += 1
+        run_dir = base.with_name(f"{base.name}-{n}")
     run_dir.mkdir(parents=True)
     configure_logging(run_dir)
     isolate_from_host()

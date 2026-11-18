@@ -8,3 +8,4 @@ __pycache__/
 targets/
 /runs/
 .pytest_cache/
+build/

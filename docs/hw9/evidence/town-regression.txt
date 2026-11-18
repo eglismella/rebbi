@@ -1,0 +1,80 @@
+# Nanda Town's four live Rebbi cases (HW8 integration), run against Rebbi dc06b28
+# Town: fork eglismella/nandatown, branch integration/rebbi-lending, commit 4803f9d
+# Command: .venv/bin/python examples/rebbi/run.py --project <rebbi checkout> --case all --out /tmp/town-runs2
+
+lend: PASSED  (../../../../tmp/town-runs2/sim-e30e7651439c)
+  passed               rebbi_connected            3 live MCP sessions, one per fleet agent
+  passed               rebbi_version_pinned       Rebbi at dc06b2861c88431f0b4d041dee71e76bc7947053, clean tree
+  passed               headroom_published         every lender's reserve is published in Rebbi
+  passed               loan_granted               Rebbi lent the full shortfall, lender reserve intact
+  passed               one_loan_per_request       1 request(s), one loan each
+  passed               job_paid                   the client received the result and released escrow
+  passed               loans_settled              every loan settled; unspent tokens went back
+  passed               rebbi_invariants           Rebbi's own ledger check passes
+  passed               ledger_conserved           10000 cents conserved across every movement
+  not_tested           privacy                    no redaction declared by this scenario
+Rebbi's ledger after the run:
+agent          balance   reserve    demand  lendable  lends
+lender-a        164000     80000     20000     64000  yes
+lender-b        100000     70000     30000         0  yes
+worker-01            0         0         0         0  no
+loan 1: lender-a -> worker-01 18000 tokens, settled, returned 2000
+decision 1 at 2026-11-18T04:26:46+00:00: worker-01 asked 18000 -> LEND 18000 lender-a
+lost-reply: PASSED  (../../../../tmp/town-runs2/sim-d1b281814a75)
+  passed               rebbi_connected            3 live MCP sessions, one per fleet agent
+  passed               rebbi_version_pinned       Rebbi at dc06b2861c88431f0b4d041dee71e76bc7947053, clean tree
+  passed               headroom_published         every lender's reserve is published in Rebbi
+  passed               fault_injected             Town injected a drop of borrow_decision
+  passed               worker_retried             the worker resent the same request
+  passed               loan_granted               Rebbi lent the full shortfall, lender reserve intact
+  passed               one_loan_per_request       1 request(s), one loan each
+  passed               job_paid                   the client received the result and released escrow
+  passed               loans_settled              every loan settled; unspent tokens went back
+  passed               rebbi_invariants           Rebbi's own ledger check passes
+  passed               retry_gets_original        the repeat got the original decision back, marked replayed
+  passed               ledger_conserved           10000 cents conserved across every movement
+  not_tested           privacy                    no redaction declared by this scenario
+Rebbi's ledger after the run:
+agent          balance   reserve    demand  lendable  lends
+lender-a        164000     80000     20000     64000  yes
+lender-b        100000     70000     30000         0  yes
+worker-01            0         0         0         0  no
+loan 1: lender-a -> worker-01 18000 tokens, settled, returned 2000
+decision 1 at 2026-11-18T04:26:49+00:00: worker-01 asked 18000 -> LEND 18000 lender-a
+duplicate: PASSED  (../../../../tmp/town-runs2/sim-7813c5759051)
+  passed               rebbi_connected            3 live MCP sessions, one per fleet agent
+  passed               rebbi_version_pinned       Rebbi at dc06b2861c88431f0b4d041dee71e76bc7947053, clean tree
+  passed               headroom_published         every lender's reserve is published in Rebbi
+  passed               fault_injected             Town injected a duplicate of borrow_request
+  passed               loan_granted               Rebbi lent the full shortfall, lender reserve intact
+  passed               one_loan_per_request       1 request(s), one loan each
+  passed               job_paid                   the client received the result and released escrow
+  passed               loans_settled              every loan settled; unspent tokens went back
+  passed               rebbi_invariants           Rebbi's own ledger check passes
+  passed               duplicate_gets_original    the repeat got the original decision back, marked replayed
+  passed               ledger_conserved           10000 cents conserved across every movement
+  not_tested           privacy                    no redaction declared by this scenario
+Rebbi's ledger after the run:
+agent          balance   reserve    demand  lendable  lends
+lender-a        164000     80000     20000     64000  yes
+lender-b        100000     70000     30000         0  yes
+worker-01            0         0         0         0  no
+loan 1: lender-a -> worker-01 18000 tokens, settled, returned 2000
+decision 1 at 2026-11-18T04:26:50+00:00: worker-01 asked 18000 -> LEND 18000 lender-a
+no-room: PASSED  (../../../../tmp/town-runs2/sim-bd844f068cf5)
+  passed               rebbi_connected            3 live MCP sessions, one per fleet agent
+  passed               rebbi_version_pinned       Rebbi at dc06b2861c88431f0b4d041dee71e76bc7947053, clean tree
+  passed               headroom_published         every lender's reserve is published in Rebbi
+  passed               cannot_move_explained      CANNOT_MOVE, with each lender's reason
+  passed               job_refunded               the worker declined and the client got its escrow back
+  passed               nothing_spent              the worker spent nothing it did not have
+  passed               no_loans                   no loan was booked
+  passed               rebbi_invariants           Rebbi's own ledger check passes
+  passed               ledger_conserved           10000 cents conserved across every movement
+  not_tested           privacy                    no redaction declared by this scenario
+Rebbi's ledger after the run:
+agent          balance   reserve    demand  lendable  lends
+lender-a        180000    175000     20000         0  yes
+lender-b        100000     70000     30000         0  yes
+worker-01         7000         0         0         0  no
+decision 1 at 2026-11-18T04:26:52+00:00: worker-01 asked 18000 -> CANNOT_MOVE  no agent has spare capacity above its reserve

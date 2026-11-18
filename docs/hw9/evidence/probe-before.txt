@@ -1,0 +1,61 @@
+
+>>> get_budget {}
+{
+  "agent_id": "auditor-01",
+  "owner": "platform-team",
+  "balance": 7000,
+  "reserve_tokens": 0,
+  "expected_demand_tokens": 0,
+  "will_lend": false,
+  "lendable": 0,
+  "borrowed": [],
+  "lent": []
+}
+
+>>> post_handoff {"goal": "audit", "budget_tokens": 100000, "request_id": "a"}
+{
+  "decision": "LEND",
+  "loan_id": 1,
+  "tokens": 60000,
+  "requested": 100000,
+  "from": "analyst-07",
+  "expires_at": "2026-11-18T04:15:04+00:00",
+  "lender_reserve_intact": true,
+  "decision_id": 1
+}
+
+>>> post_handoff {"goal": "audit", "budget_tokens": 100000, "request_id": "b"}
+{
+  "decision": "LEND",
+  "loan_id": 2,
+  "tokens": 20000,
+  "requested": 100000,
+  "from": "analyst-07",
+  "expires_at": "2026-11-18T04:15:04+00:00",
+  "lender_reserve_intact": true,
+  "decision_id": 2
+}
+
+>>> post_handoff {"goal": "audit", "budget_tokens": 10000, "request_id": "c"}
+{
+  "decision": "CANNOT_MOVE",
+  "requested": 10000,
+  "blocker": "no agent has spare capacity above its reserve",
+  "next_step": "wait and ask again, or finish on a cheaper model",
+  "decision_id": 3
+}
+
+>>> settle {"loan_id": 999}
+ERROR: Error executing tool settle
+
+>>> post_handoff {"goal": "something else", "budget_tokens": 5000, "request_id": "a"}
+ERROR: Error executing tool post_handoff
+
+>>> post_handoff {"goal": "hand this job to an agent with sql.read", "budget_tokens": 5000, "requires_tools": ["sql.read"], "request_id": "d"}
+{
+  "decision": "CANNOT_MOVE",
+  "requested": 5000,
+  "blocker": "no agent has spare capacity above its reserve",
+  "next_step": "wait and ask again, or finish on a cheaper model",
+  "decision_id": 4
+}

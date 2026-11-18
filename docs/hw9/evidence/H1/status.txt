@@ -1,0 +1,6 @@
+agent          balance   reserve    demand  lendable  lends
+analyst-07      180000     80000     20000     80000  yes
+auditor-01        7000         0         0         0  no
+writer-03       100000     70000     30000         0  yes
+loan 1: analyst-07 -> auditor-01 25000 tokens, settled, returned 25000
+decision 1 at 2026-11-18T03:58:22+00:00: auditor-01 asked 25000 -> LEND 25000 analyst-07

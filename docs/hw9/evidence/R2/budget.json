@@ -1,0 +1,20 @@
+{
+  "agent": "auditor-01",
+  "job": "dep-audit-v1 on ./target (not started)",
+  "own_budget": 7000,
+  "estimated_need": 100000,
+  "asked_for": [
+    {"request_id": "auditor01-dep-audit-a", "tokens": 60000},
+    {"request_id": "auditor01-dep-audit-b", "tokens": 33000}
+  ],
+  "asked_total": 93000,
+  "got": [
+    {"loan_id": 1, "tokens": 60000, "from": "analyst-07", "expires_at": "2026-11-18T04:13:20+00:00", "closed": "settled, outcome abandoned, returned 60000"},
+    {"loan_id": 2, "tokens": 20000, "from": "analyst-07", "expires_at": "2026-11-18T04:13:24+00:00", "closed": "settled, outcome abandoned, returned 20000"}
+  ],
+  "got_total": 80000,
+  "peak_balance": 87000,
+  "shortfall_vs_estimate": 13000,
+  "shortfall_reason": "60,000 per-loan cap; analyst-07 had only 20,000 lendable left; writer-03 had none",
+  "closed_how": "Both loans settled with outcome 'abandoned' because the audit was not run (instructed to stop). Nothing spent, so all 80000 returned to analyst-07. Final balance 7000, no active loans."
+}

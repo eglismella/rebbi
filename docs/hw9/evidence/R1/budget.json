@@ -1,0 +1,9 @@
+{
+  "asked": 60000,
+  "got": 60000,
+  "from": "analyst-07",
+  "loan_ids": [1],
+  "expires_at": "2026-11-18T04:13:23+00:00",
+  "closed": "settled with outcome=done; Rebbi reported returned_tokens=60000 (Rebbi does not meter this client's model calls, so it counted none of my tokens as spent)",
+  "request_id": "auditor-01-audit-1"
+}

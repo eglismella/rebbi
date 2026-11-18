@@ -53,6 +53,11 @@ class Broker:
         self.rules = rules
         self.now = now
 
+    def limits(self) -> dict[str, int]:
+        """The fleet's lending rules, so an agent can plan its asks instead of discovering them."""
+        return {"max_loan_tokens": self.rules.max_loan_tokens, "min_loan_tokens": self.rules.min_loan_tokens,
+                "loan_ttl_s": self.rules.loan_ttl_s}
+
     def budget(self, agent_id: str) -> dict[str, Any]:
         self.ledger.expire_loans(self.now())
         state = self.ledger.agent(agent_id)
@@ -62,12 +67,13 @@ class Broker:
             "lendable": lending.lendable(state),
             "borrowed": [_loan_view(loan) for loan in loans if loan["borrower"] == agent_id],
             "lent": [_loan_view(loan) for loan in loans if loan["lender"] == agent_id],
+            "limits": self.limits(),
         }
 
     def report_headroom(self, agent_id: str, reserve_tokens: int, will_lend: bool = True) -> dict[str, Any]:
         state = self.ledger.set_headroom(agent_id, reserve_tokens, will_lend, self.now())
         log.info("%s reports reserve %d, will_lend=%s", agent_id, reserve_tokens, will_lend)
-        return {**state.to_dict(), "lendable": lending.lendable(state)}
+        return {**state.to_dict(), "lendable": lending.lendable(state), "limits": self.limits()}
 
     def post_handoff(self, requester: str, request: HandoffRequest) -> dict[str, Any]:
         if len(request.request_id) > MAX_REQUEST_ID:
@@ -117,17 +123,39 @@ class Broker:
                 "expires_at": loan["expires_at"],
                 "lender_reserve_intact": loan["lender_balance_after"] >= loan["lender_reserve"],
                 "considered": considered,
+                **self._partial(request.budget_tokens, loan["tokens"]),
             }
             break
         if response is None:
             response = _cannot_move(request, "no agent has spare capacity above its reserve", considered)
+        if request.requires_tools or request.requires_scopes:
+            response["ignored_fields"] = [f for f in ("requires_tools", "requires_scopes") if getattr(request, f)]
+            response["note"] = ("Rebbi lends tokens only: requires_tools and requires_scopes are recorded with the "
+                                "decision but not checked, and no job is moved to another agent.")
         return self._decided(requester, request, response, now)
+
+    def _partial(self, requested: int, lent: int) -> dict[str, Any]:
+        """Say plainly when a loan covers less than the ask, and why (found by the HW9 cold-start runs)."""
+        if lent >= requested:
+            return {"partial": False, "shortfall_tokens": 0}
+        reason = "loan cap" if lent == self.rules.max_loan_tokens else "lender room"
+        why = (f"one loan is capped at {self.rules.max_loan_tokens} tokens" if reason == "loan cap"
+               else "that is all the best lender has above its reserve")
+        return {
+            "partial": True,
+            "shortfall_tokens": requested - lent,
+            "limit_reason": reason,
+            "next_step": (f"This loan covers {lent} of the {requested} tokens you asked for: {why}. "
+                          "Ask again with a new request_id for the rest, or plan the job around the shortfall."),
+        }
 
     def settle(self, agent_id: str, loan_id: int, outcome: str = "done") -> dict[str, Any]:
         """The borrower closes its loan; whatever it did not spend goes back to the lender."""
         if outcome not in ("done", "abandoned"):
             raise LedgerError("outcome must be 'done' or 'abandoned'")
         with self.ledger.atomic():
+            # A loan past its expiry has already closed itself; settling it must say so, not settle it.
+            self.ledger.expire_loans(self.now())
             loan = self.ledger.loan(loan_id)
             if loan["borrower"] != agent_id:
                 raise LedgerError(f"loan {loan_id} belongs to {loan['borrower']}, not {agent_id}")
@@ -150,6 +178,7 @@ class Broker:
         return response
 
     def _decided(self, requester: str, request: HandoffRequest, response: dict[str, Any], now: datetime):
+        response.setdefault("limits", self.limits())  # every post_handoff reply, including a non-positive ask
         response["decision_id"] = self.ledger.log_decision(requester, asdict(request), response, now)
         log.info("post_handoff from %s for %d tokens -> %s", requester, request.budget_tokens, response["decision"])
         return response

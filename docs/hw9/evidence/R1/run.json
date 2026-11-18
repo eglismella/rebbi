@@ -1,0 +1,7 @@
+{
+  "prompt": "P1",
+  "mode": "full",
+  "needed": 60000,
+  "python": "/home/claude/hw9/venv/bin/python",
+  "http_port": null
+}
