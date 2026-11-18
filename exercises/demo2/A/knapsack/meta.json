@@ -1,0 +1,11 @@
+{
+ "slug": "knapsack",
+ "difficulty": 5,
+ "solution_file": "knapsack.py",
+ "test_file": "knapsack_test.py",
+ "ntests": 7,
+ "docs_chars": 1268,
+ "test_chars": 3280,
+ "stub_chars": 51,
+ "reference_chars": 653
+}

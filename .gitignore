@@ -10,3 +10,4 @@ targets/
 .pytest_cache/
 build/
 logs/
+docs/demo2/state/

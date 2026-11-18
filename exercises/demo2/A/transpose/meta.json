@@ -1,0 +1,11 @@
+{
+ "slug": "transpose",
+ "difficulty": 2,
+ "solution_file": "transpose.py",
+ "test_file": "transpose_test.py",
+ "ntests": 12,
+ "docs_chars": 851,
+ "test_chars": 2580,
+ "stub_chars": 30,
+ "reference_chars": 286
+}

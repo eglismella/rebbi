@@ -1,0 +1,11 @@
+{
+ "slug": "hangman",
+ "difficulty": 4,
+ "solution_file": "hangman.py",
+ "test_file": "hangman_test.py",
+ "ntests": 7,
+ "docs_chars": 2082,
+ "test_chars": 3567,
+ "stub_chars": 372,
+ "reference_chars": 1360
+}

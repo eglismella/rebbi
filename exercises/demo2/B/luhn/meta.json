@@ -1,0 +1,11 @@
+{
+ "slug": "luhn",
+ "difficulty": 2,
+ "solution_file": "luhn.py",
+ "test_file": "luhn_test.py",
+ "ntests": 23,
+ "docs_chars": 2360,
+ "test_chars": 3371,
+ "stub_chars": 94,
+ "reference_chars": 598
+}

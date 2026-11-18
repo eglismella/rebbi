@@ -1,0 +1,11 @@
+{
+ "slug": "space-age",
+ "difficulty": 1,
+ "solution_file": "space_age.py",
+ "test_file": "space_age_test.py",
+ "ntests": 8,
+ "docs_chars": 3764,
+ "test_chars": 1089,
+ "stub_chars": 62,
+ "reference_chars": 566
+}

@@ -1,0 +1,11 @@
+{
+ "slug": "isbn-verifier",
+ "difficulty": 1,
+ "solution_file": "isbn_verifier.py",
+ "test_file": "isbn_verifier_test.py",
+ "ntests": 21,
+ "docs_chars": 1555,
+ "test_chars": 2607,
+ "stub_chars": 29,
+ "reference_chars": 331
+}

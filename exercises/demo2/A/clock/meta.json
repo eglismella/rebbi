@@ -1,0 +1,11 @@
+{
+ "slug": "clock",
+ "difficulty": 3,
+ "solution_file": "clock.py",
+ "test_file": "clock_test.py",
+ "ntests": 55,
+ "docs_chars": 4540,
+ "test_chars": 6282,
+ "stub_chars": 274,
+ "reference_chars": 752
+}

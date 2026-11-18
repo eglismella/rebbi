@@ -1,0 +1,11 @@
+{
+ "slug": "run-length-encoding",
+ "difficulty": 2,
+ "solution_file": "run_length_encoding.py",
+ "test_file": "run_length_encoding_test.py",
+ "ntests": 13,
+ "docs_chars": 862,
+ "test_chars": 2099,
+ "stub_chars": 60,
+ "reference_chars": 379
+}

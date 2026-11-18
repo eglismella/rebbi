@@ -1,0 +1,11 @@
+{
+ "slug": "binary-search",
+ "difficulty": 1,
+ "solution_file": "binary_search.py",
+ "test_file": "binary_search_test.py",
+ "ntests": 11,
+ "docs_chars": 3415,
+ "test_chars": 2558,
+ "stub_chars": 39,
+ "reference_chars": 356
+}

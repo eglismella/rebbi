@@ -1,0 +1,11 @@
+{
+ "slug": "eliuds-eggs",
+ "difficulty": 2,
+ "solution_file": "eliuds_eggs.py",
+ "test_file": "eliuds_eggs_test.py",
+ "ntests": 4,
+ "docs_chars": 1833,
+ "test_chars": 700,
+ "stub_chars": 39,
+ "reference_chars": 146
+}

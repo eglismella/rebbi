@@ -1,0 +1,11 @@
+{
+ "slug": "line-up",
+ "difficulty": 1,
+ "solution_file": "line_up.py",
+ "test_file": "line_up_test.py",
+ "ntests": 25,
+ "docs_chars": 1200,
+ "test_chars": 5895,
+ "stub_chars": 36,
+ "reference_chars": 389
+}

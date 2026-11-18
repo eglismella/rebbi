@@ -1,0 +1,11 @@
+{
+ "slug": "queen-attack",
+ "difficulty": 2,
+ "solution_file": "queen_attack.py",
+ "test_file": "queen_attack_test.py",
+ "ntests": 14,
+ "docs_chars": 2841,
+ "test_chars": 2867,
+ "stub_chars": 118,
+ "reference_chars": 781
+}

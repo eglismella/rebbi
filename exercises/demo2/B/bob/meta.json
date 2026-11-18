@@ -1,0 +1,11 @@
+{
+ "slug": "bob",
+ "difficulty": 1,
+ "solution_file": "bob.py",
+ "test_file": "bob_test.py",
+ "ntests": 26,
+ "docs_chars": 1087,
+ "test_chars": 3569,
+ "stub_chars": 32,
+ "reference_chars": 555
+}

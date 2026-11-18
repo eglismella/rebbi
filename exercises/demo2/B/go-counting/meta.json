@@ -1,0 +1,11 @@
+{
+ "slug": "go-counting",
+ "difficulty": 4,
+ "solution_file": "go_counting.py",
+ "test_file": "go_counting_test.py",
+ "ntests": 11,
+ "docs_chars": 2304,
+ "test_chars": 3739,
+ "stub_chars": 1059,
+ "reference_chars": 2482
+}

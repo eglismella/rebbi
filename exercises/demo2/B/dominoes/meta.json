@@ -1,0 +1,11 @@
+{
+ "slug": "dominoes",
+ "difficulty": 7,
+ "solution_file": "dominoes.py",
+ "test_file": "dominoes_test.py",
+ "ntests": 13,
+ "docs_chars": 1572,
+ "test_chars": 5099,
+ "stub_chars": 34,
+ "reference_chars": 838
+}

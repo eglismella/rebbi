@@ -1,0 +1,11 @@
+{
+ "slug": "all-your-base",
+ "difficulty": 4,
+ "solution_file": "all_your_base.py",
+ "test_file": "all_your_base_test.py",
+ "ntests": 21,
+ "docs_chars": 2608,
+ "test_chars": 3931,
+ "stub_chars": 54,
+ "reference_chars": 731
+}

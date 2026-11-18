@@ -1,0 +1,11 @@
+{
+ "slug": "robot-name",
+ "difficulty": 2,
+ "solution_file": "robot_name.py",
+ "test_file": "robot_name_test.py",
+ "ntests": 4,
+ "docs_chars": 633,
+ "test_chars": 1235,
+ "stub_chars": 50,
+ "reference_chars": 889
+}

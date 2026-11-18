@@ -1,0 +1,11 @@
+{
+ "slug": "square-root",
+ "difficulty": 2,
+ "solution_file": "square_root.py",
+ "test_file": "square_root_test.py",
+ "ntests": 6,
+ "docs_chars": 2425,
+ "test_chars": 767,
+ "stub_chars": 34,
+ "reference_chars": 91
+}

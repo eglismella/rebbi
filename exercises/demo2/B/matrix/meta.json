@@ -1,0 +1,11 @@
+{
+ "slug": "matrix",
+ "difficulty": 3,
+ "solution_file": "matrix.py",
+ "test_file": "matrix_test.py",
+ "ntests": 8,
+ "docs_chars": 1639,
+ "test_chars": 1537,
+ "stub_chars": 149,
+ "reference_chars": 367
+}

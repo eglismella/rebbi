@@ -1,0 +1,11 @@
+{
+ "slug": "atbash-cipher",
+ "difficulty": 2,
+ "solution_file": "atbash_cipher.py",
+ "test_file": "atbash_cipher_test.py",
+ "ntests": 14,
+ "docs_chars": 1183,
+ "test_chars": 2048,
+ "stub_chars": 71,
+ "reference_chars": 464
+}

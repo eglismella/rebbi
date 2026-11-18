@@ -1,0 +1,11 @@
+{
+ "slug": "two-bucket",
+ "difficulty": 6,
+ "solution_file": "two_bucket.py",
+ "test_file": "two_bucket_test.py",
+ "ntests": 11,
+ "docs_chars": 3411,
+ "test_chars": 2291,
+ "stub_chars": 66,
+ "reference_chars": 1932
+}

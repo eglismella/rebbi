@@ -1,0 +1,11 @@
+{
+ "slug": "proverb",
+ "difficulty": 2,
+ "solution_file": "proverb.py",
+ "test_file": "proverb_test.py",
+ "ntests": 8,
+ "docs_chars": 1411,
+ "test_chars": 3511,
+ "stub_chars": 24,
+ "reference_chars": 452
+}

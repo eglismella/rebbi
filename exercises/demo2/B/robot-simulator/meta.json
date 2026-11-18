@@ -1,0 +1,11 @@
+{
+ "slug": "robot-simulator",
+ "difficulty": 3,
+ "solution_file": "robot_simulator.py",
+ "test_file": "robot_simulator_test.py",
+ "ntests": 18,
+ "docs_chars": 816,
+ "test_chars": 4200,
+ "stub_chars": 201,
+ "reference_chars": 1326
+}

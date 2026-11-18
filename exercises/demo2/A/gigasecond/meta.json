@@ -1,0 +1,11 @@
+{
+ "slug": "gigasecond",
+ "difficulty": 1,
+ "solution_file": "gigasecond.py",
+ "test_file": "gigasecond_test.py",
+ "ntests": 5,
+ "docs_chars": 3378,
+ "test_chars": 1181,
+ "stub_chars": 26,
+ "reference_chars": 93
+}

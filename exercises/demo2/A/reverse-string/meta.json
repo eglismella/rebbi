@@ -1,0 +1,11 @@
+{
+ "slug": "reverse-string",
+ "difficulty": 1,
+ "solution_file": "reverse_string.py",
+ "test_file": "reverse_string_test.py",
+ "ntests": 7,
+ "docs_chars": 559,
+ "test_chars": 934,
+ "stub_chars": 28,
+ "reference_chars": 44
+}

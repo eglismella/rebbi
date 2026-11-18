@@ -1,0 +1,11 @@
+{
+ "slug": "bank-account",
+ "difficulty": 6,
+ "solution_file": "bank_account.py",
+ "test_file": "bank_account_test.py",
+ "ntests": 16,
+ "docs_chars": 4628,
+ "test_chars": 4834,
+ "stub_chars": 257,
+ "reference_chars": 1257
+}

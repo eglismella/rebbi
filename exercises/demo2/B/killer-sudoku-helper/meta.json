@@ -1,0 +1,11 @@
+{
+ "slug": "killer-sudoku-helper",
+ "difficulty": 4,
+ "solution_file": "killer_sudoku_helper.py",
+ "test_file": "killer_sudoku_helper_test.py",
+ "ntests": 13,
+ "docs_chars": 4755,
+ "test_chars": 1579,
+ "stub_chars": 50,
+ "reference_chars": 501
+}

@@ -1,0 +1,11 @@
+{
+ "slug": "ocr-numbers",
+ "difficulty": 3,
+ "solution_file": "ocr_numbers.py",
+ "test_file": "ocr_numbers_test.py",
+ "ntests": 17,
+ "docs_chars": 3217,
+ "test_chars": 4079,
+ "stub_chars": 35,
+ "reference_chars": 1204
+}

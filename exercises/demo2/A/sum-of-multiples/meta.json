@@ -1,0 +1,11 @@
+{
+ "slug": "sum-of-multiples",
+ "difficulty": 1,
+ "solution_file": "sum_of_multiples.py",
+ "test_file": "sum_of_multiples_test.py",
+ "ntests": 16,
+ "docs_chars": 1868,
+ "test_chars": 2230,
+ "stub_chars": 49,
+ "reference_chars": 219
+}

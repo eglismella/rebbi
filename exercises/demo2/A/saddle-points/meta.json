@@ -1,0 +1,11 @@
+{
+ "slug": "saddle-points",
+ "difficulty": 3,
+ "solution_file": "saddle_points.py",
+ "test_file": "saddle_points_test.py",
+ "ntests": 10,
+ "docs_chars": 2456,
+ "test_chars": 3396,
+ "stub_chars": 36,
+ "reference_chars": 491
+}

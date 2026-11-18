@@ -1,0 +1,11 @@
+{
+ "slug": "difference-of-squares",
+ "difficulty": 1,
+ "solution_file": "difference_of_squares.py",
+ "test_file": "difference_of_squares_test.py",
+ "ntests": 9,
+ "docs_chars": 692,
+ "test_chars": 1214,
+ "stub_chars": 121,
+ "reference_chars": 294
+}

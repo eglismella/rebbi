@@ -1,0 +1,11 @@
+{
+ "slug": "pig-latin",
+ "difficulty": 2,
+ "solution_file": "pig_latin.py",
+ "test_file": "pig_latin_test.py",
+ "ntests": 23,
+ "docs_chars": 2313,
+ "test_chars": 2789,
+ "stub_chars": 30,
+ "reference_chars": 597
+}

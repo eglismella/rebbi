@@ -1,0 +1,11 @@
+{
+ "slug": "acronym",
+ "difficulty": 2,
+ "solution_file": "acronym.py",
+ "test_file": "acronym_test.py",
+ "ntests": 9,
+ "docs_chars": 571,
+ "test_chars": 1418,
+ "stub_chars": 32,
+ "reference_chars": 144
+}

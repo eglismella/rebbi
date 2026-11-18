@@ -1,0 +1,11 @@
+{
+ "slug": "game-of-life",
+ "difficulty": 3,
+ "solution_file": "game_of_life.py",
+ "test_file": "game_of_life_test.py",
+ "ntests": 8,
+ "docs_chars": 938,
+ "test_chars": 3049,
+ "stub_chars": 27,
+ "reference_chars": 918
+}

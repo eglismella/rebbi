@@ -1,0 +1,11 @@
+{
+ "slug": "allergies",
+ "difficulty": 3,
+ "solution_file": "allergies.py",
+ "test_file": "allergies_test.py",
+ "ntests": 50,
+ "docs_chars": 991,
+ "test_chars": 6728,
+ "stub_chars": 156,
+ "reference_chars": 492
+}

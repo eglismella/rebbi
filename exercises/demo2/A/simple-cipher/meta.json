@@ -1,0 +1,11 @@
+{
+ "slug": "simple-cipher",
+ "difficulty": 3,
+ "solution_file": "simple_cipher.py",
+ "test_file": "simple_cipher_test.py",
+ "ntests": 12,
+ "docs_chars": 3589,
+ "test_chars": 2337,
+ "stub_chars": 145,
+ "reference_chars": 701
+}

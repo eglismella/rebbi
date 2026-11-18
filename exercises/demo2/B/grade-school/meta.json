@@ -1,0 +1,11 @@
+{
+ "slug": "grade-school",
+ "difficulty": 3,
+ "solution_file": "grade_school.py",
+ "test_file": "grade_school_test.py",
+ "ntests": 20,
+ "docs_chars": 1449,
+ "test_chars": 6976,
+ "stub_chars": 225,
+ "reference_chars": 910
+}

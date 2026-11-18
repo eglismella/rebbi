@@ -1,0 +1,11 @@
+{
+ "slug": "tournament",
+ "difficulty": 4,
+ "solution_file": "tournament.py",
+ "test_file": "tournament_test.py",
+ "ntests": 12,
+ "docs_chars": 1618,
+ "test_chars": 6883,
+ "stub_chars": 26,
+ "reference_chars": 1095
+}

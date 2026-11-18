@@ -1,0 +1,11 @@
+{
+ "slug": "resistor-color-trio",
+ "difficulty": 1,
+ "solution_file": "resistor_color_trio.py",
+ "test_file": "resistor_color_trio_test.py",
+ "ntests": 10,
+ "docs_chars": 2241,
+ "test_chars": 1544,
+ "stub_chars": 28,
+ "reference_chars": 703
+}

@@ -1,0 +1,11 @@
+{
+ "slug": "armstrong-numbers",
+ "difficulty": 1,
+ "solution_file": "armstrong_numbers.py",
+ "test_file": "armstrong_numbers_test.py",
+ "ntests": 9,
+ "docs_chars": 599,
+ "test_chars": 1412,
+ "stub_chars": 42,
+ "reference_chars": 118
+}

@@ -1,0 +1,11 @@
+{
+ "slug": "pythagorean-triplet",
+ "difficulty": 3,
+ "solution_file": "pythagorean_triplet.py",
+ "test_file": "pythagorean_triplet_test.py",
+ "ntests": 7,
+ "docs_chars": 2366,
+ "test_chars": 1682,
+ "stub_chars": 40,
+ "reference_chars": 1500
+}

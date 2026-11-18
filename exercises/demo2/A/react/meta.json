@@ -1,0 +1,11 @@
+{
+ "slug": "react",
+ "difficulty": 6,
+ "solution_file": "react.py",
+ "test_file": "react_test.py",
+ "ntests": 14,
+ "docs_chars": 728,
+ "test_chars": 7973,
+ "stub_chars": 290,
+ "reference_chars": 1471
+}

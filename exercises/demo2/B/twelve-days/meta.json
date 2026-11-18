@@ -1,0 +1,11 @@
+{
+ "slug": "twelve-days",
+ "difficulty": 2,
+ "solution_file": "twelve_days.py",
+ "test_file": "twelve_days_test.py",
+ "ntests": 15,
+ "docs_chars": 3520,
+ "test_chars": 6305,
+ "stub_chars": 45,
+ "reference_chars": 881
+}

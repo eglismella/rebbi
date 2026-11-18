@@ -1,0 +1,11 @@
+{
+ "slug": "bottle-song",
+ "difficulty": 3,
+ "solution_file": "bottle_song.py",
+ "test_file": "bottle_song_test.py",
+ "ntests": 7,
+ "docs_chars": 1973,
+ "test_chars": 5937,
+ "stub_chars": 36,
+ "reference_chars": 1078
+}

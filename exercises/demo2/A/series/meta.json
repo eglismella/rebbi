@@ -1,0 +1,11 @@
+{
+ "slug": "series",
+ "difficulty": 2,
+ "solution_file": "series.py",
+ "test_file": "series_test.py",
+ "ntests": 11,
+ "docs_chars": 1960,
+ "test_chars": 2416,
+ "stub_chars": 37,
+ "reference_chars": 448
+}

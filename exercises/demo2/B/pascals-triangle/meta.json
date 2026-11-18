@@ -1,0 +1,11 @@
+{
+ "slug": "pascals-triangle",
+ "difficulty": 4,
+ "solution_file": "pascals_triangle.py",
+ "test_file": "pascals_triangle_test.py",
+ "ntests": 10,
+ "docs_chars": 5296,
+ "test_chars": 1848,
+ "stub_chars": 30,
+ "reference_chars": 310
+}

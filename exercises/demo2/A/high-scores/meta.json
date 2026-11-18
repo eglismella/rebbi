@@ -1,0 +1,11 @@
+{
+ "slug": "high-scores",
+ "difficulty": 3,
+ "solution_file": "high_scores.py",
+ "test_file": "high_scores_test.py",
+ "ntests": 12,
+ "docs_chars": 936,
+ "test_chars": 2786,
+ "stub_chars": 63,
+ "reference_chars": 283
+}

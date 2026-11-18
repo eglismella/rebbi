@@ -1,0 +1,11 @@
+{
+ "slug": "scale-generator",
+ "difficulty": 4,
+ "solution_file": "scale_generator.py",
+ "test_file": "scale_generator_test.py",
+ "ntests": 17,
+ "docs_chars": 3756,
+ "test_chars": 3248,
+ "stub_chars": 145,
+ "reference_chars": 1155
+}

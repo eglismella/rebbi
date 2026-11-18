@@ -1,0 +1,11 @@
+{
+ "slug": "affine-cipher",
+ "difficulty": 6,
+ "solution_file": "affine_cipher.py",
+ "test_file": "affine_cipher_test.py",
+ "ntests": 16,
+ "docs_chars": 4010,
+ "test_chars": 2798,
+ "stub_chars": 83,
+ "reference_chars": 1078
+}

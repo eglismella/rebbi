@@ -1,0 +1,11 @@
+{
+ "slug": "etl",
+ "difficulty": 1,
+ "solution_file": "etl.py",
+ "test_file": "etl_test.py",
+ "ntests": 4,
+ "docs_chars": 1783,
+ "test_chars": 1815,
+ "stub_chars": 37,
+ "reference_chars": 159
+}

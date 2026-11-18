@@ -1,0 +1,11 @@
+{
+ "slug": "variable-length-quantity",
+ "difficulty": 4,
+ "solution_file": "variable_length_quantity.py",
+ "test_file": "variable_length_quantity_test.py",
+ "ntests": 31,
+ "docs_chars": 2508,
+ "test_chars": 4871,
+ "stub_chars": 61,
+ "reference_chars": 743
+}

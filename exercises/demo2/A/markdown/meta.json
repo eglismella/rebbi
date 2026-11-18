@@ -1,0 +1,11 @@
+{
+ "slug": "markdown",
+ "difficulty": 4,
+ "solution_file": "markdown.py",
+ "test_file": "markdown_test.py",
+ "ntests": 17,
+ "docs_chars": 826,
+ "test_chars": 3610,
+ "stub_chars": 2720,
+ "reference_chars": 2208
+}

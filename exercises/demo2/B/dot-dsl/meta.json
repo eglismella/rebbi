@@ -1,0 +1,11 @@
+{
+ "slug": "dot-dsl",
+ "difficulty": 5,
+ "solution_file": "dot_dsl.py",
+ "test_file": "dot_dsl_test.py",
+ "ntests": 12,
+ "docs_chars": 3100,
+ "test_chars": 3994,
+ "stub_chars": 578,
+ "reference_chars": 1536
+}

@@ -1,0 +1,11 @@
+{
+ "slug": "spiral-matrix",
+ "difficulty": 4,
+ "solution_file": "spiral_matrix.py",
+ "test_file": "spiral_matrix_test.py",
+ "ntests": 6,
+ "docs_chars": 1064,
+ "test_chars": 1183,
+ "stub_chars": 34,
+ "reference_chars": 400
+}

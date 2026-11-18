@@ -1,0 +1,11 @@
+{
+ "slug": "poker",
+ "difficulty": 3,
+ "solution_file": "poker.py",
+ "test_file": "poker_test.py",
+ "ntests": 37,
+ "docs_chars": 194,
+ "test_chars": 7690,
+ "stub_chars": 32,
+ "reference_chars": 1185
+}

@@ -1,0 +1,11 @@
+{
+ "slug": "scrabble-score",
+ "difficulty": 2,
+ "solution_file": "scrabble_score.py",
+ "test_file": "scrabble_score_test.py",
+ "ntests": 11,
+ "docs_chars": 918,
+ "test_chars": 1223,
+ "stub_chars": 26,
+ "reference_chars": 367
+}

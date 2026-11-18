@@ -1,0 +1,11 @@
+{
+ "slug": "leap",
+ "difficulty": 1,
+ "solution_file": "leap.py",
+ "test_file": "leap_test.py",
+ "ntests": 9,
+ "docs_chars": 653,
+ "test_chars": 1338,
+ "stub_chars": 30,
+ "reference_chars": 87
+}

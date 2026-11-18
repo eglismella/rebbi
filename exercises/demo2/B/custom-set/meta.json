@@ -1,0 +1,11 @@
+{
+ "slug": "custom-set",
+ "difficulty": 5,
+ "solution_file": "custom_set.py",
+ "test_file": "custom_set_test.py",
+ "ntests": 40,
+ "docs_chars": 269,
+ "test_chars": 7826,
+ "stub_chars": 469,
+ "reference_chars": 1184
+}

@@ -1,0 +1,11 @@
+{
+ "slug": "diamond",
+ "difficulty": 2,
+ "solution_file": "diamond.py",
+ "test_file": "diamond_test.py",
+ "ntests": 5,
+ "docs_chars": 1089,
+ "test_chars": 4612,
+ "stub_chars": 27,
+ "reference_chars": 428
+}

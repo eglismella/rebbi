@@ -1,0 +1,11 @@
+{
+ "slug": "circular-buffer",
+ "difficulty": 3,
+ "solution_file": "circular_buffer.py",
+ "test_file": "circular_buffer_test.py",
+ "ntests": 14,
+ "docs_chars": 3779,
+ "test_chars": 4453,
+ "stub_chars": 606,
+ "reference_chars": 1655
+}

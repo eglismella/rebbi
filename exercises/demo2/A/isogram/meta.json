@@ -1,0 +1,11 @@
+{
+ "slug": "isogram",
+ "difficulty": 1,
+ "solution_file": "isogram.py",
+ "test_file": "isogram_test.py",
+ "ntests": 14,
+ "docs_chars": 375,
+ "test_chars": 1927,
+ "stub_chars": 33,
+ "reference_chars": 162
+}

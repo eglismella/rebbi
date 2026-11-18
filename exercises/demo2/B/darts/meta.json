@@ -1,0 +1,11 @@
+{
+ "slug": "darts",
+ "difficulty": 1,
+ "solution_file": "darts.py",
+ "test_file": "darts_test.py",
+ "ntests": 13,
+ "docs_chars": 1870,
+ "test_chars": 1473,
+ "stub_chars": 26,
+ "reference_chars": 359
+}

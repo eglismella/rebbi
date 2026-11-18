@@ -1,0 +1,11 @@
+{
+ "slug": "pangram",
+ "difficulty": 1,
+ "solution_file": "pangram.py",
+ "test_file": "pangram_test.py",
+ "ntests": 12,
+ "docs_chars": 990,
+ "test_chars": 1887,
+ "stub_chars": 35,
+ "reference_chars": 132
+}

@@ -1,0 +1,11 @@
+{
+ "slug": "flatten-array",
+ "difficulty": 1,
+ "solution_file": "flatten_array.py",
+ "test_file": "flatten_array_test.py",
+ "ntests": 11,
+ "docs_chars": 956,
+ "test_chars": 2359,
+ "stub_chars": 32,
+ "reference_chars": 426
+}

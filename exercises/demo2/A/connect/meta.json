@@ -1,0 +1,11 @@
+{
+ "slug": "connect",
+ "difficulty": 3,
+ "solution_file": "connect.py",
+ "test_file": "connect_test.py",
+ "ntests": 12,
+ "docs_chars": 1164,
+ "test_chars": 3682,
+ "stub_chars": 104,
+ "reference_chars": 2077
+}

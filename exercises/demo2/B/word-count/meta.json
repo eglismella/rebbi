@@ -1,0 +1,11 @@
+{
+ "slug": "word-count",
+ "difficulty": 2,
+ "solution_file": "word_count.py",
+ "test_file": "word_count_test.py",
+ "ntests": 17,
+ "docs_chars": 1690,
+ "test_chars": 3926,
+ "stub_chars": 36,
+ "reference_chars": 188
+}

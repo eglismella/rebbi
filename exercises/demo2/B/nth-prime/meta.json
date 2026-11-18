@@ -1,0 +1,11 @@
+{
+ "slug": "nth-prime",
+ "difficulty": 2,
+ "solution_file": "nth_prime.py",
+ "test_file": "nth_prime_test.py",
+ "ntests": 6,
+ "docs_chars": 1528,
+ "test_chars": 1517,
+ "stub_chars": 28,
+ "reference_chars": 743
+}

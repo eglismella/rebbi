@@ -1,0 +1,11 @@
+{
+ "slug": "sublist",
+ "difficulty": 2,
+ "solution_file": "sublist.py",
+ "test_file": "sublist_test.py",
+ "ntests": 22,
+ "docs_chars": 1326,
+ "test_chars": 3019,
+ "stub_chars": 634,
+ "reference_chars": 702
+}

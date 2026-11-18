@@ -1,0 +1,11 @@
+{
+ "slug": "grains",
+ "difficulty": 1,
+ "solution_file": "grains.py",
+ "test_file": "grains_test.py",
+ "ntests": 11,
+ "docs_chars": 1812,
+ "test_chars": 1794,
+ "stub_chars": 53,
+ "reference_chars": 333
+}

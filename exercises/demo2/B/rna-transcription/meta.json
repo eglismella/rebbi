@@ -1,0 +1,11 @@
+{
+ "slug": "rna-transcription",
+ "difficulty": 1,
+ "solution_file": "rna_transcription.py",
+ "test_file": "rna_transcription_test.py",
+ "ntests": 6,
+ "docs_chars": 1297,
+ "test_chars": 898,
+ "stub_chars": 33,
+ "reference_chars": 112
+}

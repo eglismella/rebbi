@@ -1,0 +1,11 @@
+{
+ "slug": "prime-factors",
+ "difficulty": 2,
+ "solution_file": "prime_factors.py",
+ "test_file": "prime_factors_test.py",
+ "ntests": 12,
+ "docs_chars": 810,
+ "test_chars": 1403,
+ "stub_chars": 29,
+ "reference_chars": 229
+}

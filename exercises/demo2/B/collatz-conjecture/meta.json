@@ -1,0 +1,11 @@
+{
+ "slug": "collatz-conjecture",
+ "difficulty": 1,
+ "solution_file": "collatz_conjecture.py",
+ "test_file": "collatz_conjecture_test.py",
+ "ntests": 6,
+ "docs_chars": 2724,
+ "test_chars": 1167,
+ "stub_chars": 28,
+ "reference_chars": 349
+}

@@ -1,0 +1,11 @@
+{
+ "slug": "sieve",
+ "difficulty": 3,
+ "solution_file": "sieve.py",
+ "test_file": "sieve_test.py",
+ "ntests": 5,
+ "docs_chars": 3127,
+ "test_chars": 4258,
+ "stub_chars": 28,
+ "reference_chars": 305
+}

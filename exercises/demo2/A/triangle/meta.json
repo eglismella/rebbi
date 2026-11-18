@@ -1,0 +1,11 @@
+{
+ "slug": "triangle",
+ "difficulty": 1,
+ "solution_file": "triangle.py",
+ "test_file": "triangle_test.py",
+ "ntests": 21,
+ "docs_chars": 1192,
+ "test_chars": 2521,
+ "stub_chars": 97,
+ "reference_chars": 435
+}

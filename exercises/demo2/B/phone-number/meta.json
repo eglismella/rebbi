@@ -1,0 +1,11 @@
+{
+ "slug": "phone-number",
+ "difficulty": 2,
+ "solution_file": "phone_number.py",
+ "test_file": "phone_number_test.py",
+ "ntests": 21,
+ "docs_chars": 4206,
+ "test_chars": 5417,
+ "stub_chars": 64,
+ "reference_chars": 1818
+}

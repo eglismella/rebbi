@@ -1,0 +1,11 @@
+{
+ "slug": "binary-search-tree",
+ "difficulty": 5,
+ "solution_file": "binary_search_tree.py",
+ "test_file": "binary_search_tree_test.py",
+ "ntests": 10,
+ "docs_chars": 2474,
+ "test_chars": 3209,
+ "stub_chars": 401,
+ "reference_chars": 1453
+}

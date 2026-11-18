@@ -1,0 +1,11 @@
+{
+ "slug": "roman-numerals",
+ "difficulty": 2,
+ "solution_file": "roman_numerals.py",
+ "test_file": "roman_numerals_test.py",
+ "ntests": 27,
+ "docs_chars": 2208,
+ "test_chars": 2401,
+ "stub_chars": 29,
+ "reference_chars": 408
+}

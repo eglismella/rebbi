@@ -1,0 +1,11 @@
+{
+ "slug": "tree-building",
+ "difficulty": 3,
+ "solution_file": "tree_building.py",
+ "test_file": "tree_building_test.py",
+ "ntests": 13,
+ "docs_chars": 1957,
+ "test_chars": 6542,
+ "stub_chars": 1597,
+ "reference_chars": 1333
+}

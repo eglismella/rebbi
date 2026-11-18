@@ -1,0 +1,11 @@
+{
+ "slug": "swift-scheduling",
+ "difficulty": 4,
+ "solution_file": "swift_scheduling.py",
+ "test_file": "swift_scheduling_test.py",
+ "ntests": 17,
+ "docs_chars": 2585,
+ "test_chars": 4049,
+ "stub_chars": 48,
+ "reference_chars": 1955
+}

@@ -1,0 +1,11 @@
+{
+ "slug": "protein-translation",
+ "difficulty": 2,
+ "solution_file": "protein_translation.py",
+ "test_file": "protein_translation_test.py",
+ "ntests": 26,
+ "docs_chars": 1509,
+ "test_chars": 4724,
+ "stub_chars": 31,
+ "reference_chars": 826
+}

@@ -1,0 +1,11 @@
+{
+ "slug": "book-store",
+ "difficulty": 7,
+ "solution_file": "book_store.py",
+ "test_file": "book_store_test.py",
+ "ntests": 20,
+ "docs_chars": 1721,
+ "test_chars": 3495,
+ "stub_chars": 28,
+ "reference_chars": 634
+}

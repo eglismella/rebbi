@@ -1,0 +1,11 @@
+{
+ "slug": "kindergarten-garden",
+ "difficulty": 3,
+ "solution_file": "kindergarten_garden.py",
+ "test_file": "kindergarten_garden_test.py",
+ "ntests": 19,
+ "docs_chars": 4626,
+ "test_chars": 4840,
+ "stub_chars": 70,
+ "reference_chars": 966
+}

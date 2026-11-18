@@ -1,0 +1,11 @@
+{
+ "slug": "yacht",
+ "difficulty": 2,
+ "solution_file": "yacht.py",
+ "test_file": "yacht_test.py",
+ "ntests": 29,
+ "docs_chars": 2537,
+ "test_chars": 3691,
+ "stub_chars": 281,
+ "reference_chars": 1261
+}

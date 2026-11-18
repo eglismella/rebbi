@@ -1,0 +1,11 @@
+{
+ "slug": "two-fer",
+ "difficulty": 1,
+ "solution_file": "two_fer.py",
+ "test_file": "two_fer_test.py",
+ "ntests": 3,
+ "docs_chars": 1046,
+ "test_chars": 597,
+ "stub_chars": 28,
+ "reference_chars": 67
+}

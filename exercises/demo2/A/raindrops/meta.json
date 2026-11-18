@@ -1,0 +1,11 @@
+{
+ "slug": "raindrops",
+ "difficulty": 1,
+ "solution_file": "raindrops.py",
+ "test_file": "raindrops_test.py",
+ "ntests": 18,
+ "docs_chars": 2355,
+ "test_chars": 2359,
+ "stub_chars": 30,
+ "reference_chars": 339
+}

@@ -1,0 +1,11 @@
+{
+ "slug": "crypto-square",
+ "difficulty": 3,
+ "solution_file": "crypto_square.py",
+ "test_file": "crypto_square_test.py",
+ "ntests": 8,
+ "docs_chars": 1902,
+ "test_chars": 1814,
+ "stub_chars": 38,
+ "reference_chars": 670
+}

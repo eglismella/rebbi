@@ -1,0 +1,11 @@
+{
+ "slug": "rational-numbers",
+ "difficulty": 5,
+ "solution_file": "rational_numbers.py",
+ "test_file": "rational_numbers_test.py",
+ "ntests": 43,
+ "docs_chars": 2752,
+ "test_chars": 6542,
+ "stub_chars": 581,
+ "reference_chars": 1414
+}

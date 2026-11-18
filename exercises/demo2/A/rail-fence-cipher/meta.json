@@ -1,0 +1,11 @@
+{
+ "slug": "rail-fence-cipher",
+ "difficulty": 4,
+ "solution_file": "rail_fence_cipher.py",
+ "test_file": "rail_fence_cipher_test.py",
+ "ntests": 6,
+ "docs_chars": 1726,
+ "test_chars": 1296,
+ "stub_chars": 84,
+ "reference_chars": 494
+}

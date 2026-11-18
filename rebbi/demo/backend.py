@@ -58,9 +58,10 @@ class SdkBackend:
 
     scripted = False
 
-    def __init__(self, token: str, config_dir: Path):
+    def __init__(self, token: str, config_dir: Path, extra_env: dict[str, str] | None = None):
         self.token = token
         self.config_dir = config_dir
+        self.extra_env = dict(extra_env or {})
         config_dir.mkdir(parents=True, exist_ok=True)
 
     async def turn(self, agent, model, system, prompt, gate, window) -> TurnOutput:
@@ -71,7 +72,7 @@ class SdkBackend:
             setting_sources=[], permission_mode="dontAsk", max_turns=MAX_CALLS, cwd=str(self.config_dir),
             include_partial_messages=True,
             env={"CLAUDE_CODE_OAUTH_TOKEN": self.token, "CLAUDE_CONFIG_DIR": str(self.config_dir / agent),
-                 "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1", "DISABLE_AUTOUPDATER": "1"})
+                 "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1", "DISABLE_AUTOUPDATER": "1", **self.extra_env})
         texts: list[str] = []
         meter: UsageMeter | None = None
         stopped, calls, result = False, 0, None

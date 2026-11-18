@@ -1,0 +1,11 @@
+{
+ "slug": "say",
+ "difficulty": 2,
+ "solution_file": "say.py",
+ "test_file": "say_test.py",
+ "ntests": 20,
+ "docs_chars": 1885,
+ "test_chars": 2660,
+ "stub_chars": 26,
+ "reference_chars": 1478
+}

@@ -1,0 +1,11 @@
+{
+ "slug": "matching-brackets",
+ "difficulty": 2,
+ "solution_file": "matching_brackets.py",
+ "test_file": "matching_brackets_test.py",
+ "ntests": 20,
+ "docs_chars": 909,
+ "test_chars": 2445,
+ "stub_chars": 38,
+ "reference_chars": 388
+}

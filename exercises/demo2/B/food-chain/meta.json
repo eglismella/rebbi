@@ -1,0 +1,11 @@
+{
+ "slug": "food-chain",
+ "difficulty": 4,
+ "solution_file": "food_chain.py",
+ "test_file": "food_chain_test.py",
+ "ntests": 10,
+ "docs_chars": 2542,
+ "test_chars": 8259,
+ "stub_chars": 45,
+ "reference_chars": 1981
+}

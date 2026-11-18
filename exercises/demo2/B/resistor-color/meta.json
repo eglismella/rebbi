@@ -1,0 +1,11 @@
+{
+ "slug": "resistor-color",
+ "difficulty": 1,
+ "solution_file": "resistor_color.py",
+ "test_file": "resistor_color_test.py",
+ "ntests": 4,
+ "docs_chars": 1377,
+ "test_chars": 861,
+ "stub_chars": 57,
+ "reference_chars": 231
+}

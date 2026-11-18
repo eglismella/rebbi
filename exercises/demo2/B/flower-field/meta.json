@@ -1,0 +1,11 @@
+{
+ "slug": "flower-field",
+ "difficulty": 4,
+ "solution_file": "flower_field.py",
+ "test_file": "flower_field_test.py",
+ "ntests": 16,
+ "docs_chars": 2338,
+ "test_chars": 2760,
+ "stub_chars": 63,
+ "reference_chars": 1244
+}

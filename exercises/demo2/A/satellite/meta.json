@@ -1,0 +1,11 @@
+{
+ "slug": "satellite",
+ "difficulty": 7,
+ "solution_file": "satellite.py",
+ "test_file": "satellite_test.py",
+ "ntests": 9,
+ "docs_chars": 2367,
+ "test_chars": 3964,
+ "stub_chars": 54,
+ "reference_chars": 868
+}

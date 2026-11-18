@@ -1,0 +1,11 @@
+{
+ "slug": "ledger",
+ "difficulty": 4,
+ "solution_file": "ledger.py",
+ "test_file": "ledger_test.py",
+ "ntests": 11,
+ "docs_chars": 683,
+ "test_chars": 6074,
+ "stub_chars": 10615,
+ "reference_chars": 2445
+}

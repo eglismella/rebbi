@@ -1,0 +1,11 @@
+{
+ "slug": "resistor-color-duo",
+ "difficulty": 1,
+ "solution_file": "resistor_color_duo.py",
+ "test_file": "resistor_color_duo_test.py",
+ "ntests": 7,
+ "docs_chars": 1225,
+ "test_chars": 991,
+ "stub_chars": 28,
+ "reference_chars": 228
+}

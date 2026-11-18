@@ -1,0 +1,11 @@
+{
+ "slug": "largest-series-product",
+ "difficulty": 4,
+ "solution_file": "largest_series_product.py",
+ "test_file": "largest_series_product_test.py",
+ "ntests": 14,
+ "docs_chars": 2852,
+ "test_chars": 3928,
+ "stub_chars": 44,
+ "reference_chars": 654
+}

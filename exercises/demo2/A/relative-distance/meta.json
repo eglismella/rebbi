@@ -1,0 +1,11 @@
+{
+ "slug": "relative-distance",
+ "difficulty": 5,
+ "solution_file": "relative_distance.py",
+ "test_file": "relative_distance_test.py",
+ "ntests": 9,
+ "docs_chars": 5711,
+ "test_chars": 8269,
+ "stub_chars": 144,
+ "reference_chars": 1294
+}

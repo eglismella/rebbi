@@ -1,0 +1,11 @@
+{
+ "slug": "house",
+ "difficulty": 1,
+ "solution_file": "house.py",
+ "test_file": "house_test.py",
+ "ntests": 14,
+ "docs_chars": 2937,
+ "test_chars": 8215,
+ "stub_chars": 45,
+ "reference_chars": 882
+}

@@ -1,0 +1,11 @@
+{
+ "slug": "secret-handshake",
+ "difficulty": 1,
+ "solution_file": "secret_handshake.py",
+ "test_file": "secret_handshake_test.py",
+ "ntests": 11,
+ "docs_chars": 2014,
+ "test_chars": 1570,
+ "stub_chars": 35,
+ "reference_chars": 271
+}

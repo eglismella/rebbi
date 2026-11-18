@@ -1,0 +1,11 @@
+{
+ "slug": "rotational-cipher",
+ "difficulty": 1,
+ "solution_file": "rotational_cipher.py",
+ "test_file": "rotational_cipher_test.py",
+ "ntests": 10,
+ "docs_chars": 1154,
+ "test_chars": 1427,
+ "stub_chars": 32,
+ "reference_chars": 460
+}

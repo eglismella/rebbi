@@ -1,0 +1,11 @@
+{
+ "slug": "dnd-character",
+ "difficulty": 2,
+ "solution_file": "dnd_character.py",
+ "test_file": "dnd_character_test.py",
+ "ntests": 19,
+ "docs_chars": 2508,
+ "test_chars": 3089,
+ "stub_chars": 85,
+ "reference_chars": 554
+}

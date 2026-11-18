@@ -1,0 +1,11 @@
+{
+ "slug": "change",
+ "difficulty": 4,
+ "solution_file": "change.py",
+ "test_file": "change_test.py",
+ "ntests": 13,
+ "docs_chars": 2779,
+ "test_chars": 2569,
+ "stub_chars": 47,
+ "reference_chars": 1004
+}

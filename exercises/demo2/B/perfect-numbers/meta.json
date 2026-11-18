@@ -1,0 +1,11 @@
+{
+ "slug": "perfect-numbers",
+ "difficulty": 1,
+ "solution_file": "perfect_numbers.py",
+ "test_file": "perfect_numbers_test.py",
+ "ntests": 14,
+ "docs_chars": 2719,
+ "test_chars": 2639,
+ "stub_chars": 205,
+ "reference_chars": 913
+}

@@ -1,0 +1,11 @@
+{
+ "slug": "wordy",
+ "difficulty": 3,
+ "solution_file": "wordy.py",
+ "test_file": "wordy_test.py",
+ "ntests": 31,
+ "docs_chars": 3607,
+ "test_chars": 5080,
+ "stub_chars": 31,
+ "reference_chars": 1515
+}

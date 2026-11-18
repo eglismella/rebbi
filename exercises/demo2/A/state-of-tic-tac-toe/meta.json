@@ -1,0 +1,11 @@
+{
+ "slug": "state-of-tic-tac-toe",
+ "difficulty": 3,
+ "solution_file": "state_of_tic_tac_toe.py",
+ "test_file": "state_of_tic_tac_toe_test.py",
+ "ntests": 29,
+ "docs_chars": 3337,
+ "test_chars": 7386,
+ "stub_chars": 31,
+ "reference_chars": 1424
+}

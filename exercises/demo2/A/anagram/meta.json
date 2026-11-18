@@ -1,0 +1,11 @@
+{
+ "slug": "anagram",
+ "difficulty": 1,
+ "solution_file": "anagram.py",
+ "test_file": "anagram_test.py",
+ "ntests": 18,
+ "docs_chars": 1670,
+ "test_chars": 4198,
+ "stub_chars": 46,
+ "reference_chars": 256
+}

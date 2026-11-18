@@ -1,0 +1,11 @@
+{
+ "slug": "list-ops",
+ "difficulty": 1,
+ "solution_file": "list_ops.py",
+ "test_file": "list_ops_test.py",
+ "ntests": 25,
+ "docs_chars": 1359,
+ "test_chars": 3633,
+ "stub_chars": 293,
+ "reference_chars": 722
+}

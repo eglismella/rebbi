@@ -1,0 +1,11 @@
+{
+ "slug": "hamming",
+ "difficulty": 1,
+ "solution_file": "hamming.py",
+ "test_file": "hamming_test.py",
+ "ntests": 9,
+ "docs_chars": 2312,
+ "test_chars": 1905,
+ "stub_chars": 43,
+ "reference_chars": 214
+}
