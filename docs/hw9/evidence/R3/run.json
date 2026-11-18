@@ -1,0 +1,7 @@
+{
+  "prompt": "P2",
+  "mode": "budget-only",
+  "needed": 100000,
+  "python": "/home/claude/hw9/venv2/bin/python",
+  "http_port": null
+}

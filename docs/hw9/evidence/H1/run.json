@@ -1,0 +1,7 @@
+{
+  "prompt": "P3",
+  "mode": "budget-only",
+  "needed": 30000,
+  "python": "/home/claude/hw9/venv/bin/python",
+  "http_port": 8765
+}

@@ -1,0 +1,11 @@
+{
+  "agent": "auditor-01",
+  "own_budget": 7000,
+  "asked": 25000,
+  "got": 25000,
+  "from": "analyst-07",
+  "loan_ids": [1],
+  "expires_at": "2026-11-18T04:13:22+00:00",
+  "closed": "settled via Rebbi settle(loan_id=1, outcome=done); returned_tokens=25000; balance back to 7000",
+  "note": "Audit not started, per instructions; nothing spent, so the whole loan went back."
+}

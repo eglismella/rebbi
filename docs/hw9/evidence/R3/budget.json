@@ -1,0 +1,20 @@
+{
+  "agent": "auditor-01",
+  "job": "dep-audit-v1 on ./target (past audits up to 100,000 tokens)",
+  "starting_balance": 7000,
+  "asked_for": [
+    {"request_id": "auditor01-dep-audit-a", "tokens": 93000},
+    {"request_id": "auditor01-dep-audit-b", "tokens": 33000}
+  ],
+  "total_asked_for": 126000,
+  "note_on_ask": "Need ~100,000 total; 93,000 = 100,000 - 7,000 own. Second ask was the remaining 33,000 after the 60,000 loan cap.",
+  "got": [
+    {"loan_id": 1, "tokens": 60000, "from": "analyst-07", "expires_at": "2026-11-18T04:19:05+00:00", "limit_reason": "loan cap"},
+    {"loan_id": 2, "tokens": 20000, "from": "analyst-07", "expires_at": "2026-11-18T04:19:09+00:00", "limit_reason": "lender room"}
+  ],
+  "total_got": 80000,
+  "peak_balance": 87000,
+  "shortfall_vs_100k": 13000,
+  "shortfall_note": "No other lender had room (writer-03 lendable 0); analyst-07 fully drained of lendable budget.",
+  "closed": {"method": "settle outcome=abandoned (audit not started, per instructions)", "loan_1_returned": 60000, "loan_2_returned": 20000, "final_balance": 7000}
+}

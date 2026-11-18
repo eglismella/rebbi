@@ -1,0 +1,11 @@
+{
+  "own_budget_tokens": 7000,
+  "asked": 55000,
+  "request_id": "auditor-01-dep-audit-1",
+  "got": 55000,
+  "partial": false,
+  "from": "analyst-07",
+  "loan_ids": [1],
+  "expires_at": "2026-11-18T04:19:05+00:00",
+  "closed": {"how": "settle outcome=done", "returned_tokens": 55000, "status": "settled"}
+}
